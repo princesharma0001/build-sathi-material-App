@@ -1,0 +1,85 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# React Native
+.metro-health-check*
+.expo/
+.expo-shared/
+
+# Android
+.gradle/
+.idea/
+*.iml
+android/.idea/
+android/local.properties
+android/app/build/
+android/build/
+android/app/.cxx/
+android/.cxx/
+
+# iOS
+Pods/
+ios/build/
+DerivedData/
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+*.xcuserstate
+xcuserdata/
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Coverage
+coverage/
+
+# Watchman
+.watchmanconfig
+
+# Fastlane
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots/**/*.png
+ios/fastlane/test_output
+
+# React Native / Metro
+*.jsbundle
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# Secrets / certificates
+*.keystore
+*.jks
+*.p12
+*.pem
