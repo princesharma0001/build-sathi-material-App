@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -164,16 +165,18 @@ const SellerQuoteDetailsScreen = () => {
   // =====================================================
 
   const materialName = quote?.requirement?.material?.name || "Material";
+  const materialIcon = quote.requirement?.material.imageUrl;
 
-  const materialIcon = materialName.toLowerCase().includes("cement")
-    ? "🧱"
-    : materialName.toLowerCase().includes("sand")
-    ? "🏖️"
-    : materialName.toLowerCase().includes("aggregate")
-    ? "🪨"
-    : materialName.toLowerCase().includes("brick")
-    ? "🧱"
-    : "📦";
+
+  // const materialIcon = materialName.toLowerCase().includes("cement")
+  //   ? "🧱"
+  //   : materialName.toLowerCase().includes("sand")
+  //   ? "🏖️"
+  //   : materialName.toLowerCase().includes("aggregate")
+  //   ? "🪨"
+  //   : materialName.toLowerCase().includes("brick")
+  //   ? "🧱"
+  //   : "📦";
 
   const quantity = `${quote?.requirement?.quantity || 0} ${
     quote?.requirement?.unit || ""
@@ -436,7 +439,12 @@ const SellerQuoteDetailsScreen = () => {
 
             <View style={styles.heroMaterial}>
               <View style={styles.heroMaterialIcon}>
-                <Ionicons name="pricetag-outline" size={21} color="#FFD76A" />
+              <Image
+              source={{ uri: materialIcon }}
+              style={styles.materialImage}
+              resizeMode="cover"
+            />
+                {/* <Ionicons name="pricetag-outline" size={21} color="#FFD76A" /> */}
                 {/* <Text style={styles.heroEmoji}>{quote.materialIcon}</Text> */}
               </View>
 
@@ -1066,6 +1074,12 @@ const styles = StyleSheet.create({
     height: 25,
     backgroundColor: "rgba(255,255,255,0.12)",
     marginHorizontal: 25,
+  },
+  materialImage: {
+    width: 47,
+    height: 47,
+    resizeMode: "cover",
+    borderRadius:12
   },
 
   /* SECTION */

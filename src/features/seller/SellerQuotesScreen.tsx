@@ -10,6 +10,7 @@ import {
   TextInput,
   StatusBar,
   FlatList,
+  Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -663,7 +664,8 @@ const SellerQuotesScreen = () => {
             const materialName =
               quote?.requirement?.material?.name || "Material";
 
-            const materialIcon = getMaterialIcon(materialName);
+            // const materialIcon = getMaterialIcon(materialName);
+            const materialIcon = quote.requirement?.material.imageUrl;
 
             const buyerName = quote?.requirement?.buyer?.name || "Buyer";
 
@@ -719,7 +721,11 @@ const SellerQuotesScreen = () => {
                 <View style={styles.cardHeader}>
                   <View style={styles.materialRow}>
                     <View style={styles.materialIcon}>
-                      <Text style={styles.materialEmoji}>{materialIcon}</Text>
+                    <Image
+              source={{ uri: materialIcon }}
+              style={styles.materialImage}
+              resizeMode="cover"
+            />
                     </View>
 
                     <View style={styles.materialInfo}>
@@ -1007,6 +1013,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
+  materialImage: {
+    width: 47,
+    height: 47,
+    resizeMode: "cover",
+    borderRadius:12
+  },
   /* LOADING */
 
   loadingContainer: {

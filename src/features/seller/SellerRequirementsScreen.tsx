@@ -8,6 +8,7 @@ import {
   TextInput,
   StatusBar,
   FlatList,
+  Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -355,17 +356,21 @@ const RequirementCard = ({
   // MATERIAL
   // ==============================
 
+  console.log("sgsgs", requirement);
+
   const materialName = requirement?.material?.name || "Material";
 
-  const materialIcon = materialName.toLowerCase().includes("cement")
-    ? "🧱"
-    : materialName.toLowerCase().includes("sand")
-    ? "🏖️"
-    : materialName.toLowerCase().includes("aggregate")
-    ? "🪨"
-    : materialName.toLowerCase().includes("brick")
-    ? "🧱"
-    : "📦";
+  // const materialIcon = materialName.toLowerCase().includes("cement")
+  //   ? "🧱"
+  //   : materialName.toLowerCase().includes("sand")
+  //   ? "🏖️"
+  //   : materialName.toLowerCase().includes("aggregate")
+  //   ? "🪨"
+  //   : materialName.toLowerCase().includes("brick")
+  //   ? "🧱"
+  //   : "📦";
+
+  const materialIcon = requirement?.material.imageUrl;
 
   const materialGradient = materialName.toLowerCase().includes("cement")
     ? ["#FFF0D8", "#FFE1B5"]
@@ -479,9 +484,14 @@ const RequirementCard = ({
       {/* TOP */}
       <View style={styles.requirementTop}>
         <View style={styles.materialRow}>
-          <LinearGradient colors={materialGradient} style={styles.materialIcon}>
-            <Text style={styles.materialEmoji}>{materialIcon}</Text>
-          </LinearGradient>
+          <View style={styles.materialIcon}>
+            <Image
+              source={{ uri: materialIcon }}
+              style={styles.materialImage}
+              resizeMode="cover"
+            />
+            {/* <Text style={styles.materialEmoji}>{materialIcon}</Text> */}
+          </View>
 
           <View style={styles.materialInfo}>
             <View style={styles.materialTitleRow}>
@@ -785,6 +795,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  materialImage: {
+    width: 47,
+    height: 47,
+    resizeMode: "cover",
+    borderRadius:12
+  },
+
   /* FILTERS */
 
   filterScroll: {
@@ -1044,7 +1061,7 @@ const styles = StyleSheet.create({
   materialIcon: {
     width: 47,
     height: 47,
-    borderRadius: 15,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -89,45 +89,6 @@ const BuyerHomeScreen = ({ navigation }: any) => {
     },
   ];
 
-  // const popularMaterials = [
-  //   {
-  //     id: 'cement',
-  //     name: 'Cement',
-  //     icon: '🧱',
-  //     hint: 'Bags',
-  //     colors: ['#FFF8ED', '#FFE7C2'],
-  //     iconBackground: '#FFF0D8',
-  //     arrowColor: '#FF7A00',
-  //   },
-  //   {
-  //     id: 'sand',
-  //     name: 'Sand',
-  //     icon: '🏖️',
-  //     hint: 'Ton / CFT',
-  //     colors: ['#FFFDF4', '#F6E8B8'],
-  //     iconBackground: '#FFF7D6',
-  //     arrowColor: '#D4A017',
-  //   },
-  //   {
-  //     id: 'aggregate',
-  //     name: 'Aggregate',
-  //     icon: '🪨',
-  //     hint: 'Ton / CFT',
-  //     colors: ['#F7F7F7', '#E5E5E5'],
-  //     iconBackground: '#EEEEEE',
-  //     arrowColor: '#555555',
-  //   },
-  //   {
-  //     id: 'bricks',
-  //     name: 'Bricks',
-  //     icon: '🧱',
-  //     hint: 'Pieces',
-  //     colors: ['#FFF1EA', '#FFD8C5'],
-  //     iconBackground: '#FFE1D2',
-  //     arrowColor: '#EA580C',
-  //   },
-  // ];
-
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(false);
   const [refreshingMaterials, setRefreshingMaterials] = useState(false);
@@ -184,15 +145,17 @@ const BuyerHomeScreen = ({ navigation }: any) => {
     return "📦";
   };
 
-  const popularMaterials = materials.map((material) => ({
+  const popularMaterials = materials?.map((material) => ({
     id: material.id,
     name: material.name,
     hint: `Per ${material.unit}`,
-    icon: getMaterialIcon(material.name),
+    icon: material?.imageUrl,
     colors: ["#FFF3D6", "#FFE4B5"],
     iconBackground: "#FFFFFF",
     arrowColor: "#F97316",
   }));
+
+  console.log("dgfsfgsa", materials);
 
   useEffect(() => {
     loadMaterials();
@@ -362,54 +325,72 @@ const BuyerHomeScreen = ({ navigation }: any) => {
             </View>
 
             <View style={styles.materialGrid}>
-              {popularMaterials.map((material) => (
-                <Pressable
-                  key={material.id}
-                  style={styles.materialCard}
-                  onPress={() =>
-                    navigation.navigate("CreateRequirement", {
-                      material: material.name,
-                    })
-                  }
-                >
-                  <LinearGradient
-                    colors={material.colors}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.materialGradient}
+              {popularMaterials.length > 0 ? (
+                popularMaterials.map((material) => (
+                  <Pressable
+                    key={material.id}
+                    style={styles.materialCard}
+                    onPress={() =>
+                      navigation.navigate("CreateRequirement", {
+                        material: material.name,
+                      })
+                    }
                   >
-                    <View
-                      style={[
-                        styles.materialIcon,
-                        {
-                          backgroundColor: material.iconBackground,
-                        },
-                      ]}
+                    <LinearGradient
+                      colors={material.colors}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.materialGradient}
                     >
-                      <Text style={styles.materialEmoji}>{material.icon}</Text>
-                    </View>
+                      <View
+                        style={[
+                          styles.materialIcon,
+                          {
+                            // backgroundColor: material.iconBackground,
+                          },
+                        ]}
+                      >
+                        <Image
+                          source={{ uri: material.icon }}
+                          style={{ width: 50, height: 50,borderRadius:12 }}
+                          resizeMode="cover"
+                        />
+                      </View>
 
-                    <Text style={styles.materialName}>{material.name}</Text>
+                      <Text style={styles.materialName}>{material.name}</Text>
 
-                    <Text style={styles.materialHint}>{material.hint}</Text>
+                      <Text style={styles.materialHint}>{material.hint}</Text>
 
-                    <View
-                      style={[
-                        styles.materialArrow,
-                        {
-                          backgroundColor: "#FFFFFF",
-                        },
-                      ]}
-                    >
-                      <Ionicons
-                        name="chevron-forward"
-                        size={17}
-                        color={material.arrowColor}
-                      />
-                    </View>
-                  </LinearGradient>
-                </Pressable>
-              ))}
+                      <View
+                        style={[
+                          styles.materialArrow,
+                          {
+                            backgroundColor: "#FFFFFF",
+                          },
+                        ]}
+                      >
+                        <Ionicons
+                          name="chevron-forward"
+                          size={17}
+                          color={material.arrowColor}
+                        />
+                      </View>
+                    </LinearGradient>
+                  </Pressable>
+                ))
+              ) : (
+                <View style={styles.noMaterialContainer}>
+                  <View style={styles.noMaterialIcon}>
+                    <Ionicons name="cube-outline" size={38} color="#94A3B8" />
+                  </View>
+
+                  <Text style={styles.noMaterialTitle}>No Materials Found</Text>
+
+                  <Text style={styles.noMaterialText}>
+                    No materials are available at the moment.
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -680,6 +661,42 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 
+  noMaterialContainer: {
+    width: "100%",
+    minHeight: 180,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+  },
+
+  noMaterialIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E2E8F0",
+    marginBottom: 12,
+  },
+
+  noMaterialTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#172554",
+    marginBottom: 5,
+  },
+
+  noMaterialText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#64748B",
+    textAlign: "center",
+  },
   logoText: {
     fontSize: 20,
     fontWeight: "800",

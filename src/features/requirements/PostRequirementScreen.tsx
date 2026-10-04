@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -47,6 +48,8 @@ const PostRequirementScreen = ({ navigation }: any) => {
   const [deliveryPreference, setDeliveryPreference] = useState("");
   const [notes, setNotes] = useState("");
   const [materials, setMaterials] = useState<Material[]>([]);
+  console.log("dfsfsa", materials);
+
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
     null
   );
@@ -390,7 +393,7 @@ const PostRequirementScreen = ({ navigation }: any) => {
                       color="#D94C3D"
                     />
 
-                    <Text style={styles.loadingMaterialText}>
+                    <Text style={[styles.loadingMaterialText, { flex: 1 }]}>
                       {materialsError}
                     </Text>
 
@@ -401,80 +404,156 @@ const PostRequirementScreen = ({ navigation }: any) => {
                     />
                   </Pressable>
                 ) : materials.length === 0 ? (
-                  <View style={styles.loadingMaterial}>
-                    <Ionicons name="cube-outline" size={19} color="#8C8175" />
+                  <View style={styles.noMaterialContainer}>
+                    <View style={styles.noMaterialIcon}>
+                      <Ionicons name="cube-outline" size={28} color="#94A3B8" />
+                    </View>
 
-                    <Text style={styles.loadingMaterialText}>
-                      No materials available
+                    <Text style={styles.noMaterialTitle}>
+                      No Materials Available
+                    </Text>
+
+                    <Text style={styles.noMaterialText}>
+                      No construction materials are available right now.
                     </Text>
                   </View>
                 ) : (
-                  materials.map((item, index) => (
-                    <Pressable
-                      key={item.id}
-                      style={[
-                        styles.dropdownItem,
-                        index === materials.length - 1 &&
-                          styles.lastDropdownItem,
-                      ]}
-                      onPress={() => {
-                        setSelectedMaterial(item);
-                        setMaterial(item.name);
+                  materials.map((item, index) => {
+                    const isSelected = material === item.name;
 
-                        // Automatically use Admin's unit
-                        setUnit(item.unit);
+                    return (
+                      <Pressable
+                        key={item.id}
+                        style={[
+                          styles.materialDropdownItem,
+                          isSelected && styles.materialDropdownItemSelected,
+                          index === materials.length - 1 &&
+                            styles.lastDropdownItem,
+                        ]}
+                        onPress={() => {
+                          setSelectedMaterial(item);
+                          setMaterial(item.name);
 
-                        setShowMaterials(false);
-                        setShowUnits(false);
+                          // Automatically use Admin's unit
+                          setUnit(item.unit);
 
-                        setErrors((prev) => ({
-                          ...prev,
-                          material: undefined,
-                          unit: undefined,
-                        }));
-                      }}
-                    >
-                      <View style={styles.materialOptionLeft}>
-                        <View style={styles.materialOptionIcon}>
-                          <Ionicons
-                            name="cube-outline"
-                            size={16}
-                            color="#FF7A00"
-                          />
+                          setShowMaterials(false);
+                          setShowUnits(false);
+
+                          setErrors((prev) => ({
+                            ...prev,
+                            material: undefined,
+                            unit: undefined,
+                          }));
+                        }}
+                      >
+                        {/* IMAGE */}
+                        <View style={styles.materialImageContainer}>
+                          {item.imageUrl ? (
+                            <Image
+                              source={{ uri: item.imageUrl }}
+                              style={styles.materialImage}
+                              resizeMode="cover"
+                            />
+                          ) : (
+                            <View style={styles.materialImageFallback}>
+                              <Ionicons
+                                name="cube-outline"
+                                size={30}
+                                color="#FF7A00"
+                              />
+                            </View>
+                          )}
                         </View>
 
-                        <View style={styles.materialOptionText}>
-                          <Text
-                            style={[
-                              styles.dropdownText,
-                              material === item.name &&
-                                styles.dropdownTextActive,
-                            ]}
-                          >
-                            {item.name}
-                          </Text>
+                        {/* DETAILS */}
+                        <View style={styles.materialDetails}>
+                          <View style={styles.materialNameRow}>
+                            <Text
+                              numberOfLines={1}
+                              style={[
+                                styles.materialDropdownName,
+                                isSelected &&
+                                  styles.materialDropdownNameSelected,
+                              ]}
+                            >
+                              {item.name}
+                            </Text>
 
+                            {isSelected && (
+                              <Ionicons
+                                name="checkmark-circle"
+                                size={22}
+                                color="#FF7A00"
+                              />
+                            )}
+                          </View>
+
+                          {/* CATEGORY */}
                           {item.category?.name ? (
-                            <Text style={styles.materialCategoryText}>
-                              {item.category.name}
+                            <View style={styles.categoryRow}>
+                              <Ionicons
+                                name="layers-outline"
+                                size={14}
+                                color="#64748B"
+                              />
+
+                              <Text
+                                numberOfLines={1}
+                                style={styles.materialCategoryName}
+                              >
+                                {item.category.name}
+                              </Text>
+                            </View>
+                          ) : null}
+
+                          {/* DESCRIPTION */}
+                          {item.category?.description ? (
+                            <Text
+                              numberOfLines={2}
+                              style={styles.materialCategoryDescription}
+                            >
+                              {item.category.description}
+                            </Text>
+                          ) : item.description ? (
+                            <Text
+                              numberOfLines={2}
+                              style={styles.materialCategoryDescription}
+                            >
+                              {item.description}
                             </Text>
                           ) : null}
-                        </View>
-                      </View>
 
-                      {material === item.name && (
-                        <Ionicons
-                          name="checkmark-circle"
-                          size={19}
-                          color="#FF7A00"
-                        />
-                      )}
-                    </Pressable>
-                  ))
+                          {/* UNIT */}
+                          {item.unit ? (
+                            <View style={styles.unitBadge}>
+                              <Ionicons
+                                name="scale-outline"
+                                size={13}
+                                color="#FF7A00"
+                              />
+
+                              <Text style={styles.unitBadgeText}>
+                                Sold by {item.unit}
+                              </Text>
+                            </View>
+                          ) : null}
+                        </View>
+
+                        {/* RIGHT ARROW */}
+                        {!isSelected && (
+                          <Ionicons
+                            name="chevron-forward"
+                            size={18}
+                            color="#CBD5E1"
+                          />
+                        )}
+                      </Pressable>
+                    );
+                  })
                 )}
               </View>
             )}
-
             {/* QUANTITY */}
             <View style={styles.quantityRow}>
               <View style={styles.quantityColumn}>
@@ -1006,6 +1085,148 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 
+  materialDropdownItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+  },
+
+  materialDropdownItemSelected: {
+    backgroundColor: "#FFF7ED",
+    borderWidth: 1,
+    borderColor: "#FFD7AA",
+    borderRadius: 14,
+    marginHorizontal: 6,
+    marginVertical: 4,
+  },
+
+  lastDropdownItem: {
+    borderBottomWidth: 0,
+  },
+
+  materialImageContainer: {
+    width: 68,
+    height: 68,
+    borderRadius: 14,
+    overflow: "hidden",
+    backgroundColor: "#FFF7ED",
+    borderWidth: 1,
+    borderColor: "#FDE7CF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 13,
+  },
+
+  materialImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  materialImageFallback: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFF7ED",
+  },
+
+  materialDetails: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  materialNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+
+  materialDropdownName: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#172554",
+    marginRight: 8,
+  },
+
+  materialDropdownNameSelected: {
+    color: "#EA580C",
+  },
+
+  categoryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+
+  materialCategoryName: {
+    marginLeft: 5,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#64748B",
+  },
+
+  materialCategoryDescription: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: "#64748B",
+    marginBottom: 7,
+  },
+
+  unitBadge: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 7,
+    backgroundColor: "#FFF7ED",
+  },
+
+  unitBadgeText: {
+    marginLeft: 4,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#EA580C",
+  },
+
+  noMaterialContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    backgroundColor: "#FFFFFF",
+  },
+
+  noMaterialIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F1F5F9",
+    marginBottom: 10,
+  },
+
+  noMaterialTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: "#172554",
+    marginBottom: 4,
+  },
+
+  noMaterialText: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: "#64748B",
+    textAlign: "center",
+  },
+
   loadingMaterialText: {
     flex: 1,
     fontSize: 11,
@@ -1035,9 +1256,10 @@ const styles = StyleSheet.create({
 
   materialCategoryText: {
     marginTop: 2,
-    fontSize: 9,
-    fontWeight: "500",
+    fontSize: 11,
+    fontWeight: "600",
     color: "#A79B8E",
+    lineHeight: 18,
   },
   headerTitle: {
     marginTop: 3,
@@ -1345,13 +1567,14 @@ const styles = StyleSheet.create({
   },
 
   dropdownItem: {
-    minHeight: 43,
+    minHeight: 50,
     paddingHorizontal: 13,
     borderBottomWidth: 1,
     borderBottomColor: "#F5ECE2",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingVertical: 14,
   },
 
   lastDropdownItem: {
@@ -1359,14 +1582,14 @@ const styles = StyleSheet.create({
   },
 
   dropdownText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#51483F",
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#000",
   },
 
   dropdownTextActive: {
     color: "#FF7A00",
-    fontWeight: "900",
+    fontWeight: "800",
   },
 
   quantityRow: {
