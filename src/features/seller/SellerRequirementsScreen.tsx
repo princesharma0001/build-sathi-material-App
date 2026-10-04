@@ -7,6 +7,7 @@ import {
   Pressable,
   TextInput,
   StatusBar,
+  FlatList,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -30,85 +31,6 @@ const SellerRequirementsScreen = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [requirements, setRequirements] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
-  // const requirements = [
-  //   {
-  //     id: 'REQ-1024',
-  //     material: 'Cement',
-  //     materialIcon: '🧱',
-  //     quantity: '500 Bags',
-  //     location: 'Noida, Uttar Pradesh',
-  //     delivery: 'Within 3–5 days',
-  //     posted: '12 min ago',
-  //     buyerName: 'Amit Construction',
-  //     buyerType: 'Contractor',
-  //     verified: true,
-  //     urgent: true,
-  //     budget: '₹350–₹390 / Bag',
-  //     notes:
-  //       'Need OPC 43 Grade cement. Delivery required at construction site.',
-  //   },
-  //   {
-  //     id: 'REQ-1023',
-  //     material: 'Bricks',
-  //     materialIcon: '🧱',
-  //     quantity: '8,000 Pieces',
-  //     location: 'Ghaziabad, Uttar Pradesh',
-  //     delivery: 'Within 5–7 days',
-  //     posted: '28 min ago',
-  //     buyerName: 'Sharma Builders',
-  //     buyerType: 'Builder',
-  //     verified: true,
-  //     urgent: false,
-  //     budget: '₹7–₹9 / Piece',
-  //     notes: 'Good quality red bricks required for residential project.',
-  //   },
-  //   {
-  //     id: 'REQ-1022',
-  //     material: 'Sand',
-  //     materialIcon: '🏖️',
-  //     quantity: '20 Ton',
-  //     location: 'Delhi',
-  //     delivery: 'Within 3–5 days',
-  //     posted: '45 min ago',
-  //     buyerName: 'RK Infra',
-  //     buyerType: 'Contractor',
-  //     verified: true,
-  //     urgent: false,
-  //     budget: '₹1,400–₹1,700 / Ton',
-  //     notes: 'River sand preferred. Please include delivery charges in quote.',
-  //   },
-  //   {
-  //     id: 'REQ-1021',
-  //     material: 'Aggregate',
-  //     materialIcon: '🪨',
-  //     quantity: '30 Ton',
-  //     location: 'Greater Noida',
-  //     delivery: 'Within 7 days',
-  //     posted: '1 hr ago',
-  //     buyerName: 'BuildPro Developers',
-  //     buyerType: 'Developer',
-  //     verified: true,
-  //     urgent: false,
-  //     budget: '₹1,100–₹1,400 / Ton',
-  //     notes: '20mm aggregate required for RCC work.',
-  //   },
-  //   {
-  //     id: 'REQ-1020',
-  //     material: 'Cement',
-  //     materialIcon: '🧱',
-  //     quantity: '1,000 Bags',
-  //     location: 'Faridabad, Haryana',
-  //     delivery: 'Within 7 days',
-  //     posted: '2 hrs ago',
-  //     buyerName: 'Shree Ram Projects',
-  //     buyerType: 'Contractor',
-  //     verified: true,
-  //     urgent: false,
-  //     budget: '₹345–₹385 / Bag',
-  //     notes: 'Bulk cement requirement. Long-term supply possible.',
-  //   },
-  // ];
 
   const filters = ["All", "Cement", "Sand", "Aggregate", "Bricks"];
 
@@ -142,7 +64,7 @@ const SellerRequirementsScreen = () => {
   }, [requirements, activeFilter, search]);
 
   const openRequirement = (requirement: any) => {
-    navigation.navigate('SellerRequirementDetails', {
+    navigation.navigate("SellerRequirementDetails", {
       requirementId: requirement.id,
     });
   };
@@ -214,7 +136,7 @@ const SellerRequirementsScreen = () => {
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.brand}>BUILDSATHI</Text>
+            <Text style={styles.brand}>NEEVSATHI</Text>
 
             <View style={styles.titleRow}>
               <Text style={styles.title}>Buyer Requirements</Text>
@@ -236,215 +158,182 @@ const SellerRequirementsScreen = () => {
           </Pressable>
         </View>
 
-        <ScrollView
+        <FlatList
+          data={filteredRequirements}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
-        >
-          {/* INTRO */}
-          <View style={styles.introSection}>
-            <Text style={styles.introTitle}>Find your next order</Text>
+          keyboardShouldPersistTaps="handled"
+          ListHeaderComponent={
+            <>
+              {/* INTRO */}
+              <View style={styles.introSection}>
+                <Text style={styles.introTitle}>Find your next order</Text>
 
-            <Text style={styles.introSubtitle}>
-              Discover buyer requirements and send competitive quotes.
-            </Text>
-          </View>
+                <Text style={styles.introSubtitle}>
+                  Discover buyer requirements and send competitive quotes.
+                </Text>
+              </View>
 
-          {/* SEARCH */}
-          <View style={styles.searchBox}>
-            <Ionicons name="search-outline" size={20} color="#9B8F82" />
+              {/* SEARCH */}
+              <View style={styles.searchBox}>
+                <Ionicons name="search-outline" size={20} color="#9B8F82" />
 
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search material, location or buyer"
-              placeholderTextColor="#A79B8D"
-              style={styles.searchInput}
-              returnKeyType="search"
-            />
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Search material, location or buyer"
+                  placeholderTextColor="#A79B8D"
+                  style={styles.searchInput}
+                  returnKeyType="search"
+                />
 
-            {search.length > 0 && (
-              <Pressable onPress={() => setSearch("")}>
-                <Ionicons name="close-circle" size={19} color="#B6AA9D" />
-              </Pressable>
-            )}
+                {search.length > 0 && (
+                  <Pressable onPress={() => setSearch("")}>
+                    <Ionicons name="close-circle" size={19} color="#B6AA9D" />
+                  </Pressable>
+                )}
+              </View>
 
-            <Pressable
-              style={styles.filterButton}
-              onPress={() => setShowFilters(!showFilters)}
-            >
-              <Ionicons name="options-outline" size={18} color="#FFFFFF" />
-            </Pressable>
-          </View>
+              {/* FILTERS */}
+              <FlatList
+                data={filters}
+                horizontal
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterScroll}
+                renderItem={({ item: filter }) => {
+                  const active = activeFilter === filter;
 
-          {/* FILTERS */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterScroll}
-          >
-            {filters.map((filter) => {
-              const active = activeFilter === filter;
-
-              return (
-                <Pressable
-                  key={filter}
-                  onPress={() => setActiveFilter(filter)}
-                  style={[styles.filterChip, active && styles.filterChipActive]}
-                >
-                  {filter !== "All" && (
-                    <View
+                  return (
+                    <Pressable
+                      onPress={() => setActiveFilter(filter)}
                       style={[
-                        styles.filterMiniIcon,
-                        active && styles.filterMiniIconActive,
+                        styles.filterChip,
+                        active && styles.filterChipActive,
                       ]}
                     >
-                      <Text style={styles.filterEmoji}>
-                        {filter === "Cement"
-                          ? "🧱"
-                          : filter === "Sand"
-                          ? "🏖️"
-                          : filter === "Aggregate"
-                          ? "🪨"
-                          : "🧱"}
+                      {filter !== "All" && (
+                        <View
+                          style={[
+                            styles.filterMiniIcon,
+                            active && styles.filterMiniIconActive,
+                          ]}
+                        >
+                          <Text style={styles.filterEmoji}>
+                            {filter === "Cement"
+                              ? "🧱"
+                              : filter === "Sand"
+                              ? "🏖️"
+                              : filter === "Aggregate"
+                              ? "🪨"
+                              : "🧱"}
+                          </Text>
+                        </View>
+                      )}
+
+                      <Text
+                        style={[
+                          styles.filterText,
+                          active && styles.filterTextActive,
+                        ]}
+                      >
+                        {filter}
                       </Text>
-                    </View>
-                  )}
-
-                  <Text
-                    style={[
-                      styles.filterText,
-                      active && styles.filterTextActive,
-                    ]}
-                  >
-                    {filter}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-
-          {/* STATS */}
-          <View style={styles.statsRow}>
-            <View style={styles.statCardLight}>
-              <View style={styles.statIconGold}>
-                <Ionicons name="flash" size={17} color="#D4A017" />
-              </View>
-
-              <Text style={styles.statNumber}>
-                {" "}
-                {String(todayRequirements).padStart(2, "0")}
-              </Text>
-              <Text style={styles.statLabel}>New Todays</Text>
-            </View>
-
-            <View style={styles.statCardLight}>
-              <View style={styles.statIconGold}>
-                <Ionicons name="time-outline" size={17} color="#D4A017" />
-              </View>
-
-              <Text style={styles.statNumber}> {String(openRequirements).padStart(2, '0')}</Text>
-              <Text style={styles.statLabel}>Open Requests</Text>
-            </View>
-
-            <View style={styles.statCardLight}>
-              <View style={styles.statIconGreen}>
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={17}
-                  color="#3B8A58"
-                />
-              </View>
-
-              <Text style={styles.statNumber}>05</Text>
-              <Text style={styles.statLabel}>Matching You</Text>
-            </View>
-          </View>
-
-          {/* SECTION HEADER */}
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Available Requirements</Text>
-
-              <Text style={styles.sectionSubtitle}>
-                {filteredRequirements.length} requirements found
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={() => setShowFilters(!showFilters)}
-              style={styles.sortButton}
-            >
-              <Ionicons
-                name="swap-vertical-outline"
-                size={16}
-                color="#FF7A00"
+                    </Pressable>
+                  );
+                }}
               />
 
-              <Text style={styles.sortText}>Recent</Text>
-            </Pressable>
-          </View>
+              {/* STATS */}
+              <View style={styles.statsRow}>
+                <View style={styles.statCardLight}>
+                  <View style={styles.statIconGold}>
+                    <Ionicons name="flash" size={17} color="#D4A017" />
+                  </View>
 
-          {/* FILTER PANEL */}
-          {showFilters && (
-            <View style={styles.filterPanel}>
-              <Text style={styles.filterPanelTitle}>Refine Requirements</Text>
+                  <Text style={styles.statNumber}>
+                    {String(todayRequirements).padStart(2, "0")}
+                  </Text>
 
-              <View style={styles.filterPanelRow}>
-                <View style={styles.panelOptionActive}>
-                  <Ionicons name="location-outline" size={16} color="#FF7A00" />
-                  <Text style={styles.panelOptionText}>Nearby</Text>
+                  <Text style={styles.statLabel}>New Todays</Text>
                 </View>
 
-                <View style={styles.panelOption}>
-                  <Ionicons name="flash-outline" size={16} color="#8C8175" />
-                  <Text style={styles.panelOptionTextMuted}>Urgent</Text>
+                <View style={styles.statCardLight}>
+                  <View style={styles.statIconGold}>
+                    <Ionicons name="time-outline" size={17} color="#D4A017" />
+                  </View>
+
+                  <Text style={styles.statNumber}>
+                    {String(openRequirements).padStart(2, "0")}
+                  </Text>
+
+                  <Text style={styles.statLabel}>Open Requests</Text>
                 </View>
 
-                <View style={styles.panelOption}>
-                  <Ionicons name="cube-outline" size={16} color="#8C8175" />
-                  <Text style={styles.panelOptionTextMuted}>Bulk</Text>
+                <View style={styles.statCardLight}>
+                  <View style={styles.statIconGreen}>
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={17}
+                      color="#3B8A58"
+                    />
+                  </View>
+
+                  <Text style={styles.statNumber}>05</Text>
+
+                  <Text style={styles.statLabel}>Matching You</Text>
                 </View>
               </View>
-            </View>
-          )}
 
-          {/* REQUIREMENTS */}
-          {filteredRequirements.map((requirement, index) => (
+              {/* SECTION HEADER */}
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.sectionTitle}>
+                    Available Requirements
+                  </Text>
+
+                  <Text style={styles.sectionSubtitle}>
+                    {filteredRequirements.length} requirements found
+                  </Text>
+                </View>
+              </View>
+            </>
+          }
+          renderItem={({ item, index }) => (
             <RequirementCard
-              key={requirement.id}
-              requirement={requirement}
-              onPress={() => openRequirement(requirement)}
+              requirement={item}
+              onPress={() => openRequirement(item)}
               isFirst={index === 0}
             />
-          ))}
-
-          {/* EMPTY STATE */}
-          {filteredRequirements.length === 0 && (
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIcon}>
-                <Ionicons name="search-outline" size={30} color="#D4A017" />
-              </View>
-
-              <Text style={styles.emptyTitle}>No requirements found</Text>
-
-              <Text style={styles.emptyText}>
-                Try another material, location or buyer name.
-              </Text>
-
-              <Pressable
-                style={styles.clearButton}
-                onPress={() => {
-                  setSearch("");
-                  setActiveFilter("All");
-                }}
-              >
-                <Text style={styles.clearButtonText}>Clear Filters</Text>
-              </Pressable>
-            </View>
           )}
+          ListEmptyComponent={
+            !loading ? (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIcon}>
+                  <Ionicons name="search-outline" size={30} color="#D4A017" />
+                </View>
 
-          <View style={{ height: 70 }} />
-        </ScrollView>
+                <Text style={styles.emptyTitle}>No requirements found</Text>
+
+                <Text style={styles.emptyText}>
+                  Try another material, location or buyer name.
+                </Text>
+
+                <Pressable
+                  style={styles.clearButton}
+                  onPress={() => {
+                    setSearch("");
+                    setActiveFilter("All");
+                  }}
+                >
+                  <Text style={styles.clearButtonText}>Clear Filters</Text>
+                </Pressable>
+              </View>
+            ) : null
+          }
+          ListFooterComponent={<View style={{ height: 70 }} />}
+        />
       </View>
     </SafeAreaView>
   );

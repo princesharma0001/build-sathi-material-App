@@ -13,6 +13,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getMaterialsApi, Material } from "./material.api";
+import { getGreeting } from "../../utils/greeting";
 const BuyerHomeScreen = ({ navigation }: any) => {
   const quickActions = [
     {
@@ -224,7 +225,7 @@ const BuyerHomeScreen = ({ navigation }: any) => {
             />
 
             <Text style={styles.logoText}>
-              Build<Text style={styles.logoOrange}>Sathi</Text>
+              Neev<Text style={styles.logoOrange}>Sathi</Text>
             </Text>
           </View>
 
@@ -236,7 +237,7 @@ const BuyerHomeScreen = ({ navigation }: any) => {
               navigation.navigate("Notifications");
             }}
           >
-            <Text style={styles.bellIcon}>🔔</Text>
+            <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
             <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>2</Text>
@@ -256,7 +257,7 @@ const BuyerHomeScreen = ({ navigation }: any) => {
           {/* ========================================= */}
 
           <View style={styles.heroSection}>
-            <Text style={styles.goodMorning}>Good morning 👋</Text>
+            <Text style={styles.goodMorning}>{getGreeting()} 👋</Text>
 
             <Text style={styles.heroTitle}>
               What are you{"\n"}

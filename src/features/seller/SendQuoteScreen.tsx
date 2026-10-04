@@ -16,11 +16,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Toast from "react-native-toast-message";
 import { createQuoteApi } from "./quoteApi";
+import { useSubscriptionStore } from "../subscription/subscription.store";
 
 const SendQuoteScreen = ({ navigation, route }: any) => {
-
   const requirement = route?.params?.requirement;
-
+  const fetchSubscription = useSubscriptionStore(
+    (state) => state.fetchSubscription
+  );
   const materialName = requirement?.material?.name || "Material";
 
   const materialIcon = materialName.toLowerCase().includes("sand")
@@ -58,6 +60,7 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [sendingQuote, setSendingQuote] = useState(false);
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
 
   const [pricePerUnit, setPricePerUnit] = useState("");
   const [deliveryCharges, setDeliveryCharges] = useState("");
@@ -168,6 +171,7 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
       console.log("CREATE QUOTE PAYLOAD:", payload);
 
       const response = await createQuoteApi(payload);
+      await fetchSubscription();
 
       console.log("CREATE QUOTE RESPONSE:", response);
 
@@ -180,6 +184,13 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
       setShowSuccess(true);
     } catch (error: any) {
       console.error("SEND QUOTE ERROR:", error?.response?.data || error);
+
+      const errorCode = error?.response?.data?.code;
+
+      if (errorCode === "QUOTA_EXHAUSTED") {
+        setShowQuotaModal(true);
+        return;
+      }
 
       const errorMessage =
         error?.response?.data?.message ||
@@ -665,6 +676,50 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
               </View>
             </View>
           )}
+          {/* QUOTA EXHAUSTED MODAL */}
+
+          {showQuotaModal && (
+            <View style={styles.quotaOverlay}>
+              {/* Dark backdrop */}
+              <Pressable
+                style={styles.quotaBackdrop}
+                onPress={() => setShowQuotaModal(false)}
+              />
+
+              <View style={styles.quotaModal}>
+                {/* Close icon */}
+                <Pressable
+                  style={styles.quotaCloseButton}
+                  onPress={() => setShowQuotaModal(false)}
+                  hitSlop={10}
+                >
+                  <Ionicons name="close" size={22} color="#665D54" />
+                </Pressable>
+
+                {/* Icon */}
+                <View style={styles.quotaIcon}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={30}
+                    color="#FF7A00"
+                  />
+                </View>
+
+                {/* Title */}
+                <Text style={styles.quotaTitle}>Quotation Limit Reached</Text>
+
+                {/* Message */}
+                <Text style={styles.quotaMessage}>
+                  Your free quotation limit is finished.
+                </Text>
+
+                <Text style={styles.quotaSubMessage}>
+                  Please upgrade your subscription to continue sending
+                  quotations.
+                </Text>
+              </View>
+            </View>
+          )}
         </SafeAreaView>
       </LinearGradient>
     </View>
@@ -674,6 +729,99 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
 export default SendQuoteScreen;
 
 const styles = StyleSheet.create({
+  quotaOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 200,
+  },
+  
+  quotaBackdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(10,10,10,0.55)",
+  },
+  
+  quotaModal: {
+    width: "88%",
+    maxWidth: 380,
+    backgroundColor: "#FFFCF7",
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 28,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#F1E2D0",
+  
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 20,
+  
+    position: "relative",
+  },
+  
+  quotaCloseButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFF3E5",
+  },
+  
+  quotaIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: "#FFF0DC",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 17,
+    borderWidth: 1,
+    borderColor: "#FFD9AD",
+  },
+  
+  quotaTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#0A0A0A",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  
+  quotaMessage: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "700",
+    color: "#665D54",
+    textAlign: "center",
+  },
+  
+  quotaSubMessage: {
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
+    color: "#8C8175",
+    textAlign: "center",
+    marginTop: 4,
+    paddingHorizontal: 8,
+  },
   successOverlay: {
     position: "absolute",
     top: 0,

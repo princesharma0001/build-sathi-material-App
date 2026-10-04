@@ -7,6 +7,7 @@ import {
   Pressable,
   StatusBar,
   Image,
+  FlatList,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -301,7 +302,7 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
             />
 
             <Text style={styles.logoText}>
-              Build<Text style={styles.logoOrange}>Sathi</Text>
+              Neev<Text style={styles.logoOrange}>Sathi</Text>
             </Text>
           </View>
 
@@ -313,7 +314,7 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
               console.log("Notifications");
             }}
           >
-            <Text style={styles.bellIcon}>🔔</Text>
+            <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
             <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>2</Text>
@@ -321,462 +322,494 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
           </Pressable>
         </View>
 
-        <ScrollView
+        <FlatList
+          data={filteredOrders}
+          keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
-        >
-          {/* Intro */}
-          <LinearGradient
-            colors={["#FF7A00", "#FF9F1C", "#FFC43D"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.requirementCard}
-          >
-            <View style={styles.introSection}>
-              <View style={styles.introTextContainer}>
-                <Text style={styles.introTitle}>Track your purchases</Text>
+          nestedScrollEnabled
+          /* ============================================================
+     HEADER
+  ============================================================ */
 
-                <Text style={styles.introSubtitle}>
-                  Manage your material orders and deliveries in one place.
-                </Text>
-              </View>
+          ListHeaderComponent={
+            <>
+              {/* INTRO */}
 
-              <View style={styles.introIcon}>
-                <Text style={styles.requirementEmoji}>🧱</Text>
-
-                {/* <Ionicons name="cube" size={25} color="#FF7A00" /> */}
-              </View>
-            </View>
-          </LinearGradient>
-
-          {/* Stats */}
-          <View style={styles.statsRow}>
-            {/* Active */}
-            <View style={styles.statCard}>
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor: "#FFF0DF",
-                  },
-                ]}
+              <LinearGradient
+                colors={["#FF7A00", "#FF9F1C", "#FFC43D"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.requirementCard}
               >
-                <Ionicons name="time-outline" size={17} color="#FF7A00" />
-              </View>
+                <View style={styles.introSection}>
+                  <View style={styles.introTextContainer}>
+                    <Text style={styles.introTitle}>Track your purchases</Text>
 
-              <Text style={styles.statNumber}>{activeCount}</Text>
+                    <Text style={styles.introSubtitle}>
+                      Manage your material orders and deliveries in one place.
+                    </Text>
+                  </View>
 
-              <Text style={styles.statLabel}>Active</Text>
-            </View>
+                  <View style={styles.introIcon}>
+                    <Text style={styles.requirementEmoji}>🧱</Text>
+                  </View>
+                </View>
+              </LinearGradient>
 
-            {/* Delivered */}
-            <View style={styles.statCard}>
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor: "#EAF8EF",
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={17}
-                  color="#2E9D5B"
-                />
-              </View>
+              {/* STATS */}
 
-              <Text style={styles.statNumber}>{deliveredCount}</Text>
+              <View style={styles.statsRow}>
+                {/* Active */}
 
-              <Text style={styles.statLabel}>Delivered</Text>
-            </View>
-
-            {/* Spent */}
-            <View style={styles.statCard}>
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor: "#FFF7D9",
-                  },
-                ]}
-              >
-                <Ionicons name="wallet-outline" size={17} color="#D4A017" />
-              </View>
-
-              <Text
-                style={styles.statNumber}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-              >
-                ₹{(totalSpent / 1000).toFixed(1)}k
-              </Text>
-
-              <Text style={styles.statLabel}>Spent</Text>
-            </View>
-          </View>
-
-          {/* Filter */}
-          <View style={styles.filterSection}>
-            <Text style={styles.sectionTitle}>Your Orders</Text>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.filterScroll}
-            >
-              {filters.map((filter) => {
-                const active = selectedFilter === filter;
-
-                return (
-                  <Pressable
-                    key={filter}
-                    onPress={() => setSelectedFilter(filter)}
+                <View style={styles.statCard}>
+                  <View
                     style={[
-                      styles.filterButton,
-                      active && styles.filterButtonActive,
+                      styles.statIcon,
+                      {
+                        backgroundColor: "#FFF0DF",
+                      },
                     ]}
                   >
+                    <Ionicons name="time-outline" size={17} color="#FF7A00" />
+                  </View>
+
+                  <Text style={styles.statNumber}>{activeCount}</Text>
+
+                  <Text style={styles.statLabel}>Active</Text>
+                </View>
+
+                {/* Delivered */}
+
+                <View style={styles.statCard}>
+                  <View
+                    style={[
+                      styles.statIcon,
+                      {
+                        backgroundColor: "#EAF8EF",
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={17}
+                      color="#2E9D5B"
+                    />
+                  </View>
+
+                  <Text style={styles.statNumber}>{deliveredCount}</Text>
+
+                  <Text style={styles.statLabel}>Delivered</Text>
+                </View>
+
+                {/* Spent */}
+
+                <View style={styles.statCard}>
+                  <View
+                    style={[
+                      styles.statIcon,
+                      {
+                        backgroundColor: "#FFF7D9",
+                      },
+                    ]}
+                  >
+                    <Ionicons name="wallet-outline" size={17} color="#D4A017" />
+                  </View>
+
+                  <Text
+                    style={styles.statNumber}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    ₹{(totalSpent / 1000).toFixed(1)}k
+                  </Text>
+
+                  <Text style={styles.statLabel}>Spent</Text>
+                </View>
+              </View>
+
+              {/* FILTER */}
+
+              <View style={styles.filterSection}>
+                <Text style={styles.sectionTitle}>Your Orders</Text>
+
+                <FlatList
+                  data={filters}
+                  horizontal
+                  keyExtractor={(item) => item}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.filterScroll}
+                  nestedScrollEnabled
+                  renderItem={({ item: filter }) => {
+                    const active = selectedFilter === filter;
+
+                    return (
+                      <Pressable
+                        onPress={() => setSelectedFilter(filter)}
+                        style={[
+                          styles.filterButton,
+                          active && styles.filterButtonActive,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.filterText,
+                            active && styles.filterTextActive,
+                          ]}
+                        >
+                          {filter}
+                        </Text>
+                      </Pressable>
+                    );
+                  }}
+                />
+              </View>
+            </>
+          }
+          /* ============================================================
+     ORDER ITEM
+  ============================================================ */
+
+          renderItem={({ item: order }) => {
+            const rawStatus = String(order.status ?? "").toUpperCase();
+
+            const statusColor = getStatusColor(rawStatus);
+
+            const statusBackground = getStatusBackground(rawStatus);
+
+            const supplierName = getSupplierName(order);
+
+            const location = getLocation(order);
+
+            const quantity = getQuantity(order);
+
+            const amount = getAmount(order);
+
+            const isActive = ["PENDING", "ACCEPTED", "DISPATCHED"].includes(
+              rawStatus
+            );
+
+            const isDelivered = ["DELIVERED", "COMPLETED"].includes(rawStatus);
+
+            const isCancelled = rawStatus === "CANCELLED";
+
+            return (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("OrderDetails", {
+                    order,
+                  });
+                }}
+                style={styles.orderCard}
+              >
+                {/* ORDER HEADER */}
+
+                <View style={styles.orderHeader}>
+                  <View style={styles.orderIdContainer}>
+                    <Text style={styles.orderIdLabel}>ORDER ID</Text>
+
+                    <Text style={styles.orderId}>
+                      {order.orderNumber || order.id}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: statusBackground,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={getStatusIcon(rawStatus)}
+                      size={13}
+                      color={statusColor}
+                    />
+
                     <Text
                       style={[
-                        styles.filterText,
-                        active && styles.filterTextActive,
-                      ]}
-                    >
-                      {filter}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          {/* Orders */}
-          <View style={styles.ordersContainer}>
-            {filteredOrders?.map((order) => {
-              const rawStatus = String(order.status ?? "").toUpperCase();
-              console.log("dfsgsfg", rawStatus);
-
-              const statusColor = getStatusColor(rawStatus);
-
-              const statusBackground = getStatusBackground(rawStatus);
-
-              const supplierName = getSupplierName(order);
-
-              const location = getLocation(order);
-
-              const quantity = getQuantity(order);
-
-              const amount = getAmount(order);
-
-              const isActive = ["PENDING", "ACCEPTED", "DISPATCHED"].includes(
-                rawStatus
-              );
-
-              const isDelivered = ["DELIVERED", "COMPLETED"].includes(
-                rawStatus
-              );
-
-              const isCancelled = rawStatus === "CANCELLED";
-
-              return (
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("OrderDetails", {
-                      order,
-                    });
-                  }}
-                  key={order.id}
-                  style={styles.orderCard}
-                >
-                  {/* Order Header */}
-                  <View style={styles.orderHeader}>
-                    <View style={styles.orderIdContainer}>
-                      <Text style={styles.orderIdLabel}>ORDER ID</Text>
-
-                      <Text style={styles.orderId}>
-                        {order.orderNumber || order.id}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={[
-                        styles.statusBadge,
+                        styles.statusText,
                         {
-                          backgroundColor: statusBackground,
+                          color: statusColor,
                         },
                       ]}
                     >
-                      <Ionicons
-                        name={getStatusIcon(rawStatus)}
-                        size={13}
-                        color={statusColor}
-                      />
+                      {getStatusLabel(rawStatus)}
+                    </Text>
+                  </View>
+                </View>
 
-                      <Text
-                        style={[
-                          styles.statusText,
-                          {
-                            color: statusColor,
-                          },
-                        ]}
-                      >
-                        {getStatusLabel(rawStatus)}
-                      </Text>
-                    </View>
+                <View style={styles.cardDivider} />
+
+                {/* SUPPLIER */}
+
+                <View style={styles.supplierRow}>
+                  <View style={styles.supplierAvatar}>
+                    <Text style={styles.avatarText}>
+                      {supplierName
+                        .split(" ")
+                        .map((word) => word.charAt(0))
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase()}
+                    </Text>
                   </View>
 
-                  <View style={styles.cardDivider} />
-
-                  {/* Supplier */}
-                  <View style={styles.supplierRow}>
-                    <View style={styles.supplierAvatar}>
-                      <Text style={styles.avatarText}>
-                        {supplierName
-                          .split(" ")
-                          .map((word) => word.charAt(0))
-                          .slice(0, 2)
-                          .join("")
-                          .toUpperCase()}
-                      </Text>
-                    </View>
-
-                    <View style={styles.supplierInfo}>
-                      <View style={styles.supplierNameRow}>
-                        <Text style={styles.supplierName} numberOfLines={1}>
-                          {supplierName}
-                        </Text>
-
-                        <Ionicons
-                          name="checkmark-circle"
-                          size={15}
-                          color="#2E9D5B"
-                        />
-                      </View>
-
-                      <View style={styles.supplierMeta}>
-                        <Ionicons
-                          name="location-outline"
-                          size={11}
-                          color="#8C8175"
-                        />
-
-                        <Text style={styles.location}>{location}</Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* Material */}
-                  <View style={styles.materialCard}>
-                    <View style={styles.materialIcon}>
-                      <Ionicons name="cube-outline" size={19} color="#FF7A00" />
-                    </View>
-
-                    <View style={styles.materialInfo}>
-                      <Text style={styles.materialName} numberOfLines={2}>
-                        {order.material?.name || "Material"}
+                  <View style={styles.supplierInfo}>
+                    <View style={styles.supplierNameRow}>
+                      <Text style={styles.supplierName} numberOfLines={1}>
+                        {supplierName}
                       </Text>
 
-                      <Text style={styles.quantity}>{quantity}</Text>
-                    </View>
-
-                    <View style={styles.amountContainer}>
-                      <Text style={styles.amountLabel}>Amount</Text>
-
-                      <Text style={styles.amount}>
-                        ₹{amount.toLocaleString("en-IN")}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Delivery Progress */}
-                  {isActive && (
-                    <View style={styles.progressSection}>
-                      <View style={styles.progressHeader}>
-                        <Text style={styles.progressTitle}>
-                          Delivery Progress
-                        </Text>
-
-                        <Text style={styles.progressStatus}>
-                          {getStatusLabel(rawStatus)}
-                        </Text>
-                      </View>
-
-                      <View style={styles.progressTrack}>
-                        <View
-                          style={[
-                            styles.progressFill,
-                            {
-                              width:
-                                rawStatus === "DISPATCHED"
-                                  ? "75%"
-                                  : rawStatus === "ACCEPTED"
-                                  ? "45%"
-                                  : "25%",
-                            },
-                          ]}
-                        />
-                      </View>
-
-                      <View style={styles.progressLabels}>
-                        <Text style={styles.progressLabelActive}>
-                          Confirmed
-                        </Text>
-
-                        <Text style={styles.progressLabel}>Preparing</Text>
-
-                        <Text style={styles.progressLabel}>Delivery</Text>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Delivered */}
-                  {isDelivered && (
-                    <View style={styles.deliveredRow}>
                       <Ionicons
                         name="checkmark-circle"
-                        size={17}
+                        size={15}
                         color="#2E9D5B"
                       />
-
-                      <Text style={styles.deliveredText}>
-                        {rawStatus === "COMPLETED"
-                          ? "Order completed successfully"
-                          : "Delivered successfully"}
-                      </Text>
-
-                      <Text style={styles.placedDate}>
-                        {formatDate(order.dispatchDate || order.createdAt)}
-                      </Text>
                     </View>
-                  )}
 
-                  {/* Cancelled */}
-                  {isCancelled && (
-                    <View style={styles.cancelledRow}>
-                      <Ionicons name="close-circle" size={17} color="#C94B4B" />
-
-                      <Text style={styles.cancelledText}>Order cancelled</Text>
-                    </View>
-                  )}
-
-                  {/* Footer */}
-                  <View style={styles.cardFooter}>
-                    <View style={styles.deliveryInfo}>
+                    <View style={styles.supplierMeta}>
                       <Ionicons
-                        name="calendar-outline"
-                        size={14}
+                        name="location-outline"
+                        size={11}
                         color="#8C8175"
                       />
 
-                      <Text style={styles.deliveryText}>
-                        {order.expectedDeliveryDate
-                          ? `Delivery: ${formatDate(
-                              order.expectedDeliveryDate
-                            )}`
-                          : `Placed: ${formatDate(order.createdAt)}`}
+                      <Text style={styles.location} numberOfLines={1}>
+                        {location}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* MATERIAL */}
+
+                <View style={styles.materialCard}>
+                  <View style={styles.materialIcon}>
+                    <Ionicons name="cube-outline" size={19} color="#FF7A00" />
+                  </View>
+
+                  <View style={styles.materialInfo}>
+                    <Text style={styles.materialName} numberOfLines={2}>
+                      {order.material?.name || "Material"}
+                    </Text>
+
+                    <Text style={styles.quantity}>{quantity}</Text>
+                  </View>
+
+                  <View style={styles.amountContainer}>
+                    <Text style={styles.amountLabel}>Amount</Text>
+
+                    <Text style={styles.amount}>
+                      ₹{amount.toLocaleString("en-IN")}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* DELIVERY PROGRESS */}
+
+                {isActive && (
+                  <View style={styles.progressSection}>
+                    <View style={styles.progressHeader}>
+                      <Text style={styles.progressTitle}>
+                        Delivery Progress
+                      </Text>
+
+                      <Text style={styles.progressStatus}>
+                        {getStatusLabel(rawStatus)}
                       </Text>
                     </View>
 
-                    <Pressable
-                      style={styles.viewButton}
-                      onPress={() => {
-                        navigation.navigate("OrderDetails", {
-                          order,
-                        });
-                      }}
-                    >
-                      <Text style={styles.viewButtonText}>View Details</Text>
-
-                      <Ionicons
-                        name="arrow-forward"
-                        size={15}
-                        color="#FF7A00"
+                    <View style={styles.progressTrack}>
+                      <View
+                        style={[
+                          styles.progressFill,
+                          {
+                            width:
+                              rawStatus === "DISPATCHED"
+                                ? "75%"
+                                : rawStatus === "ACCEPTED"
+                                ? "45%"
+                                : "25%",
+                          },
+                        ]}
                       />
-                    </Pressable>
+                    </View>
+
+                    <View style={styles.progressLabels}>
+                      <Text style={styles.progressLabelActive}>Confirmed</Text>
+
+                      <Text style={styles.progressLabel}>Preparing</Text>
+
+                      <Text style={styles.progressLabel}>Delivery</Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* DELIVERED */}
+
+                {isDelivered && (
+                  <View style={styles.deliveredRow}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={17}
+                      color="#2E9D5B"
+                    />
+
+                    <Text style={styles.deliveredText}>
+                      {rawStatus === "COMPLETED"
+                        ? "Order completed successfully"
+                        : "Delivered successfully"}
+                    </Text>
+
+                    <Text style={styles.placedDate}>
+                      {formatDate(order.dispatchDate || order.createdAt)}
+                    </Text>
+                  </View>
+                )}
+
+                {/* CANCELLED */}
+
+                {isCancelled && (
+                  <View style={styles.cancelledRow}>
+                    <Ionicons name="close-circle" size={17} color="#C94B4B" />
+
+                    <Text style={styles.cancelledText}>Order cancelled</Text>
+                  </View>
+                )}
+
+                {/* FOOTER */}
+
+                <View style={styles.cardFooter}>
+                  <View style={styles.deliveryInfo}>
+                    <Ionicons
+                      name="calendar-outline"
+                      size={14}
+                      color="#8C8175"
+                    />
+
+                    <Text style={styles.deliveryText}>
+                      {order.expectedDeliveryDate
+                        ? `Delivery: ${formatDate(order.expectedDeliveryDate)}`
+                        : `Placed: ${formatDate(order.createdAt)}`}
+                    </Text>
                   </View>
 
-                  {/* Track */}
-                  {isActive && (
-                    <View style={styles.trackWrapper}>
-                      <LinearGradient
-                        colors={["#FF7A00", "#FF8F0A", "#FF9F1C"]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.trackGradient}
+                  <Pressable
+                    style={styles.viewButton}
+                    onPress={() => {
+                      navigation.navigate("OrderDetails", {
+                        order,
+                      });
+                    }}
+                  >
+                    <Text style={styles.viewButtonText}>View Details</Text>
+
+                    <Ionicons name="arrow-forward" size={15} color="#FF7A00" />
+                  </Pressable>
+                </View>
+
+                {/* TRACK */}
+
+                {isActive && (
+                  <View style={styles.trackWrapper}>
+                    <LinearGradient
+                      colors={["#FF7A00", "#FF8F0A", "#FF9F1C"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.trackGradient}
+                    >
+                      <Pressable
+                        style={styles.trackButton}
+                        onPress={() => {
+                          navigation.navigate("OrderDetails", {
+                            order,
+                          });
+                        }}
                       >
-                        <Pressable
-                          style={styles.trackButton}
-                          onPress={() => {
-                            navigation.navigate("OrderDetails", {
-                              order,
-                            });
-                          }}
-                        >
-                          <Ionicons
-                            name="navigate-outline"
-                            size={17}
-                            color="#FFFFFF"
-                          />
+                        <Ionicons
+                          name="navigate-outline"
+                          size={17}
+                          color="#FFFFFF"
+                        />
 
-                          <Text style={styles.trackButtonText}>
-                            Track Order
-                          </Text>
-                        </Pressable>
-                      </LinearGradient>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {/* Empty State */}
-          {filteredOrders.length === 0 && (
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIcon}>
-                <Ionicons name="cube-outline" size={32} color="#FF7A00" />
-              </View>
-
-              <Text style={styles.emptyTitle}>No Orders Found</Text>
-
-              <Text style={styles.emptyText}>
-                You don't have any {selectedFilter.toLowerCase()} orders yet.
-              </Text>
-
-              <Pressable
-                style={styles.shopButton}
-                onPress={() => {
-                  navigation.navigate("BuyerHome");
-                }}
-              >
-                <Text style={styles.shopButtonText}>Browse Materials</Text>
-
-                <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+                        <Text style={styles.trackButtonText}>Track Order</Text>
+                      </Pressable>
+                    </LinearGradient>
+                  </View>
+                )}
               </Pressable>
-            </View>
-          )}
+            );
+          }}
+          /* ============================================================
+     EMPTY STATE
+  ============================================================ */
 
-          {/* Protection */}
-          <View style={styles.protectionCard}>
-            <View style={styles.protectionIcon}>
-              <Ionicons name="shield-checkmark" size={20} color="#2E9D5B" />
-            </View>
+          ListEmptyComponent={
+            !loading ? (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIcon}>
+                  <Ionicons name="cube-outline" size={32} color="#FF7A00" />
+                </View>
 
-            <View style={styles.protectionContent}>
-              <Text style={styles.protectionTitle}>
-                Every Order is Protected
-              </Text>
+                <Text style={styles.emptyTitle}>No Orders Found</Text>
 
-              <Text style={styles.protectionText}>
-                Your payment stays protected until you receive and confirm your
-                material.
-              </Text>
-            </View>
-          </View>
+                <Text style={styles.emptyText}>
+                  You don't have any {selectedFilter.toLowerCase()} orders yet.
+                </Text>
 
-          <View style={styles.bottomSpace} />
-        </ScrollView>
+                <Pressable
+                  style={styles.shopButton}
+                  onPress={() => {
+                    navigation.navigate("BuyerHome");
+                  }}
+                >
+                  <Text style={styles.shopButtonText}>Browse Materials</Text>
+
+                  <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+                </Pressable>
+              </View>
+            ) : null
+          }
+          /* ============================================================
+     FOOTER
+  ============================================================ */
+
+          ListFooterComponent={
+            filteredOrders.length > 0 ? (
+              <>
+                <View style={styles.protectionCard}>
+                  <View style={styles.protectionIcon}>
+                    <Ionicons
+                      name="shield-checkmark"
+                      size={20}
+                      color="#2E9D5B"
+                    />
+                  </View>
+
+                  <View style={styles.protectionContent}>
+                    <Text style={styles.protectionTitle}>
+                      Every Order is Protected
+                    </Text>
+
+                    <Text style={styles.protectionText}>
+                      Your payment stays protected until you receive and confirm
+                      your material.
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.bottomSpace} />
+              </>
+            ) : (
+              <View style={styles.bottomSpace} />
+            )
+          }
+          ListHeaderComponentStyle={{
+            paddingBottom: 0,
+          }}
+        />
       </SafeAreaView>
     </View>
   );
@@ -1080,6 +1113,7 @@ const styles = StyleSheet.create({
 
   filterSection: {
     marginTop: 22,
+    paddingBottom: 18,
   },
 
   sectionTitle: {

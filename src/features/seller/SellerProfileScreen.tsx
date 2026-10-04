@@ -14,19 +14,25 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { getSellerProfileApi, SellerProfile } from "./seller.api";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSubscriptionStore } from "../subscription/subscription.store";
+import { useSellerStore } from "./seller.store";
 
 const SellerProfileScreen = ({ navigation }: any) => {
-   const {
-      subscription,
-      loading: subscriptionLoading,
-      fetchSubscription,
-      getActiveSubscription,
-      isPlanActive,
-    } = useSubscriptionStore();
-  const [seller, setSeller] = useState<SellerProfile | null>(null);
-  console.log("dfsdgsd", seller);
+  const {
+    subscription,
+    loading: subscriptionLoading,
+    fetchSubscription,
+    getActiveSubscription,
+    isPlanActive,
+  } = useSubscriptionStore();
+  // const [seller, setSeller] = useState<SellerProfile | null>(null);
+  // console.log("dfsdgsd", seller);
   const activeSubscription = getActiveSubscription();
-
+  const {
+    seller,
+    loading: sellerLoading,
+    error: sellerError,
+    fetchSellerProfile,
+  } = useSellerStore();
   const [loading, setLoading] = useState(true);
 
   const menuItems = [
@@ -38,6 +44,15 @@ const SellerProfileScreen = ({ navigation }: any) => {
       color: "#FF7A00",
       bg: "#FFF0DF",
       route: "EditSellerProfile",
+    },
+    {
+      id: "subscription",
+      title: "Subscription",
+      subtitle: "Manage your subscription plan",
+      icon: "card-outline",
+      color: "#EA580C",
+      bg: "#FFF0EA",
+      route: "SellerSubscription",
     },
     {
       id: "verification",
@@ -57,15 +72,7 @@ const SellerProfileScreen = ({ navigation }: any) => {
       bg: "#FFF7D6",
       route: "SellerProducts",
     },
-    {
-      id: "subscription",
-      title: "Subscription",
-      subtitle: "Manage your subscription plan",
-      icon: "card-outline",
-      color: "#EA580C",
-      bg: "#FFF0EA",
-      route: "SellerSubscription",
-    },
+
     {
       id: "payments",
       title: "Bank & Payments",
@@ -90,37 +97,13 @@ const SellerProfileScreen = ({ navigation }: any) => {
     navigation.navigate(item.route);
   };
 
-  const fetchSellerProfile = useCallback(async () => {
-    try {
-      setLoading(true);
 
-      const profile = await getSellerProfileApi();
-
-      console.log("✅ SELLER PROFILE:", profile);
-
-      setSeller(profile);
-    } catch (error: any) {
-      console.log(
-        "❌ GET SELLER PROFILE ERROR:",
-        error?.response?.data || error?.message
-      );
-
-      Alert.alert(
-        "Unable to load profile",
-        error?.response?.data?.message ||
-          error?.message ||
-          "Something went wrong while loading your profile."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
       fetchSellerProfile();
       fetchSubscription();
-    }, [fetchSellerProfile,fetchSubscription])
+    }, [fetchSellerProfile, fetchSubscription])
   );
 
   const handleLogout = () => {
@@ -149,7 +132,7 @@ const SellerProfileScreen = ({ navigation }: any) => {
     ]);
   };
 
-  if (loading) {
+  if (sellerLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF7A00" />
@@ -164,7 +147,10 @@ const SellerProfileScreen = ({ navigation }: any) => {
       <View style={styles.loadingContainer}>
         <Ionicons name="person-circle-outline" size={60} color="#D4A017" />
 
-        <Text style={styles.loadingText}>Seller profile not found</Text>
+        <Text style={styles.loadingText}>
+          {" "}
+          {sellerError || "Seller profile not found"}
+        </Text>
 
         <TouchableOpacity
           style={styles.retryButton}
@@ -229,7 +215,9 @@ const SellerProfileScreen = ({ navigation }: any) => {
               >
                 {/* <Ionicons name="create-outline" size={15} color="#0A0A0A" /> */}
 
-                <Text style={styles.editButtonText}>{activeSubscription?.plan?.name ?? "No plan"}</Text>
+                <Text style={styles.editButtonText}>
+                  {activeSubscription?.plan?.name ?? "No plan"}
+                </Text>
               </TouchableOpacity>
             </View>
 

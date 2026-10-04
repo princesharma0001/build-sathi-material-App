@@ -199,7 +199,6 @@ const SplashScreen = ({ navigation }: Props) => {
         switch (user.role) {
           case "BUYER":
             console.log("🛒 BUYER → BuyerHome");
-
             navigation.replace("Buyer");
             break;
 
@@ -207,18 +206,6 @@ const SplashScreen = ({ navigation }: Props) => {
             console.log("🏪 SELLER → SellerHome");
 
             navigation.replace("Seller");
-            break;
-
-          case "CONTRACTOR":
-            console.log("👷 CONTRACTOR → ContractorHome");
-
-            navigation.replace("ContractorHome");
-            break;
-
-          case "ADMIN":
-            console.log("🛡️ ADMIN → AdminHome");
-
-            navigation.replace("AdminHome");
             break;
 
           default:
@@ -295,7 +282,7 @@ const SplashScreen = ({ navigation }: Props) => {
                   end={{ x: 1, y: 1 }}
                   style={styles.logoGradient}
                 >
-                  <Text style={styles.logoText}>B</Text>
+                  <Text style={styles.logoText}>N</Text>
 
                   <View style={styles.logoSmallDot} />
                 </LinearGradient>
@@ -312,7 +299,7 @@ const SplashScreen = ({ navigation }: Props) => {
                 },
               ]}
             >
-              Build<Text style={styles.appNameAccent}>Sathi</Text>
+              Neev<Text style={styles.appNameAccent}>Sathi</Text>
             </Animated.Text>
 
             {/* Tagline */}

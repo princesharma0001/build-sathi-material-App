@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -9,20 +9,20 @@ import {
   Pressable,
   TextInput,
   StatusBar,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
-import { getSellerQuotesApi } from './quoteApi';
-
+  FlatList,
+} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+import { getSellerQuotesApi } from "./quoteApi";
 
 const SellerQuotesScreen = () => {
   const navigation = useNavigation<any>();
 
-  const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
 
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,21 +39,21 @@ const SellerQuotesScreen = () => {
       setLoading(true);
 
       const response = await getSellerQuotesApi();
-console.log("quotation send me",response);
+      console.log("quotation send me", response);
 
       const quoteList = response?.data?.quotes || [];
 
       setQuotes(Array.isArray(quoteList) ? quoteList : []);
     } catch (error: any) {
-      console.error('GET SELLER QUOTES ERROR:', error);
+      console.error("GET SELLER QUOTES ERROR:", error);
 
       Toast.show({
-        type: 'error',
-        text1: 'Unable to load quotes',
+        type: "error",
+        text1: "Unable to load quotes",
         text2:
           error?.response?.data?.message ||
           error?.message ||
-          'Something went wrong',
+          "Something went wrong",
       });
 
       setQuotes([]);
@@ -68,7 +68,7 @@ console.log("quotation send me",response);
   useFocusEffect(
     useCallback(() => {
       fetchQuotes();
-    }, [fetchQuotes]),
+    }, [fetchQuotes])
   );
 
   /**
@@ -85,12 +85,12 @@ console.log("quotation send me",response);
       setQuotes(Array.isArray(quoteList) ? quoteList : []);
     } catch (error: any) {
       Toast.show({
-        type: 'error',
-        text1: 'Refresh failed',
+        type: "error",
+        text1: "Refresh failed",
         text2:
           error?.response?.data?.message ||
           error?.message ||
-          'Unable to refresh quotes',
+          "Unable to refresh quotes",
       });
     } finally {
       setRefreshing(false);
@@ -110,13 +110,7 @@ console.log("quotation send me",response);
    * EXPIRED
    */
 
-  const filters = [
-    'All',
-    'Pending',
-    'Accepted',
-    'Rejected',
-    'Expired',
-  ];
+  const filters = ["All", "Pending", "Accepted", "Rejected", "Expired"];
 
   /**
    * ============================================================
@@ -126,54 +120,54 @@ console.log("quotation send me",response);
 
   const getStatusLabel = (status: string) => {
     switch (status?.toUpperCase()) {
-      case 'PENDING':
-        return 'Pending';
+      case "PENDING":
+        return "Pending";
 
-      case 'ACCEPTED':
-        return 'Accepted';
+      case "ACCEPTED":
+        return "Accepted";
 
-      case 'REJECTED':
-        return 'Rejected';
+      case "REJECTED":
+        return "Rejected";
 
-      case 'EXPIRED':
-        return 'Expired';
+      case "EXPIRED":
+        return "Expired";
 
       default:
-        return status || 'Pending';
+        return status || "Pending";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toUpperCase()) {
-      case 'ACCEPTED':
-        return '#3B8A58';
+      case "ACCEPTED":
+        return "#3B8A58";
 
-      case 'REJECTED':
-        return '#C05A5A';
+      case "REJECTED":
+        return "#C05A5A";
 
-      case 'EXPIRED':
-        return '#A36A6A';
+      case "EXPIRED":
+        return "#A36A6A";
 
-      case 'PENDING':
+      case "PENDING":
       default:
-        return '#FF7A00';
+        return "#FF7A00";
     }
   };
 
   const getStatusBg = (status: string) => {
     switch (status?.toUpperCase()) {
-      case 'ACCEPTED':
-        return '#EAF5EE';
+      case "ACCEPTED":
+        return "#EAF5EE";
 
-      case 'REJECTED':
-        return '#FCECEC';
+      case "REJECTED":
+        return "#FCECEC";
 
-      case 'EXPIRED':
-        return '#F6EAEA';
+      case "EXPIRED":
+        return "#F6EAEA";
 
-      case 'PENDING':
+      case "PENDING":
       default:
-        return '#FFF0DF';
+        return "#FFF0DF";
     }
   };
 
@@ -184,33 +178,33 @@ console.log("quotation send me",response);
    */
 
   const getMaterialIcon = (materialName: string) => {
-    const name = materialName?.toLowerCase() || '';
+    const name = materialName?.toLowerCase() || "";
 
-    if (name.includes('cement')) {
-      return '🧱';
+    if (name.includes("cement")) {
+      return "🧱";
     }
 
-    if (name.includes('sand')) {
-      return '🏖️';
+    if (name.includes("sand")) {
+      return "🏖️";
     }
 
-    if (name.includes('aggregate')) {
-      return '🪨';
+    if (name.includes("aggregate")) {
+      return "🪨";
     }
 
-    if (name.includes('brick')) {
-      return '🧱';
+    if (name.includes("brick")) {
+      return "🧱";
     }
 
-    if (name.includes('steel')) {
-      return '🔩';
+    if (name.includes("steel")) {
+      return "🔩";
     }
 
-    if (name.includes('tile')) {
-      return '🔲';
+    if (name.includes("tile")) {
+      return "🔲";
     }
 
-    return '📦';
+    return "📦";
   };
 
   /**
@@ -221,13 +215,13 @@ console.log("quotation send me",response);
 
   const getRelativeTime = (dateValue: string) => {
     if (!dateValue) {
-      return '';
+      return "";
     }
 
     const createdAt = new Date(dateValue);
 
     if (Number.isNaN(createdAt.getTime())) {
-      return '';
+      return "";
     }
 
     const now = new Date();
@@ -237,7 +231,7 @@ console.log("quotation send me",response);
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
     if (diffMinutes < 1) {
-      return 'Just now';
+      return "Just now";
     }
 
     if (diffMinutes < 60) {
@@ -253,13 +247,13 @@ console.log("quotation send me",response);
     const diffDays = Math.floor(diffHours / 24);
 
     if (diffDays < 7) {
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
     }
 
-    return createdAt.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return createdAt.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -273,10 +267,10 @@ console.log("quotation send me",response);
     const numericAmount = Number(amount || 0);
 
     if (!Number.isFinite(numericAmount)) {
-      return '₹0';
+      return "₹0";
     }
 
-    return `₹${numericAmount.toLocaleString('en-IN')}`;
+    return `₹${numericAmount.toLocaleString("en-IN")}`;
   };
 
   /**
@@ -288,40 +282,34 @@ console.log("quotation send me",response);
   const filteredQuotes = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return quotes.filter(quote => {
-      const status = quote?.status?.toUpperCase() || '';
+    return quotes.filter((quote) => {
+      const status = quote?.status?.toUpperCase() || "";
 
       let matchesFilter = true;
 
-      if (activeFilter === 'Pending') {
-        matchesFilter = status === 'PENDING';
-      } else if (activeFilter === 'Accepted') {
-        matchesFilter = status === 'ACCEPTED';
-      } else if (activeFilter === 'Rejected') {
-        matchesFilter = status === 'REJECTED';
-      } else if (activeFilter === 'Expired') {
-        matchesFilter = status === 'EXPIRED';
+      if (activeFilter === "Pending") {
+        matchesFilter = status === "PENDING";
+      } else if (activeFilter === "Accepted") {
+        matchesFilter = status === "ACCEPTED";
+      } else if (activeFilter === "Rejected") {
+        matchesFilter = status === "REJECTED";
+      } else if (activeFilter === "Expired") {
+        matchesFilter = status === "EXPIRED";
       }
 
-      const materialName =
-        quote?.requirement?.material?.name || '';
+      const materialName = quote?.requirement?.material?.name || "";
 
-      const buyerName =
-        quote?.requirement?.buyer?.name || '';
+      const buyerName = quote?.requirement?.buyer?.name || "";
 
       const address = quote?.requirement?.deliveryAddress;
 
-      const location = [
-        address?.city,
-        address?.state,
-      ]
+      const location = [address?.city, address?.state]
         .filter(Boolean)
-        .join(', ');
+        .join(", ");
 
-      const quoteId = quote?.id || '';
+      const quoteId = quote?.id || "";
 
-      const requirementId =
-        quote?.requirement?.id || '';
+      const requirementId = quote?.requirement?.id || "";
 
       const matchesSearch =
         !query ||
@@ -350,27 +338,23 @@ console.log("quotation send me",response);
   const totalQuotes = quotes.length;
 
   const pendingQuotes = useMemo(() => {
-    return quotes.filter(
-      quote => quote?.status?.toUpperCase() === 'PENDING',
-    ).length;
+    return quotes.filter((quote) => quote?.status?.toUpperCase() === "PENDING")
+      .length;
   }, [quotes]);
 
   const acceptedQuotes = useMemo(() => {
-    return quotes.filter(
-      quote => quote?.status?.toUpperCase() === 'ACCEPTED',
-    ).length;
+    return quotes.filter((quote) => quote?.status?.toUpperCase() === "ACCEPTED")
+      .length;
   }, [quotes]);
 
   const rejectedQuotes = useMemo(() => {
-    return quotes.filter(
-      quote => quote?.status?.toUpperCase() === 'REJECTED',
-    ).length;
+    return quotes.filter((quote) => quote?.status?.toUpperCase() === "REJECTED")
+      .length;
   }, [quotes]);
 
   const expiredQuotes = useMemo(() => {
-    return quotes.filter(
-      quote => quote?.status?.toUpperCase() === 'EXPIRED',
-    ).length;
+    return quotes.filter((quote) => quote?.status?.toUpperCase() === "EXPIRED")
+      .length;
   }, [quotes]);
 
   /**
@@ -385,18 +369,10 @@ console.log("quotation send me",response);
       return 0;
     }
 
-    const responded =
-      acceptedQuotes +
-      rejectedQuotes +
-      expiredQuotes;
+    const responded = acceptedQuotes + rejectedQuotes + expiredQuotes;
 
     return Math.round((responded / totalQuotes) * 100);
-  }, [
-    totalQuotes,
-    acceptedQuotes,
-    rejectedQuotes,
-    expiredQuotes,
-  ]);
+  }, [totalQuotes, acceptedQuotes, rejectedQuotes, expiredQuotes]);
 
   /**
    * Quick stats
@@ -411,7 +387,7 @@ console.log("quotation send me",response);
    */
 
   const openQuote = (quote: any) => {
-    navigation.navigate('SellerQuoteDetails', {
+    navigation.navigate("SellerQuoteDetails", {
       quoteId: quote?.id,
     });
   };
@@ -433,22 +409,16 @@ console.log("quotation send me",response);
 
         <View style={styles.loadingContainer}>
           <View style={styles.loadingIcon}>
-            <Ionicons
-              name="pricetag-outline"
-              size={30}
-              color="#FF7A00"
-            />
+            <Ionicons name="pricetag-outline" size={30} color="#FF7A00" />
           </View>
 
           <ActivityIndicator
             size="small"
             color="#FF7A00"
-            style={{marginTop: 16}}
+            style={{ marginTop: 16 }}
           />
 
-          <Text style={styles.loadingTitle}>
-            Loading your quotes...
-          </Text>
+          <Text style={styles.loadingTitle}>Loading your quotes...</Text>
 
           <Text style={styles.loadingText}>
             Fetching your latest quotations.
@@ -467,454 +437,305 @@ console.log("quotation send me",response);
       />
 
       <View style={styles.container}>
-
         {/* HEADER */}
 
         <View style={styles.header}>
           <View>
-            <Text style={styles.brand}>
-              BUILDSATHI
-            </Text>
+            <Text style={styles.brand}>NEEVSATHI</Text>
 
-            <Text style={styles.title}>
-              My Quotes
-            </Text>
+            <Text style={styles.title}>My Quotes</Text>
           </View>
 
           <Pressable
             style={styles.headerIcon}
-            onPress={() =>
-              navigation.navigate(
-                'SellerNotifications',
-              )
-            }
+            onPress={() => navigation.navigate("SellerNotifications")}
           >
-            <Ionicons
-              name="notifications-outline"
-              size={21}
-              color="#0A0A0A"
-            />
+            <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
             <View style={styles.notificationDot} />
           </Pressable>
         </View>
 
-        <ScrollView
+        <FlatList
+          data={filteredQuotes}
+          keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor="#FF7A00"
-              colors={['#FF7A00']}
+              colors={["#FF7A00"]}
             />
           }
-        >
+          ListHeaderComponent={
+            <>
+              {/* INTRO */}
+              <View style={styles.intro}>
+                <Text style={styles.introTitle}>Track your quotations</Text>
 
-          {/* INTRO */}
-
-          <View style={styles.intro}>
-            <Text style={styles.introTitle}>
-              Track your quotations
-            </Text>
-
-            <Text style={styles.introSubtitle}>
-              Manage quotes you've sent to buyers.
-            </Text>
-          </View>
-
-          {/* OVERVIEW CARD */}
-
-          <LinearGradient
-            colors={[
-              '#0A0A0A',
-              '#171717',
-              '#30220A',
-            ]}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={styles.overviewCard}
-          >
-            <View style={styles.overviewTop}>
-              <View style={{flex: 1}}>
-                <Text style={styles.overviewLabel}>
-                  TOTAL QUOTE VALUE
-                </Text>
-
-                <Text
-                  style={styles.overviewAmount}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.6}
-                >
-                  {formatCurrency(totalQuoteValue)}
+                <Text style={styles.introSubtitle}>
+                  Manage quotes you've sent to buyers.
                 </Text>
               </View>
 
-              <View style={styles.overviewIcon}>
-                <Ionicons
-                  name="pricetag"
-                  size={21}
-                  color="#FFD76A"
-                />
-              </View>
-            </View>
-
-            <View style={styles.overviewDivider} />
-
-            <View style={styles.overviewStats}>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewNumber}>
-                  {String(totalQuotes).padStart(2, '0')}
-                </Text>
-
-                <Text style={styles.overviewStatLabel}>
-                  Total Quotes
-                </Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewNumber}>
-                  {String(pendingQuotes).padStart(2, '0')}
-                </Text>
-
-                <Text style={styles.overviewStatLabel}>
-                  Awaiting Reply
-                </Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewNumber}>
-                  {String(acceptedQuotes).padStart(2, '0')}
-                </Text>
-
-                <Text style={styles.overviewStatLabel}>
-                  Accepted
-                </Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewNumber}>
-                  {responseRate}%
-                </Text>
-
-                <Text style={styles.overviewStatLabel}>
-                  Response Rate
-                </Text>
-              </View>
-
-            </View>
-          </LinearGradient>
-
-          {/* QUICK STATS */}
-
-          <View style={styles.quickStats}>
-
-            <View style={styles.quickStatCard}>
-              <View style={styles.quickIconOrange}>
-                <Ionicons
-                  name="send-outline"
-                  size={17}
-                  color="#FF7A00"
-                />
-              </View>
-
-              <Text style={styles.quickNumber}>
-                {String(sentCount).padStart(2, '0')}
-              </Text>
-
-              <Text style={styles.quickLabel}>
-                Sent
-              </Text>
-            </View>
-
-            <View style={styles.quickStatCard}>
-              <View style={styles.quickIconGold}>
-                <Ionicons
-                  name="time-outline"
-                  size={17}
-                  color="#D4A017"
-                />
-              </View>
-
-              <Text style={styles.quickNumber}>
-                {String(pendingQuotes).padStart(2, '0')}
-              </Text>
-
-              <Text style={styles.quickLabel}>
-                Pending
-              </Text>
-            </View>
-
-            <View style={styles.quickStatCard}>
-              <View style={styles.quickIconGreen}>
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={17}
-                  color="#3B8A58"
-                />
-              </View>
-
-              <Text style={styles.quickNumber}>
-                {String(acceptedQuotes).padStart(2, '0')}
-              </Text>
-
-              <Text style={styles.quickLabel}>
-                Accepted
-              </Text>
-            </View>
-
-          </View>
-
-          {/* SEARCH */}
-
-          <View style={styles.searchBox}>
-            <Ionicons
-              name="search-outline"
-              size={19}
-              color="#9B8F82"
-            />
-
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search quotes, buyers or materials"
-              placeholderTextColor="#A79B8D"
-              style={styles.searchInput}
-            />
-
-            {search.length > 0 && (
-              <Pressable
-                onPress={() => setSearch('')}
+              {/* OVERVIEW CARD */}
+              <LinearGradient
+                colors={["#0A0A0A", "#171717", "#30220A"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.overviewCard}
               >
-                <Ionicons
-                  name="close-circle"
-                  size={18}
-                  color="#B5A99B"
-                />
-              </Pressable>
-            )}
-          </View>
+                <View style={styles.overviewTop}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.overviewLabel}>TOTAL QUOTE VALUE</Text>
 
-          {/* FILTERS */}
+                    <Text
+                      style={styles.overviewAmount}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.6}
+                    >
+                      {formatCurrency(totalQuoteValue)}
+                    </Text>
+                  </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterScroll}
-          >
-            {filters?.map(filter => {
-              const active =
-                activeFilter === filter;
+                  <View style={styles.overviewIcon}>
+                    <Ionicons name="pricetag" size={21} color="#FFD76A" />
+                  </View>
+                </View>
 
-              return (
-                <Pressable
-                  key={filter}
-                  onPress={() =>
-                    setActiveFilter(filter)
-                  }
-                  style={[
-                    styles.filterChip,
-                    active &&
-                      styles.filterChipActive,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.filterText,
-                      active &&
-                        styles.filterTextActive,
-                    ]}
-                  >
-                    {filter}
+                <View style={styles.overviewDivider} />
+
+                <View style={styles.overviewStats}>
+                  <View style={styles.overviewStat}>
+                    <Text style={styles.overviewNumber}>
+                      {String(totalQuotes).padStart(2, "0")}
+                    </Text>
+
+                    <Text style={styles.overviewStatLabel}>Total Quotes</Text>
+                  </View>
+
+                  <View style={styles.overviewStat}>
+                    <Text style={styles.overviewNumber}>
+                      {String(pendingQuotes).padStart(2, "0")}
+                    </Text>
+
+                    <Text style={styles.overviewStatLabel}>Awaiting Reply</Text>
+                  </View>
+
+                  <View style={styles.overviewStat}>
+                    <Text style={styles.overviewNumber}>
+                      {String(acceptedQuotes).padStart(2, "0")}
+                    </Text>
+
+                    <Text style={styles.overviewStatLabel}>Accepted</Text>
+                  </View>
+
+                  <View style={styles.overviewStat}>
+                    <Text style={styles.overviewNumber}>{responseRate}%</Text>
+
+                    <Text style={styles.overviewStatLabel}>Response Rate</Text>
+                  </View>
+                </View>
+              </LinearGradient>
+
+              {/* QUICK STATS */}
+              <View style={styles.quickStats}>
+                <View style={styles.quickStatCard}>
+                  <View style={styles.quickIconOrange}>
+                    <Ionicons name="send-outline" size={17} color="#FF7A00" />
+                  </View>
+
+                  <Text style={styles.quickNumber}>
+                    {String(sentCount).padStart(2, "0")}
                   </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
 
-          {/* SECTION HEADER */}
+                  <Text style={styles.quickLabel}>Sent</Text>
+                </View>
 
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>
-                Your Quotations
-              </Text>
+                <View style={styles.quickStatCard}>
+                  <View style={styles.quickIconGold}>
+                    <Ionicons name="time-outline" size={17} color="#D4A017" />
+                  </View>
 
-              <Text style={styles.sectionSubtitle}>
-                {filteredQuotes.length}{' '}
-                {filteredQuotes.length === 1
-                  ? 'quote'
-                  : 'quotes'}
-              </Text>
-            </View>
+                  <Text style={styles.quickNumber}>
+                    {String(pendingQuotes).padStart(2, "0")}
+                  </Text>
 
-            <View style={styles.sortButton}>
-              <Ionicons
-                name="swap-vertical-outline"
-                size={15}
-                color="#FF7A00"
+                  <Text style={styles.quickLabel}>Pending</Text>
+                </View>
+
+                <View style={styles.quickStatCard}>
+                  <View style={styles.quickIconGreen}>
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={17}
+                      color="#3B8A58"
+                    />
+                  </View>
+
+                  <Text style={styles.quickNumber}>
+                    {String(acceptedQuotes).padStart(2, "0")}
+                  </Text>
+
+                  <Text style={styles.quickLabel}>Accepted</Text>
+                </View>
+              </View>
+
+              {/* SEARCH */}
+              <View style={styles.searchBox}>
+                <Ionicons name="search-outline" size={19} color="#9B8F82" />
+
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Search quotes, buyers or materials"
+                  placeholderTextColor="#A79B8D"
+                  style={styles.searchInput}
+                  returnKeyType="search"
+                />
+
+                {search.length > 0 && (
+                  <Pressable onPress={() => setSearch("")}>
+                    <Ionicons name="close-circle" size={18} color="#B5A99B" />
+                  </Pressable>
+                )}
+              </View>
+
+              {/* FILTERS */}
+              <FlatList
+                data={filters}
+                horizontal
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterScroll}
+                renderItem={({ item: filter }) => {
+                  const active = activeFilter === filter;
+
+                  return (
+                    <Pressable
+                      onPress={() => setActiveFilter(filter)}
+                      style={[
+                        styles.filterChip,
+                        active && styles.filterChipActive,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.filterText,
+                          active && styles.filterTextActive,
+                        ]}
+                      >
+                        {filter}
+                      </Text>
+                    </Pressable>
+                  );
+                }}
               />
 
-              <Text style={styles.sortText}>
-                Recent
-              </Text>
-            </View>
-          </View>
+              {/* SECTION HEADER */}
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.sectionTitle}>Your Quotations</Text>
 
-          {/* QUOTES */}
+                  <Text style={styles.sectionSubtitle}>
+                    {filteredQuotes.length}{" "}
+                    {filteredQuotes.length === 1 ? "quote" : "quotes"}
+                  </Text>
+                </View>
 
-          {filteredQuotes?.map(quote => {
+                <View style={styles.sortButton}>
+                  <Ionicons
+                    name="swap-vertical-outline"
+                    size={15}
+                    color="#FF7A00"
+                  />
 
+                  <Text style={styles.sortText}>Recent</Text>
+                </View>
+              </View>
+            </>
+          }
+          renderItem={({ item: quote }) => {
             const materialName =
-              quote?.requirement?.material?.name ||
-              'Material';
+              quote?.requirement?.material?.name || "Material";
 
-            const materialIcon =
-              getMaterialIcon(materialName);
+            const materialIcon = getMaterialIcon(materialName);
 
-            const buyerName =
-              quote?.requirement?.buyer?.name ||
-              'Buyer';
+            const buyerName = quote?.requirement?.buyer?.name || "Buyer";
 
-            const buyerType = 'Buyer';
+            const buyerType = "Buyer";
 
-            const address =
-              quote?.requirement?.deliveryAddress;
+            const address = quote?.requirement?.deliveryAddress;
 
-            const location = [
-              address?.city,
-              address?.state,
-            ]
-              .filter(Boolean)
-              .join(', ') || 'Location not available';
+            const location =
+              [address?.city, address?.state].filter(Boolean).join(", ") ||
+              "Location not available";
 
-            const quantity =
-              `${quote?.requirement?.quantity || 0} ${
-                quote?.requirement?.unit || ''
-              }`.trim();
+            const quantity = `${quote?.requirement?.quantity || 0} ${
+              quote?.requirement?.unit || ""
+            }`.trim();
 
-            const quoteId =
-              quote?.id
-                ? `QT-${String(
-                    quote.id,
-                  )
-                    .slice(0, 8)
-                    .toUpperCase()}`
-                : 'QT-0000';
+            const quoteId = quote?.id
+              ? `QT-${String(quote.id).slice(0, 8).toUpperCase()}`
+              : "QT-0000";
 
-            const requirementId =
-              quote?.requirement?.id
-                ? `REQ-${String(
-                    quote.requirement.id,
-                  )
-                    .slice(0, 8)
-                    .toUpperCase()}`
-                : 'REQ-0000';
+            const requirementId = quote?.requirement?.id
+              ? `REQ-${String(quote.requirement.id).slice(0, 8).toUpperCase()}`
+              : "REQ-0000";
 
-            const status =
-              getStatusLabel(
-                quote?.status,
-              );
+            const status = getStatusLabel(quote?.status);
 
-            const statusColor =
-              getStatusColor(
-                quote?.status,
-              );
+            const statusColor = getStatusColor(quote?.status);
 
-            const statusBg =
-              getStatusBg(
-                quote?.status,
-              );
+            const statusBg = getStatusBg(quote?.status);
 
-            const amount =
-              Number(
-                quote?.totalAmount || 0,
-              );
+            const amount = Number(quote?.totalAmount || 0);
 
-            const pricePerUnit =
-              Number(
-                quote?.pricePerUnit || 0,
-              );
+            const pricePerUnit = Number(quote?.pricePerUnit || 0);
 
-            const deliveryTime =
-              quote?.deliveryTime ||
-              'Not specified';
+            const deliveryTime = quote?.deliveryTime || "Not specified";
 
-            const validity =
-              quote?.validity
-                ? `Valid for ${quote.validity}`
-                : 'Validity not specified';
+            const validity = quote?.validity
+              ? `Valid for ${quote.validity}`
+              : "Validity not specified";
 
-            const sentAt =
-              getRelativeTime(
-                quote?.createdAt,
-              );
+            const sentAt = getRelativeTime(quote?.createdAt);
 
             return (
               <Pressable
-                key={quote.id}
-                onPress={() =>
-                  openQuote(quote)
-                }
-                style={({pressed}) => [
+                onPress={() => openQuote(quote)}
+                style={({ pressed }) => [
                   styles.quoteCard,
                   pressed && {
-                    transform: [
-                      {scale: 0.985},
-                    ],
+                    transform: [{ scale: 0.985 }],
                   },
                 ]}
               >
-
                 {/* CARD HEADER */}
-
                 <View style={styles.cardHeader}>
-
-                  <View
-                    style={styles.materialRow}
-                  >
-
-                    <View
-                      style={styles.materialIcon}
-                    >
-                      <Text
-                        style={
-                          styles.materialEmoji
-                        }
-                      >
-                        {materialIcon}
-                      </Text>
+                  <View style={styles.materialRow}>
+                    <View style={styles.materialIcon}>
+                      <Text style={styles.materialEmoji}>{materialIcon}</Text>
                     </View>
 
-                    <View
-                      style={styles.materialInfo}
-                    >
-                      <Text
-                        style={
-                          styles.materialName
-                        }
-                      >
-                        {materialName}
-                      </Text>
+                    <View style={styles.materialInfo}>
+                      <Text style={styles.materialName}>{materialName}</Text>
 
-                      <Text
-                        style={styles.quoteId}
-                      >
+                      <Text style={styles.quoteId}>
                         {quoteId} • {requirementId}
                       </Text>
                     </View>
-
                   </View>
 
                   <View
                     style={[
                       styles.statusBadge,
                       {
-                        backgroundColor:
-                          statusBg,
+                        backgroundColor: statusBg,
                       },
                     ]}
                   >
@@ -922,8 +743,7 @@ console.log("quotation send me",response);
                       style={[
                         styles.statusDot,
                         {
-                          backgroundColor:
-                            statusColor,
+                          backgroundColor: statusColor,
                         },
                       ]}
                     />
@@ -932,51 +752,26 @@ console.log("quotation send me",response);
                       style={[
                         styles.statusText,
                         {
-                          color:
-                            statusColor,
+                          color: statusColor,
                         },
                       ]}
                     >
                       {status}
                     </Text>
                   </View>
-
                 </View>
 
                 {/* BUYER */}
-
-                <View
-                  style={styles.buyerRow}
-                >
-
-                  <View
-                    style={styles.buyerAvatar}
-                  >
-                    <Text
-                      style={
-                        styles.buyerAvatarText
-                      }
-                    >
-                      {buyerName
-                        .charAt(0)
-                        .toUpperCase()}
+                <View style={styles.buyerRow}>
+                  <View style={styles.buyerAvatar}>
+                    <Text style={styles.buyerAvatarText}>
+                      {buyerName.charAt(0).toUpperCase()}
                     </Text>
                   </View>
 
-                  <View
-                    style={styles.buyerInfo}
-                  >
-                    <View
-                      style={
-                        styles.buyerNameRow
-                      }
-                    >
-                      <Text
-                        style={
-                          styles.buyerName
-                        }
-                        numberOfLines={1}
-                      >
+                  <View style={styles.buyerInfo}>
+                    <View style={styles.buyerNameRow}>
+                      <Text style={styles.buyerName} numberOfLines={1}>
                         {buyerName}
                       </Text>
 
@@ -987,59 +782,29 @@ console.log("quotation send me",response);
                       />
                     </View>
 
-                    <Text
-                      style={styles.buyerMeta}
-                      numberOfLines={1}
-                    >
+                    <Text style={styles.buyerMeta} numberOfLines={1}>
                       {buyerType} • {location}
                     </Text>
                   </View>
-
                 </View>
 
                 {/* QUOTE VALUE */}
-
-                <View
-                  style={
-                    styles.quoteValueCard
-                  }
-                >
-
-                  <View
-                    style={{flex: 1}}
-                  >
-                    <Text
-                      style={
-                        styles.valueLabel
-                      }
-                    >
-                      YOUR QUOTE
-                    </Text>
+                <View style={styles.quoteValueCard}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.valueLabel}>YOUR QUOTE</Text>
 
                     <Text
-                      style={
-                        styles.quoteAmount
-                      }
+                      style={styles.quoteAmount}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                       minimumFontScale={0.65}
                     >
-                      {formatCurrency(
-                        amount,
-                      )}
+                      {formatCurrency(amount)}
                     </Text>
                   </View>
 
-                  <View
-                    style={styles.priceInfo}
-                  >
-                    <Text
-                      style={
-                        styles.valueLabel
-                      }
-                    >
-                      PRICE / UNIT
-                    </Text>
+                  <View style={styles.priceInfo}>
+                    <Text style={styles.valueLabel}>PRICE / UNIT</Text>
 
                     <Text
                       style={styles.priceValue}
@@ -1047,231 +812,108 @@ console.log("quotation send me",response);
                       adjustsFontSizeToFit
                       minimumFontScale={0.7}
                     >
-                      {formatCurrency(
-                        pricePerUnit,
-                      )}
+                      {formatCurrency(pricePerUnit)}
                     </Text>
                   </View>
-
                 </View>
 
                 {/* DETAILS */}
+                <View style={styles.detailsRow}>
+                  <View style={styles.detail}>
+                    <Ionicons name="cube-outline" size={20} color="#FF7A00" />
 
-                <View
-                  style={styles.detailsRow}
-                >
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.detailLabel}>Quantity</Text>
 
-                  <View
-                    style={styles.detail}
-                  >
-                    <Ionicons
-                      name="cube-outline"
-                      size={20}
-                      color="#FF7A00"
-                    />
-
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      <Text
-                        style={
-                          styles.detailLabel
-                        }
-                      >
-                        Quantity
-                      </Text>
-
-                      <Text
-                        style={
-                          styles.detailValue
-                        }
-                        numberOfLines={1}
-                      >
+                      <Text style={styles.detailValue} numberOfLines={1}>
                         {quantity}
                       </Text>
                     </View>
                   </View>
 
-                  <View
-                    style={styles.detail}
-                  >
-                    <Ionicons
-                      name="time-outline"
-                      size={20}
-                      color="#D4A017"
-                    />
+                  <View style={styles.detail}>
+                    <Ionicons name="time-outline" size={20} color="#D4A017" />
 
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      <Text
-                        style={
-                          styles.detailLabel
-                        }
-                      >
-                        Delivery
-                      </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.detailLabel}>Delivery</Text>
 
-                      <Text
-                        style={
-                          styles.detailValue
-                        }
-                        numberOfLines={1}
-                      >
+                      <Text style={styles.detailValue} numberOfLines={1}>
                         {deliveryTime}
                       </Text>
                     </View>
                   </View>
-
                 </View>
 
                 {/* FOOTER */}
+                <View style={styles.cardFooter}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.sentText}>Sent {sentAt}</Text>
 
-                <View
-                  style={styles.cardFooter}
-                >
-
-                  <View
-                    style={{flex: 1}}
-                  >
-                    <Text
-                      style={styles.sentText}
-                    >
-                      Sent {sentAt}
-                    </Text>
-
-                    <Text
-                      style={
-                        styles.validityText
-                      }
-                    >
-                      {validity}
-                    </Text>
+                    <Text style={styles.validityText}>{validity}</Text>
                   </View>
 
-                  <View
-                    style={
-                      styles.detailsButton
-                    }
-                  >
-                    <Text
-                      style={
-                        styles.detailsButtonText
-                      }
-                    >
-                      View Details
-                    </Text>
+                  <View style={styles.detailsButton}>
+                    <Text style={styles.detailsButtonText}>View Details</Text>
 
-                    <Ionicons
-                      name="arrow-forward"
-                      size={15}
-                      color="#FF7A00"
-                    />
+                    <Ionicons name="arrow-forward" size={15} color="#FF7A00" />
                   </View>
-
                 </View>
-
               </Pressable>
             );
-          })}
-
-          {/* EMPTY */}
-
-          {filteredQuotes.length === 0 && (
-            <View
-              style={styles.emptyState}
-            >
-
-              <View
-                style={styles.emptyIcon}
-              >
-                <Ionicons
-                  name="pricetag-outline"
-                  size={30}
-                  color="#D4A017"
-                />
+          }}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <View style={styles.emptyIcon}>
+                <Ionicons name="pricetag-outline" size={30} color="#D4A017" />
               </View>
 
-              <Text
-                style={styles.emptyTitle}
-              >
-                {quotes.length === 0
-                  ? 'No quotes yet'
-                  : 'No quotes found'}
+              <Text style={styles.emptyTitle}>
+                {quotes.length === 0 ? "No quotes yet" : "No quotes found"}
               </Text>
 
-              <Text
-                style={styles.emptyText}
-              >
+              <Text style={styles.emptyText}>
                 {quotes.length === 0
-                  ? 'Quotes you send to buyers will appear here.'
-                  : 'Try another search or change the quote filter.'}
+                  ? "Quotes you send to buyers will appear here."
+                  : "Try another search or change the quote filter."}
               </Text>
 
               {quotes.length > 0 && (
                 <Pressable
                   style={styles.clearButton}
                   onPress={() => {
-                    setSearch('');
-                    setActiveFilter(
-                      'All',
-                    );
+                    setSearch("");
+                    setActiveFilter("All");
                   }}
                 >
-                  <Text
-                    style={
-                      styles.clearButtonText
-                    }
-                  >
-                    Clear Filters
-                  </Text>
+                  <Text style={styles.clearButtonText}>Clear Filters</Text>
                 </Pressable>
               )}
-
             </View>
-          )}
+          }
+          ListFooterComponent={
+            <>
+              {/* SELLER TIP */}
+              <View style={styles.tipCard}>
+                <View style={styles.tipIcon}>
+                  <Ionicons name="bulb-outline" size={27} color="#D4A017" />
+                </View>
 
-          {/* SELLER TIP */}
+                <View style={styles.tipContent}>
+                  <Text style={styles.tipTitle}>
+                    Improve your quote response
+                  </Text>
 
-          <View style={styles.tipCard}>
+                  <Text style={styles.tipText}>
+                    Add clear delivery timelines and competitive pricing to
+                    increase buyer confidence.
+                  </Text>
+                </View>
+              </View>
 
-            <View style={styles.tipIcon}>
-              <Ionicons
-                name="bulb-outline"
-                size={27}
-                color="#D4A017"
-              />
-            </View>
-
-            <View
-              style={styles.tipContent}
-            >
-              <Text
-                style={styles.tipTitle}
-              >
-                Improve your quote response
-              </Text>
-
-              <Text
-                style={styles.tipText}
-              >
-                Add clear delivery timelines and
-                competitive pricing to increase
-                buyer confidence.
-              </Text>
-            </View>
-
-          </View>
-
-          <View
-            style={{height: 110}}
-          />
-
-        </ScrollView>
+              <View style={{ height: 110 }} />
+            </>
+          }
+        />
       </View>
     </SafeAreaView>
   );
@@ -1282,12 +924,12 @@ export default SellerQuotesScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFF8EE',
+    backgroundColor: "#FFF8EE",
   },
 
   container: {
     flex: 1,
-    backgroundColor: '#FFF8EE',
+    backgroundColor: "#FFF8EE",
   },
 
   scrollContent: {
@@ -1302,47 +944,47 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1E2D0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    borderBottomColor: "#F1E2D0",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   brand: {
     fontSize: 9,
     letterSpacing: 2.2,
-    fontWeight: '900',
-    color: '#D4A017',
+    fontWeight: "900",
+    color: "#D4A017",
     marginBottom: 3,
   },
 
   title: {
     fontSize: 19,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
   },
 
   headerIcon: {
     width: 42,
     height: 42,
     borderRadius: 15,
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#F1E2D0",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   notificationDot: {
-    position: 'absolute',
+    position: "absolute",
     top: 9,
     right: 9,
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
     borderWidth: 1.5,
-    borderColor: '#FFFCF7',
+    borderColor: "#FFFCF7",
   },
 
   /* INTRO */
@@ -1354,14 +996,14 @@ const styles = StyleSheet.create({
 
   introTitle: {
     fontSize: 21,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
   },
 
   introSubtitle: {
     fontSize: 10,
-    color: '#8C8175',
-    fontWeight: '600',
+    color: "#8C8175",
+    fontWeight: "600",
     marginTop: 4,
   },
 
@@ -1369,8 +1011,8 @@ const styles = StyleSheet.create({
 
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 30,
   },
 
@@ -1378,22 +1020,22 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 22,
-    backgroundColor: '#FFF3E5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFF3E5",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   loadingTitle: {
     fontSize: 15,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
     marginTop: 14,
   },
 
   loadingText: {
     fontSize: 11,
-    color: '#8C8175',
-    fontWeight: '600',
+    color: "#8C8175",
+    fontWeight: "600",
     marginTop: 5,
   },
 
@@ -1401,10 +1043,10 @@ const styles = StyleSheet.create({
 
   overviewCard: {
     borderRadius: 22,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
-    borderColor: '#33280F',
-    shadowColor: '#000',
+    borderColor: "#33280F",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 6,
@@ -1415,50 +1057,48 @@ const styles = StyleSheet.create({
   },
 
   overviewTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 15,
     paddingTop: 15,
   },
 
   overviewLabel: {
-    color: '#BDB4A6',
+    color: "#BDB4A6",
     fontSize: 7,
-    fontWeight: '800',
+    fontWeight: "800",
     letterSpacing: 1,
   },
 
   overviewAmount: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 25,
-    fontWeight: '900',
+    fontWeight: "900",
     marginTop: 5,
     flexShrink: 1,
-    maxWidth: '100%',
+    maxWidth: "100%",
   },
 
   overviewIcon: {
     width: 45,
     height: 45,
     borderRadius: 15,
-    backgroundColor:
-      'rgba(255,215,106,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255,215,106,0.12)",
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: 10,
   },
 
   overviewDivider: {
     height: 1,
-    backgroundColor:
-      'rgba(255,255,255,0.1)',
+    backgroundColor: "rgba(255,255,255,0.1)",
     marginVertical: 15,
   },
 
   overviewStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 15,
     paddingBottom: 16,
   },
@@ -1469,21 +1109,21 @@ const styles = StyleSheet.create({
 
   overviewNumber: {
     fontSize: 15,
-    color: '#FFD76A',
-    fontWeight: '900',
+    color: "#FFD76A",
+    fontWeight: "900",
   },
 
   overviewStatLabel: {
     fontSize: 10,
-    color: '#BDB4A6',
-    fontWeight: '600',
+    color: "#BDB4A6",
+    fontWeight: "600",
     marginTop: 3,
   },
 
   /* QUICK STATS */
 
   quickStats: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 9,
     marginTop: 12,
     marginBottom: 18,
@@ -1491,9 +1131,9 @@ const styles = StyleSheet.create({
 
   quickStatCard: {
     flex: 1,
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
     borderRadius: 17,
     padding: 10,
   },
@@ -1502,40 +1142,40 @@ const styles = StyleSheet.create({
     width: 29,
     height: 29,
     borderRadius: 9,
-    backgroundColor: '#FFF0DF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFF0DF",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   quickIconGold: {
     width: 29,
     height: 29,
     borderRadius: 9,
-    backgroundColor: '#FFF7D9',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFF7D9",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   quickIconGreen: {
     width: 29,
     height: 29,
     borderRadius: 9,
-    backgroundColor: '#EAF5EE',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#EAF5EE",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   quickNumber: {
     fontSize: 17,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
     marginTop: 7,
   },
 
   quickLabel: {
     fontSize: 12,
-    color: '#8C8175',
-    fontWeight: '700',
+    color: "#8C8175",
+    fontWeight: "700",
     marginTop: 2,
   },
 
@@ -1543,22 +1183,22 @@ const styles = StyleSheet.create({
 
   searchBox: {
     height: 52,
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderRadius: 17,
     borderWidth: 1,
-    borderColor: '#F1E2D0',
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderColor: "#F1E2D0",
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 14,
   },
 
   searchInput: {
     flex: 1,
     marginLeft: 9,
-    height: '100%',
-    color: '#0A0A0A',
+    height: "100%",
+    color: "#0A0A0A",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   /* FILTER */
@@ -1573,47 +1213,47 @@ const styles = StyleSheet.create({
     height: 34,
     paddingHorizontal: 13,
     borderRadius: 17,
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#F1E2D0",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   filterChipActive: {
-    backgroundColor: '#FF7A00',
-    borderColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
+    borderColor: "#FF7A00",
   },
 
   filterText: {
     fontSize: 14,
-    color: '#8C8175',
-    fontWeight: '700',
+    color: "#8C8175",
+    fontWeight: "700",
   },
 
   filterTextActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 
   /* SECTION */
 
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
 
   sectionTitle: {
     fontSize: 15,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
   },
 
   sectionSubtitle: {
     fontSize: 12,
-    color: '#9B8F82',
-    fontWeight: '600',
+    color: "#9B8F82",
+    fontWeight: "600",
     marginTop: 3,
   },
 
@@ -1621,28 +1261,28 @@ const styles = StyleSheet.create({
     height: 31,
     paddingHorizontal: 10,
     borderRadius: 10,
-    backgroundColor: '#FFF3E5',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "#FFF3E5",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
 
   sortText: {
     fontSize: 12,
-    color: '#FF7A00',
-    fontWeight: '900',
+    color: "#FF7A00",
+    fontWeight: "900",
   },
 
   /* QUOTE CARD */
 
   quoteCard: {
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
     padding: 14,
     marginBottom: 13,
-    shadowColor: '#8C5A2B',
+    shadowColor: "#8C5A2B",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -1653,14 +1293,14 @@ const styles = StyleSheet.create({
   },
 
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   materialRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     minWidth: 0,
   },
@@ -1669,9 +1309,9 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 14,
-    backgroundColor: '#FFF0D8',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFF0D8",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   materialEmoji: {
@@ -1686,20 +1326,20 @@ const styles = StyleSheet.create({
 
   materialName: {
     fontSize: 14,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
   },
 
   quoteId: {
     fontSize: 12,
-    color: '#A2978A',
-    fontWeight: '600',
+    color: "#A2978A",
+    fontWeight: "600",
     marginTop: 3,
   },
 
   statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 9,
@@ -1715,33 +1355,33 @@ const styles = StyleSheet.create({
 
   statusText: {
     fontSize: 12,
-    fontWeight: '900',
+    fontWeight: "900",
   },
 
   /* BUYER */
 
   buyerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 14,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1E8DD',
+    borderBottomColor: "#F1E8DD",
   },
 
   buyerAvatar: {
     width: 35,
     height: 35,
     borderRadius: 12,
-    backgroundColor: '#0A0A0A',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#0A0A0A",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   buyerAvatarText: {
-    color: '#FFD76A',
+    color: "#FFD76A",
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: "900",
   },
 
   buyerInfo: {
@@ -1751,22 +1391,22 @@ const styles = StyleSheet.create({
   },
 
   buyerNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
 
   buyerName: {
     fontSize: 13,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
     flexShrink: 1,
   },
 
   buyerMeta: {
     fontSize: 10,
-    color: '#958A7D',
-    fontWeight: '600',
+    color: "#958A7D",
+    fontWeight: "600",
     marginTop: 2,
   },
 
@@ -1775,56 +1415,56 @@ const styles = StyleSheet.create({
   quoteValueCard: {
     marginTop: 12,
     borderRadius: 15,
-    backgroundColor: '#FFF8E8',
+    backgroundColor: "#FFF8E8",
     borderWidth: 1,
-    borderColor: '#F0DDAF',
+    borderColor: "#F0DDAF",
     paddingHorizontal: 12,
     paddingVertical: 11,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 
   valueLabel: {
     fontSize: 10,
-    color: '#A29483',
-    fontWeight: '800',
+    color: "#A29483",
+    fontWeight: "800",
     letterSpacing: 0.5,
   },
 
   quoteAmount: {
     fontSize: 18,
-    color: '#FF7A00',
-    fontWeight: '900',
+    color: "#FF7A00",
+    fontWeight: "900",
     marginTop: 3,
     flexShrink: 1,
-    maxWidth: '100%',
+    maxWidth: "100%",
   },
 
   priceInfo: {
-    alignItems: 'flex-end',
-    maxWidth: '42%',
+    alignItems: "flex-end",
+    maxWidth: "42%",
     marginLeft: 10,
   },
 
   priceValue: {
     fontSize: 14,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
     marginTop: 4,
   },
 
   /* DETAILS */
 
   detailsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 12,
     gap: 20,
   },
 
   detail: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     gap: 10,
     minWidth: 0,
@@ -1832,62 +1472,62 @@ const styles = StyleSheet.create({
 
   detailLabel: {
     fontSize: 12,
-    color: '#A2978A',
-    fontWeight: '700',
+    color: "#A2978A",
+    fontWeight: "700",
     marginBottom: 2,
   },
 
   detailValue: {
     fontSize: 12,
-    color: '#0A0A0A',
-    fontWeight: '800',
+    color: "#0A0A0A",
+    fontWeight: "800",
   },
 
   /* FOOTER */
 
   cardFooter: {
     borderTopWidth: 1,
-    borderTopColor: '#F1E8DD',
+    borderTopColor: "#F1E8DD",
     paddingTop: 11,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   sentText: {
     fontSize: 13,
-    color: '#9B8F82',
-    fontWeight: '600',
+    color: "#9B8F82",
+    fontWeight: "600",
   },
 
   validityText: {
     fontSize: 10,
-    color: '#3B8A58',
-    fontWeight: '800',
+    color: "#3B8A58",
+    fontWeight: "800",
     marginTop: 2,
   },
 
   detailsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
     marginLeft: 10,
   },
 
   detailsButtonText: {
     fontSize: 12,
-    color: '#FF7A00',
-    fontWeight: '800',
+    color: "#FF7A00",
+    fontWeight: "800",
   },
 
   /* EMPTY */
 
   emptyState: {
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: '#F1E2D0',
-    alignItems: 'center',
+    borderColor: "#F1E2D0",
+    alignItems: "center",
     paddingVertical: 35,
     paddingHorizontal: 20,
   },
@@ -1896,38 +1536,38 @@ const styles = StyleSheet.create({
     width: 62,
     height: 62,
     borderRadius: 21,
-    backgroundColor: '#FFF3E5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFF3E5",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   emptyTitle: {
     fontSize: 14,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
     marginTop: 12,
   },
 
   emptyText: {
     fontSize: 9,
-    color: '#8C8175',
-    textAlign: 'center',
-    fontWeight: '600',
+    color: "#8C8175",
+    textAlign: "center",
+    fontWeight: "600",
     marginTop: 5,
   },
 
   clearButton: {
     marginTop: 14,
-    backgroundColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
     borderRadius: 11,
     paddingHorizontal: 16,
     paddingVertical: 9,
   },
 
   clearButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 8,
-    fontWeight: '900',
+    fontWeight: "900",
   },
 
   /* TIP */
@@ -1935,21 +1575,21 @@ const styles = StyleSheet.create({
   tipCard: {
     marginTop: 18,
     padding: 13,
-    backgroundColor: '#FFF8E8',
+    backgroundColor: "#FFF8E8",
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#F0DDAF',
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderColor: "#F0DDAF",
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   tipIcon: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: '#FFFDF8',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFFDF8",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   tipContent: {
@@ -1959,15 +1599,15 @@ const styles = StyleSheet.create({
 
   tipTitle: {
     fontSize: 14,
-    color: '#0A0A0A',
-    fontWeight: '900',
+    color: "#0A0A0A",
+    fontWeight: "900",
   },
 
   tipText: {
     fontSize: 10,
     lineHeight: 13,
-    color: '#8C8175',
-    fontWeight: '600',
+    color: "#8C8175",
+    fontWeight: "600",
     marginTop: 3,
   },
 });

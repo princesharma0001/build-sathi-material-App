@@ -9,6 +9,7 @@ import {
   Pressable,
   TextInput,
   StatusBar,
+  FlatList,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -284,16 +285,16 @@ const SellerQuotesScreen = () => {
         lowestQuoteId: string;
       }
     > = {};
-  
+
     quotes.forEach((quote) => {
       const requirementId = quote?.requirement?.id;
-  
+
       if (!requirementId) return;
-  
+
       const amount = Number(quote?.totalAmount ?? 0);
-  
+
       if (!Number.isFinite(amount)) return;
-  
+
       if (!comparisonMap[requirementId]) {
         comparisonMap[requirementId] = {
           lowestAmount: amount,
@@ -301,31 +302,23 @@ const SellerQuotesScreen = () => {
           quoteCount: 1,
           lowestQuoteId: quote?.id || "",
         };
-  
+
         return;
       }
-  
+
       comparisonMap[requirementId].quoteCount += 1;
-  
-      if (
-        amount <
-        comparisonMap[requirementId].lowestAmount
-      ) {
+
+      if (amount < comparisonMap[requirementId].lowestAmount) {
         comparisonMap[requirementId].lowestAmount = amount;
-  
-        comparisonMap[requirementId].lowestQuoteId =
-          quote?.id || "";
+
+        comparisonMap[requirementId].lowestQuoteId = quote?.id || "";
       }
-  
-      if (
-        amount >
-        comparisonMap[requirementId].highestAmount
-      ) {
-        comparisonMap[requirementId].highestAmount =
-          amount;
+
+      if (amount > comparisonMap[requirementId].highestAmount) {
+        comparisonMap[requirementId].highestAmount = amount;
       }
     });
-  
+
     return comparisonMap;
   }, [quotes]);
 
@@ -508,7 +501,7 @@ const SellerQuotesScreen = () => {
 
           <View style={styles.header}>
             <View>
-              <Text style={styles.brand}>BUILDSATHI</Text>
+              <Text style={styles.brand}>NEEVSATHI</Text>
 
               <Text style={styles.title}>My Quotes</Text>
             </View>
@@ -527,9 +520,12 @@ const SellerQuotesScreen = () => {
             </Pressable>
           </View>
 
-          <ScrollView
+          <FlatList
+            data={filteredQuotes}
+            keyExtractor={(item) => String(item.id)}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -538,233 +534,234 @@ const SellerQuotesScreen = () => {
                 colors={["#FF7A00"]}
               />
             }
-          >
-            {/* INTRO */}
+            /* ============================================================
+     HEADER CONTENT
+  ============================================================ */
 
-            <View style={styles.intro}>
-              <Text style={styles.introTitle}>Track your quotations</Text>
+            ListHeaderComponent={
+              <>
+                {/* INTRO */}
 
-              <Text style={styles.introSubtitle}>
-                Manage quotes you've sent to buyers.
-              </Text>
-            </View>
+                <View style={styles.intro}>
+                  <Text style={styles.introTitle}>Track your quotations</Text>
 
-            {/* OVERVIEW */}
+                  <Text style={styles.introSubtitle}>
+                    Manage quotes you've sent to buyers.
+                  </Text>
+                </View>
 
-            <LinearGradient
-              colors={["#0A0A0A", "#171717", "#30220A"]}
-              start={{
-                x: 0,
-                y: 0,
-              }}
-              end={{
-                x: 1,
-                y: 1,
-              }}
-              style={styles.overviewCard}
-            >
-              <View style={styles.overviewTop}>
-                <View
-                  style={{
-                    flex: 1,
-                  }}
+                {/* OVERVIEW */}
+
+                <LinearGradient
+                  colors={["#0A0A0A", "#171717", "#30220A"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.overviewCard}
                 >
-                  <Text style={styles.overviewLabel}>TOTAL QUOTE VALUE</Text>
+                  <View style={styles.overviewTop}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.overviewLabel}>
+                        TOTAL QUOTE VALUE
+                      </Text>
 
-                  <Text
-                    style={styles.overviewAmount}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.6}
-                  >
-                    {formatCurrency(totalQuoteValue)}
-                  </Text>
-                </View>
+                      <Text
+                        style={styles.overviewAmount}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.6}
+                      >
+                        {formatCurrency(totalQuoteValue)}
+                      </Text>
+                    </View>
 
-                <View style={styles.overviewIcon}>
-                  <Ionicons name="pricetag" size={21} color="#FFD76A" />
-                </View>
-              </View>
+                    <View style={styles.overviewIcon}>
+                      <Ionicons name="pricetag" size={21} color="#FFD76A" />
+                    </View>
+                  </View>
 
-              <View style={styles.overviewDivider} />
+                  <View style={styles.overviewDivider} />
 
-              <View style={styles.overviewStats}>
-                <View style={styles.overviewStat}>
-                  <Text style={styles.overviewNumber}>
-                    {String(totalQuotes).padStart(2, "0")}
-                  </Text>
+                  <View style={styles.overviewStats}>
+                    <View style={styles.overviewStat}>
+                      <Text style={styles.overviewNumber}>
+                        {String(totalQuotes).padStart(2, "0")}
+                      </Text>
 
-                  <Text style={styles.overviewStatLabel}>Total Quotes</Text>
-                </View>
+                      <Text style={styles.overviewStatLabel}>Total Quotes</Text>
+                    </View>
 
-                <View style={styles.overviewStat}>
-                  <Text style={styles.overviewNumber}>
-                    {String(pendingQuotes).padStart(2, "0")}
-                  </Text>
+                    <View style={styles.overviewStat}>
+                      <Text style={styles.overviewNumber}>
+                        {String(pendingQuotes).padStart(2, "0")}
+                      </Text>
 
-                  <Text style={styles.overviewStatLabel}>Awaiting Reply</Text>
-                </View>
+                      <Text style={styles.overviewStatLabel}>
+                        Awaiting Reply
+                      </Text>
+                    </View>
 
-                <View style={styles.overviewStat}>
-                  <Text style={styles.overviewNumber}>
-                    {String(acceptedQuotes).padStart(2, "0")}
-                  </Text>
+                    <View style={styles.overviewStat}>
+                      <Text style={styles.overviewNumber}>
+                        {String(acceptedQuotes).padStart(2, "0")}
+                      </Text>
 
-                  <Text style={styles.overviewStatLabel}>Accepted</Text>
-                </View>
+                      <Text style={styles.overviewStatLabel}>Accepted</Text>
+                    </View>
 
-                <View style={styles.overviewStat}>
-                  <Text style={styles.overviewNumber}>{responseRate}%</Text>
+                    <View style={styles.overviewStat}>
+                      <Text style={styles.overviewNumber}>{responseRate}%</Text>
 
-                  <Text style={styles.overviewStatLabel}>Response Rate</Text>
-                </View>
-              </View>
-            </LinearGradient>
+                      <Text style={styles.overviewStatLabel}>
+                        Response Rate
+                      </Text>
+                    </View>
+                  </View>
+                </LinearGradient>
 
-            {/* QUICK STATS */}
+                {/* QUICK STATS */}
 
-            <View style={styles.quickStats}>
-              <View style={styles.quickStatCard}>
-                <View style={styles.quickIconOrange}>
-                  <Ionicons name="send-outline" size={17} color="#FF7A00" />
-                </View>
+                <View style={styles.quickStats}>
+                  <View style={styles.quickStatCard}>
+                    <View style={styles.quickIconOrange}>
+                      <Ionicons name="send-outline" size={17} color="#FF7A00" />
+                    </View>
 
-                <Text style={styles.quickNumber}>
-                  {String(sentCount).padStart(2, "0")}
-                </Text>
-
-                <Text style={styles.quickLabel}>Sent</Text>
-              </View>
-
-              <View style={styles.quickStatCard}>
-                <View style={styles.quickIconGold}>
-                  <Ionicons name="time-outline" size={17} color="#D4A017" />
-                </View>
-
-                <Text style={styles.quickNumber}>
-                  {String(pendingQuotes).padStart(2, "0")}
-                </Text>
-
-                <Text style={styles.quickLabel}>Pending</Text>
-              </View>
-
-              <View style={styles.quickStatCard}>
-                <View style={styles.quickIconGreen}>
-                  <Ionicons
-                    name="checkmark-circle-outline"
-                    size={17}
-                    color="#3B8A58"
-                  />
-                </View>
-
-                <Text style={styles.quickNumber}>
-                  {String(acceptedQuotes).padStart(2, "0")}
-                </Text>
-
-                <Text style={styles.quickLabel}>Accepted</Text>
-              </View>
-            </View>
-
-            {/* SEARCH */}
-
-            <View style={styles.searchBox}>
-              <Ionicons name="search-outline" size={19} color="#9B8F82" />
-
-              <TextInput
-                value={search}
-                onChangeText={setSearch}
-                placeholder="Search quotes, buyers or materials"
-                placeholderTextColor="#A79B8D"
-                style={styles.searchInput}
-              />
-
-              {search.length > 0 && (
-                <Pressable onPress={() => setSearch("")}>
-                  <Ionicons name="close-circle" size={18} color="#B5A99B" />
-                </Pressable>
-              )}
-            </View>
-
-            {/* FILTERS */}
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.filterScroll}
-            >
-              {filters?.map((filter) => {
-                const active = activeFilter === filter;
-
-                return (
-                  <Pressable
-                    key={filter}
-                    onPress={() => setActiveFilter(filter)}
-                    style={[
-                      styles.filterChip,
-                      active && styles.filterChipActive,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.filterText,
-                        active && styles.filterTextActive,
-                      ]}
-                    >
-                      {filter}
+                    <Text style={styles.quickNumber}>
+                      {String(sentCount).padStart(2, "0")}
                     </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
 
-            {/* SECTION HEADER */}
+                    <Text style={styles.quickLabel}>Sent</Text>
+                  </View>
 
-            <View style={styles.sectionHeader}>
-              <View>
-                <Text style={styles.sectionTitle}>Your Quotations</Text>
+                  <View style={styles.quickStatCard}>
+                    <View style={styles.quickIconGold}>
+                      <Ionicons name="time-outline" size={17} color="#D4A017" />
+                    </View>
 
-                <Text style={styles.sectionSubtitle}>
-                  {filteredQuotes.length}{" "}
-                  {filteredQuotes.length === 1 ? "quote" : "quotes"}
-                </Text>
-              </View>
+                    <Text style={styles.quickNumber}>
+                      {String(pendingQuotes).padStart(2, "0")}
+                    </Text>
 
-              <View style={styles.sortButton}>
-                <Ionicons
-                  name="swap-vertical-outline"
-                  size={15}
-                  color="#FF7A00"
+                    <Text style={styles.quickLabel}>Pending</Text>
+                  </View>
+
+                  <View style={styles.quickStatCard}>
+                    <View style={styles.quickIconGreen}>
+                      <Ionicons
+                        name="checkmark-circle-outline"
+                        size={17}
+                        color="#3B8A58"
+                      />
+                    </View>
+
+                    <Text style={styles.quickNumber}>
+                      {String(acceptedQuotes).padStart(2, "0")}
+                    </Text>
+
+                    <Text style={styles.quickLabel}>Accepted</Text>
+                  </View>
+                </View>
+
+                {/* SEARCH */}
+
+                <View style={styles.searchBox}>
+                  <Ionicons name="search-outline" size={19} color="#9B8F82" />
+
+                  <TextInput
+                    value={search}
+                    onChangeText={setSearch}
+                    placeholder="Search quotes, buyers or materials"
+                    placeholderTextColor="#A79B8D"
+                    style={styles.searchInput}
+                  />
+
+                  {search.length > 0 && (
+                    <Pressable onPress={() => setSearch("")}>
+                      <Ionicons name="close-circle" size={18} color="#B5A99B" />
+                    </Pressable>
+                  )}
+                </View>
+
+                {/* FILTERS */}
+
+                <FlatList
+                  data={filters}
+                  horizontal
+                  keyExtractor={(item) => item}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.filterScroll}
+                  nestedScrollEnabled
+                  renderItem={({ item: filter }) => {
+                    const active = activeFilter === filter;
+
+                    return (
+                      <Pressable
+                        onPress={() => setActiveFilter(filter)}
+                        style={[
+                          styles.filterChip,
+                          active && styles.filterChipActive,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.filterText,
+                            active && styles.filterTextActive,
+                          ]}
+                        >
+                          {filter}
+                        </Text>
+                      </Pressable>
+                    );
+                  }}
                 />
 
-                <Text style={styles.sortText}>Recent</Text>
-              </View>
-            </View>
+                {/* SECTION HEADER */}
 
-            {/* QUOTE LIST */}
+                <View style={styles.sectionHeader}>
+                  <View>
+                    <Text style={styles.sectionTitle}>Your Quotations</Text>
 
-            {filteredQuotes?.map((quote) => {
-              const requirementIdRaw =
-              quote?.requirement?.id || "";
-            
-            const comparison =
-              getRequirementComparison[requirementIdRaw];
-            
-            const amount =
-              Number(quote?.totalAmount ?? 0);
-            
-            const isLowestPrice =
-              !!comparison &&
-              comparison.quoteCount > 1 &&
-              quote?.id === comparison.lowestQuoteId;
-            
-            const savingsVsHighest =
-              comparison &&
-              comparison.highestAmount > amount
-                ? comparison.highestAmount - amount
-                : 0;
-            
-            const quoteCount =
-              comparison?.quoteCount || 1;
+                    <Text style={styles.sectionSubtitle}>
+                      {filteredQuotes.length}{" "}
+                      {filteredQuotes.length === 1 ? "quote" : "quotes"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.sortButton}>
+                    <Ionicons
+                      name="swap-vertical-outline"
+                      size={15}
+                      color="#FF7A00"
+                    />
+
+                    <Text style={styles.sortText}>Recent</Text>
+                  </View>
+                </View>
+              </>
+            }
+            /* ============================================================
+     QUOTE CARD
+  ============================================================ */
+
+            renderItem={({ item: quote }) => {
+              const requirementIdRaw = quote?.requirement?.id || "";
+
+              const comparison = getRequirementComparison[requirementIdRaw];
+
+              const amount = Number(quote?.totalAmount ?? 0);
+
+              const isLowestPrice =
+                !!comparison &&
+                comparison.quoteCount > 1 &&
+                quote?.id === comparison.lowestQuoteId;
+
+              const savingsVsHighest =
+                comparison && comparison.highestAmount > amount
+                  ? comparison.highestAmount - amount
+                  : 0;
+
+              const quoteCount = comparison?.quoteCount || 1;
+
               const materialName =
                 quote?.requirement?.material?.name || "Material";
 
@@ -800,8 +797,6 @@ const SellerQuotesScreen = () => {
 
               const statusBg = getStatusBg(quote?.status);
 
-              // const amount = Number(quote?.totalAmount ?? 0);
-
               const pricePerUnit = Number(quote?.pricePerUnit ?? 0);
 
               const deliveryTime = quote?.deliveryTime || "Not specified";
@@ -814,16 +809,11 @@ const SellerQuotesScreen = () => {
 
               return (
                 <Pressable
-                  key={quote.id}
                   onPress={() => openQuote(quote)}
                   style={({ pressed }) => [
                     styles.quoteCard,
                     pressed && {
-                      transform: [
-                        {
-                          scale: 0.985,
-                        },
-                      ],
+                      transform: [{ scale: 0.985 }],
                     },
                   ]}
                 >
@@ -902,46 +892,44 @@ const SellerQuotesScreen = () => {
                     </View>
                   </View>
 
-                  {/* QUOTE VALUE */}
+                  {/* LOWEST PRICE */}
 
                   {isLowestPrice && (
-  <View style={styles.lowestPriceBanner}>
-    <View style={styles.lowestPriceLeft}>
-      <View style={styles.lowestPriceIcon}>
-        <Ionicons
-          name="trending-down"
-          size={15}
-          color="#16803C"
-        />
-      </View>
+                    <View style={styles.lowestPriceBanner}>
+                      <View style={styles.lowestPriceLeft}>
+                        <View style={styles.lowestPriceIcon}>
+                          <Ionicons
+                            name="trending-down"
+                            size={15}
+                            color="#16803C"
+                          />
+                        </View>
 
-      <View>
-        <Text style={styles.lowestPriceTitle}>
-          LOWEST PRICE
-        </Text>
+                        <View>
+                          <Text style={styles.lowestPriceTitle}>
+                            LOWEST PRICE
+                          </Text>
 
-        <Text style={styles.lowestPriceSubtitle}>
-          Lowest quoted total for this requirement
-        </Text>
-      </View>
-    </View>
+                          <Text style={styles.lowestPriceSubtitle}>
+                            Lowest quoted total for this requirement
+                          </Text>
+                        </View>
+                      </View>
 
-    {savingsVsHighest > 0 && (
-      <View style={styles.savingsBadge}>
-        <Text style={styles.savingsBadgeText}>
-          Save {formatCurrency(savingsVsHighest)}
-        </Text>
-      </View>
-    )}
-  </View>
-)}
+                      {savingsVsHighest > 0 && (
+                        <View style={styles.savingsBadge}>
+                          <Text style={styles.savingsBadgeText}>
+                            Save {formatCurrency(savingsVsHighest)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+
+                  {/* QUOTE VALUE */}
 
                   <View style={styles.quoteValueCard}>
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
+                    <View style={{ flex: 1 }}>
                       <Text style={styles.valueLabel}>YOUR QUOTE</Text>
 
                       <Text
@@ -968,30 +956,30 @@ const SellerQuotesScreen = () => {
                     </View>
                   </View>
 
+                  {/* COMPARISON */}
+
                   {quoteCount > 1 && (
-  <View style={styles.comparisonRow}>
-    <View style={styles.comparisonLeft}>
-      <Ionicons
-        name="git-compare-outline"
-        size={16}
-        color="#8C8175"
-      />
+                    <View style={styles.comparisonRow}>
+                      <View style={styles.comparisonLeft}>
+                        <Ionicons
+                          name="git-compare-outline"
+                          size={16}
+                          color="#8C8175"
+                        />
 
-      <Text style={styles.comparisonText}>
-        {quoteCount} quotes received for this requirement
-      </Text>
-    </View>
+                        <Text style={styles.comparisonText}>
+                          {quoteCount} quotes received for this requirement
+                        </Text>
+                      </View>
 
-    {!isLowestPrice && comparison && (
-      <Text style={styles.moreThanLowestText}>
-        {formatCurrency(
-          amount - comparison.lowestAmount,
-        )}{" "}
-        higher
-      </Text>
-    )}
-  </View>
-)}
+                      {!isLowestPrice && comparison && (
+                        <Text style={styles.moreThanLowestText}>
+                          {formatCurrency(amount - comparison.lowestAmount)}{" "}
+                          higher
+                        </Text>
+                      )}
+                    </View>
+                  )}
 
                   {/* DETAILS */}
 
@@ -999,11 +987,7 @@ const SellerQuotesScreen = () => {
                     <View style={styles.detail}>
                       <Ionicons name="cube-outline" size={20} color="#FF7A00" />
 
-                      <View
-                        style={{
-                          flex: 1,
-                        }}
-                      >
+                      <View style={{ flex: 1 }}>
                         <Text style={styles.detailLabel}>Quantity</Text>
 
                         <Text style={styles.detailValue} numberOfLines={1}>
@@ -1015,11 +999,7 @@ const SellerQuotesScreen = () => {
                     <View style={styles.detail}>
                       <Ionicons name="time-outline" size={20} color="#D4A017" />
 
-                      <View
-                        style={{
-                          flex: 1,
-                        }}
-                      >
+                      <View style={{ flex: 1 }}>
                         <Text style={styles.detailLabel}>Delivery</Text>
 
                         <Text style={styles.detailValue} numberOfLines={1}>
@@ -1032,11 +1012,7 @@ const SellerQuotesScreen = () => {
                   {/* FOOTER */}
 
                   <View style={styles.cardFooter}>
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
+                    <View style={{ flex: 1 }}>
                       <Text style={styles.sentText}>Sent {sentAt}</Text>
 
                       <Text style={styles.validityText}>{validity}</Text>
@@ -1054,11 +1030,12 @@ const SellerQuotesScreen = () => {
                   </View>
                 </Pressable>
               );
-            })}
+            }}
+            /* ============================================================
+     EMPTY STATE
+  ============================================================ */
 
-            {/* EMPTY */}
-
-            {filteredQuotes.length === 0 && (
+            ListEmptyComponent={
               <View style={styles.emptyState}>
                 <View style={styles.emptyIcon}>
                   <Ionicons name="pricetag-outline" size={30} color="#D4A017" />
@@ -1086,31 +1063,34 @@ const SellerQuotesScreen = () => {
                   </Pressable>
                 )}
               </View>
-            )}
+            }
+            /* ============================================================
+     FOOTER
+  ============================================================ */
 
-            {/* TIP */}
+            ListFooterComponent={
+              <>
+                <View style={styles.tipCard}>
+                  <View style={styles.tipIcon}>
+                    <Ionicons name="bulb-outline" size={27} color="#D4A017" />
+                  </View>
 
-            <View style={styles.tipCard}>
-              <View style={styles.tipIcon}>
-                <Ionicons name="bulb-outline" size={27} color="#D4A017" />
-              </View>
+                  <View style={styles.tipContent}>
+                    <Text style={styles.tipTitle}>
+                      Improve your quote response
+                    </Text>
 
-              <View style={styles.tipContent}>
-                <Text style={styles.tipTitle}>Improve your quote response</Text>
+                    <Text style={styles.tipText}>
+                      Add clear delivery timelines and competitive pricing to
+                      increase buyer confidence.
+                    </Text>
+                  </View>
+                </View>
 
-                <Text style={styles.tipText}>
-                  Add clear delivery timelines and competitive pricing to
-                  increase buyer confidence.
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={{
-                height: 110,
-              }}
-            />
-          </ScrollView>
+                <View style={{ height: 110 }} />
+              </>
+            }
+          />
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -1806,7 +1786,6 @@ const styles = StyleSheet.create({
     color: "#8C8175",
   },
 
-
   lowestPriceBanner: {
     marginTop: 14,
     marginBottom: 10,
@@ -1820,14 +1799,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  
+
   lowestPriceLeft: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     minWidth: 0,
   },
-  
+
   lowestPriceIcon: {
     width: 32,
     height: 32,
@@ -1837,20 +1816,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 9,
   },
-  
+
   lowestPriceTitle: {
     fontSize: 11,
     fontWeight: "900",
     color: "#16803C",
     letterSpacing: 0.5,
   },
-  
+
   lowestPriceSubtitle: {
     marginTop: 2,
     fontSize: 9,
     color: "#5F7867",
   },
-  
+
   savingsBadge: {
     marginLeft: 8,
     paddingHorizontal: 9,
@@ -1858,13 +1837,13 @@ const styles = StyleSheet.create({
     borderRadius: 9,
     backgroundColor: "#16803C",
   },
-  
+
   savingsBadgeText: {
     color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "900",
   },
-  
+
   comparisonRow: {
     marginTop: 10,
     paddingHorizontal: 2,
@@ -1872,21 +1851,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  
+
   comparisonLeft: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     minWidth: 0,
   },
-  
+
   comparisonText: {
     marginLeft: 6,
     fontSize: 10,
     color: "#8C8175",
     fontWeight: "700",
   },
-  
+
   moreThanLowestText: {
     marginLeft: 8,
     fontSize: 10,

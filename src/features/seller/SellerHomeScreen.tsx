@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getSellerDashboardApi } from "./seller.api";
 import Toast from "react-native-toast-message";
+import { getGreeting } from "../../utils/greeting";
 
 const SellerHomeScreen = ({ navigation }: any) => {
   const [dashboard, setDashboard] = useState<any>(null);
@@ -230,91 +231,7 @@ const SellerHomeScreen = ({ navigation }: any) => {
     }
   };
 
-  const getMaterialIcon = (name?: string) => {
-    const material = name?.toLowerCase();
 
-    if (material?.includes("cement")) return "🧱";
-    if (material?.includes("sand")) return "🏖️";
-    if (material?.includes("aggregate")) return "🪨";
-    if (material?.includes("brick")) return "🧱";
-    if (material?.includes("steel")) return "🔩";
-    if (material?.includes("iron")) return "🔩";
-
-    return "📦";
-  };
-
-  const getMaterialColors = (name?: string) => {
-    const material = name?.toLowerCase();
-
-    if (material?.includes("cement")) {
-      return ["#FFF8ED", "#FFE4BE"];
-    }
-
-    if (material?.includes("sand")) {
-      return ["#FFFDF4", "#F6E8B8"];
-    }
-
-    if (material?.includes("aggregate")) {
-      return ["#F7F7F7", "#E5E5E5"];
-    }
-
-    if (material?.includes("brick")) {
-      return ["#FFF1EA", "#FFD8C5"];
-    }
-
-    return ["#FFF8ED", "#FFE4BE"];
-  };
-
-  const getMaterialIconBackground = (name?: string) => {
-    const material = name?.toLowerCase();
-
-    if (material?.includes("sand")) return "#FFF7D6";
-    if (material?.includes("aggregate")) return "#EEEEEE";
-    if (material?.includes("brick")) return "#FFE1D2";
-
-    return "#FFF0D8";
-  };
-
-  const getMaterialAccent = (name?: string) => {
-    const material = name?.toLowerCase();
-
-    if (material?.includes("sand")) return "#D4A017";
-    if (material?.includes("aggregate")) return "#555555";
-    if (material?.includes("brick")) return "#EA580C";
-
-    return "#FF7A00";
-  };
-
-  const formatTimeAgo = (dateString?: string) => {
-    if (!dateString) return "";
-
-    const createdAt = new Date(dateString);
-    const now = new Date();
-
-    const diffInSeconds = Math.floor(
-      (now.getTime() - createdAt.getTime()) / 1000
-    );
-
-    if (diffInSeconds < 60) {
-      return "Just now";
-    }
-
-    const minutes = Math.floor(diffInSeconds / 60);
-
-    if (minutes < 60) {
-      return `${minutes} min ago`;
-    }
-
-    const hours = Math.floor(minutes / 60);
-
-    if (hours < 24) {
-      return `${hours} hr ago`;
-    }
-
-    const days = Math.floor(hours / 24);
-
-    return `${days} day${days > 1 ? "s" : ""} ago`;
-  };
 
   return (
     <View style={styles.root}>
@@ -370,7 +287,7 @@ const SellerHomeScreen = ({ navigation }: any) => {
             {/* WELCOME HERO */}
             <View style={styles.welcomeSection}>
               <View>
-                <Text style={styles.welcomeSmall}>Good evening 👋</Text>
+                <Text style={styles.welcomeSmall}>{getGreeting()} 👋</Text>
 
                 <Text style={styles.welcomeTitle}>Grow your business</Text>
 

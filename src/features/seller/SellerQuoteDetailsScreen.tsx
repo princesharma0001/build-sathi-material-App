@@ -514,23 +514,17 @@ const SellerQuoteDetailsScreen = () => {
 
               <Text style={styles.locationText}>{quote.location}</Text>
             </View> */}
-
-            <Pressable
-              style={styles.chatBuyerButton}
-              // onPress={() => {
-              //   navigation.navigate("SellerChat", {
-              //     buyer: quote,
-              //   });
-              // }}
-            >
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={17}
-                color="#FF7A00"
-              />
-
-              <Text style={styles.chatBuyerText}>Chat with Buyer</Text>
-            </Pressable>
+            {quote.status === "ACCEPTED" && (
+              <Pressable style={styles.chatBuyerButton}>
+                <Ionicons name="call" size={17} color="#FF7A00" />
+                <Text style={styles.chatBuyerText}>
+                  {" "}
+                  {quote?.requirement?.buyer?.buyerProfile?.phoneNumber ||
+                    quote?.requirement?.buyer?.phone ||
+                    "Phone unavailable"}
+                </Text>
+              </Pressable>
+            )}
           </View>
 
           {/* PRICING */}

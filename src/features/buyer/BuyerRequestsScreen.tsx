@@ -9,48 +9,13 @@ import {
   Image,
   RefreshControl,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getBuyerRequirementsApi, Requirement } from "./requirement.api";
 const BuyerRequestsScreen = ({ navigation }: any) => {
-  const requests = [
-    {
-      id: "1",
-      title: "Cement & Building Materials",
-      quantity: "20 Bags Cement",
-      location: "Noida, Uttar Pradesh",
-      quotes: "3 Quotes Received",
-      status: "Active",
-      time: "Posted 2 hours ago",
-      icon: "🧱",
-      delivery: "today",
-    },
-    {
-      id: "2",
-      title: "Steel Rods",
-      quantity: "500 kg • 12mm",
-      location: "Greater Noida",
-      quotes: "5 Quotes Received",
-      status: "Active",
-      time: "Posted Yesterday",
-      icon: "🏗️",
-      delivery: "today",
-    },
-    {
-      id: "3",
-      title: "River Sand",
-      quantity: "2 Truck Loads",
-      location: "Ghaziabad",
-      quotes: "2 Quotes Received",
-      status: "Pending",
-      time: "Posted 2 days ago",
-      icon: "🚚",
-      delivery: "today",
-    },
-  ];
-
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -183,7 +148,7 @@ const BuyerRequestsScreen = ({ navigation }: any) => {
             />
 
             <Text style={styles.logoText}>
-              Build<Text style={styles.logoOrange}>Sathi</Text>
+              Neev<Text style={styles.logoOrange}>Sathi</Text>
             </Text>
           </View>
 
@@ -195,15 +160,16 @@ const BuyerRequestsScreen = ({ navigation }: any) => {
               navigation.navigate("Notifications");
             }}
           >
-            <Text style={styles.bellIcon}>🔔</Text>
-
+            <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
             <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>2</Text>
             </View>
           </Pressable>
         </View>
 
-        <ScrollView
+        <FlatList
+          data={loading || error ? [] : requirements}
+          keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
           refreshControl={
@@ -214,238 +180,234 @@ const BuyerRequestsScreen = ({ navigation }: any) => {
               tintColor="#FF7A00"
             />
           }
-        >
-          {/* INTRO */}
-          <View style={styles.intro}>
-            <Text style={styles.introTitle}>Your Requirements</Text>
+          ListHeaderComponent={
+            <>
+              {/* INTRO */}
+              <View style={styles.intro}>
+                <Text style={styles.introTitle}>Your Requirements</Text>
 
-            <Text style={styles.introSubtitle}>
-              Track your material requests and supplier quotes.
-            </Text>
-          </View>
-
-          {/* POST REQUIREMENT */}
-          <Pressable onPress={() => navigation.navigate("CreateRequirement")}>
-            <LinearGradient
-              colors={["#FF7A00", "#FF9F1C", "#FFC43D"]}
-              start={{ x: 0, y: 0.5 }}
-              end={{ x: 1, y: 0.5 }}
-              style={styles.postCard}
-            >
-              <View style={styles.postIconContainer}>
-                <Text style={styles.postIcon}>＋</Text>
-              </View>
-
-              <View style={styles.postContent}>
-                <Text style={styles.postTitle}>Post New Requirement</Text>
-
-                <Text style={styles.postSubtitle}>
-                  Get quotes from trusted suppliers
+                <Text style={styles.introSubtitle}>
+                  Track your material requests and supplier quotes.
                 </Text>
               </View>
 
-              {/* <Text style={styles.postArrow}>→</Text> */}
-            </LinearGradient>
-          </Pressable>
-
-          {/* SUMMARY */}
-          <View style={styles.summaryRow}>
-            <View style={styles.summaryCard}>
-              <Text style={styles.summaryNumber}>{activeCount}</Text>
-
-              <Text style={styles.summaryLabel}>Active</Text>
-            </View>
-
-            <View style={styles.summaryCard}>
-              <Text style={styles.summaryNumber}>0</Text>
-
-              <Text style={styles.summaryLabel}>Quotes</Text>
-            </View>
-
-            <View style={styles.summaryCard}>
-              <Text style={styles.summaryNumber}>{completedCount}</Text>
-
-              <Text style={styles.summaryLabel}>Completed</Text>
-            </View>
-          </View>
-
-          {/* SECTION */}
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Recent Requests</Text>
-
-              <Text style={styles.sectionSubtitle}>
-                Your latest material requirements
-              </Text>
-            </View>
-
-            <Pressable>
-              <Text style={styles.filterText}>Filter</Text>
-            </Pressable>
-          </View>
-
-          {/* REQUEST CARDS */}
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#FF7A00" />
-              <Text style={styles.loadingText}>
-                Loading your requirements...
-              </Text>
-            </View>
-          ) : error ? (
-            <View style={styles.emptyCard}>
-              <View style={styles.emptyIcon}>
-                <Ionicons
-                  name="cloud-offline-outline"
-                  size={28}
-                  color="#FF7A00"
-                />
-              </View>
-
-              <Text style={styles.emptyTitle}>Unable to load requirements</Text>
-              <Text style={styles.emptySubtitle}>{error}</Text>
-              <Pressable style={styles.retryButton} onPress={loadRequirements}>
-                <Text style={styles.retryText}>Try Again</Text>
-              </Pressable>
-            </View>
-          ) : requirements?.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <View style={styles.emptyIcon}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={28}
-                  color="#FF7A00"
-                />
-              </View>
-
-              <Text style={styles.emptyTitle}>No Requirements Yet</Text>
-
-              <Text style={styles.emptySubtitle}>
-                Post your first material requirement and start receiving
-                supplier quotes.
-              </Text>
-
+              {/* POST REQUIREMENT */}
               <Pressable
-                style={styles.retryButton}
                 onPress={() => navigation.navigate("CreateRequirement")}
               >
-                <Text style={styles.retryText}>Post Requirement</Text>
-              </Pressable>
-            </View>
-          ) : (
-            requirements?.map((requirement) => {
-              console.log("fdsfsd", requirement);
-
-              const statusStyle = getStatusStyle(requirement.status);
-
-              const address = requirement.deliveryAddress;
-              const fullAddress = [
-                address.addressLine1,
-                address.addressLine2,
-                address.landmark,
-                address.city,
-                address.state,
-                address.pincode,
-              ]
-                .filter(Boolean)
-                .join(", ");
-              console.log("dfsgf", fullAddress);
-
-              const location = `${address.city}, ${address.state}`;
-              const quantity = `${requirement.quantity} ${requirement.unit}`;
-              const createdDate = new Date(requirement.createdAt);
-              const time = createdDate.toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              });
-
-              return (
-                <Pressable
-                  key={requirement.id}
-                  style={styles.requestCard}
-                  onPress={() =>
-                    navigation.navigate("RequestDetails", {
-                      requestId: requirement.id,
-                    })
-                  }
+                <LinearGradient
+                  colors={["#FF7A00", "#FF9F1C", "#FFC43D"]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.postCard}
                 >
-                  {/* TOP */}
-
-                  <View style={styles.requestTop}>
-                    <View style={styles.materialIcon}>
-                      {requirement.material.imageUrl ? (
-                        <Image
-                          source={{
-                            uri: requirement.material.imageUrl,
-                          }}
-                          style={styles.materialImage}
-                        />
-                      ) : (
-                        <Text style={styles.materialEmoji}>🧱</Text>
-                      )}
-                    </View>
-
-                    <View style={styles.requestTitleContainer}>
-                      <Text style={styles.requestTitle} numberOfLines={1}>
-                        {requirement.material.name}
-                      </Text>
-
-                      <Text style={styles.requestQuantity}>{quantity}</Text>
-                    </View>
-
-                    <Text style={styles.cardArrow}>›</Text>
+                  <View style={styles.postIconContainer}>
+                    <Text style={styles.postIcon}>＋</Text>
                   </View>
 
-                  {/* LOCATION */}
+                  <View style={styles.postContent}>
+                    <Text style={styles.postTitle}>Post New Requirement</Text>
 
-                  <View style={styles.locationRow}>
-                    <Text style={styles.locationIcon}>📍</Text>
-
-                    <Text style={styles.locationText} numberOfLines={1}>
-                      {location}
+                    <Text style={styles.postSubtitle}>
+                      Get quotes from trusted suppliers
                     </Text>
                   </View>
+                </LinearGradient>
+              </Pressable>
 
-                  {/* STATUS */}
+              {/* SUMMARY */}
+              <View style={styles.summaryRow}>
+                <View style={styles.summaryCard}>
+                  <Text style={styles.summaryNumber}>{activeCount}</Text>
 
-                  <View style={styles.requestBottom}>
-                    <View style={[styles.statusPill, statusStyle.pill]}>
-                      <View style={[styles.statusDot, statusStyle.dot]} />
+                  <Text style={styles.summaryLabel}>Active</Text>
+                </View>
 
-                      <Text style={[styles.statusText, statusStyle.text]}>
-                        {getStatusLabel(requirement.status)}
-                      </Text>
-                    </View>
+                <View style={styles.summaryCard}>
+                  <Text style={styles.summaryNumber}>0</Text>
 
-                    <Text style={styles.quoteText}>
-                      {requirement.material.category?.name ||
-                        "Construction Material"}
-                    </Text>
-                  </View>
+                  <Text style={styles.summaryLabel}>Quotes</Text>
+                </View>
 
-                  {/* FOOTER */}
+                <View style={styles.summaryCard}>
+                  <Text style={styles.summaryNumber}>{completedCount}</Text>
 
-                  <View style={styles.cardFooter}>
-                    <Text style={styles.timeText}>Posted {time}</Text>
+                  <Text style={styles.summaryLabel}>Completed</Text>
+                </View>
+              </View>
 
-                    <Pressable
-                      onPress={() =>
-                        navigation.navigate("RequestDetails", {
-                          requestId: requirement.id,
-                        })
-                      }
-                    >
-                      <Text style={styles.viewDetails}>View Details →</Text>
-                    </Pressable>
-                  </View>
+              {/* SECTION */}
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.sectionTitle}>Recent Requests</Text>
+
+                  <Text style={styles.sectionSubtitle}>
+                    Your latest material requirements
+                  </Text>
+                </View>
+
+                <Pressable>
+                  <Text style={styles.filterText}>Filter</Text>
                 </Pressable>
-              );
-            })
-          )}
+              </View>
+            </>
+          }
+          renderItem={({ item: requirement }) => {
+            const statusStyle = getStatusStyle(requirement.status);
 
-          <View style={styles.bottomSpace} />
-        </ScrollView>
+            const address = requirement.deliveryAddress;
+
+            const location = [address?.city, address?.state]
+              .filter(Boolean)
+              .join(", ");
+
+            const quantity = `${requirement.quantity} ${requirement.unit}`;
+
+            const createdDate = new Date(requirement.createdAt);
+
+            const time = createdDate.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
+
+            return (
+              <Pressable
+                style={styles.requestCard}
+                onPress={() =>
+                  navigation.navigate("RequestDetails", {
+                    requestId: requirement.id,
+                  })
+                }
+              >
+                {/* TOP */}
+                <View style={styles.requestTop}>
+                  <View style={styles.materialIcon}>
+                    {requirement.material?.imageUrl ? (
+                      <Image
+                        source={{
+                          uri: requirement.material.imageUrl,
+                        }}
+                        style={styles.materialImage}
+                      />
+                    ) : (
+                      <Text style={styles.materialEmoji}>🧱</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.requestTitleContainer}>
+                    <Text style={styles.requestTitle} numberOfLines={1}>
+                      {requirement.material?.name ?? "Material"}
+                    </Text>
+
+                    <Text style={styles.requestQuantity}>{quantity}</Text>
+                  </View>
+
+                  <Text style={styles.cardArrow}>›</Text>
+                </View>
+
+                {/* LOCATION */}
+                <View style={styles.locationRow}>
+                  <Text style={styles.locationIcon}>📍</Text>
+
+                  <Text style={styles.locationText} numberOfLines={1}>
+                    {location || "Location not available"}
+                  </Text>
+                </View>
+
+                {/* STATUS */}
+                <View style={styles.requestBottom}>
+                  <View style={[styles.statusPill, statusStyle.pill]}>
+                    <View style={[styles.statusDot, statusStyle.dot]} />
+
+                    <Text style={[styles.statusText, statusStyle.text]}>
+                      {getStatusLabel(requirement.status)}
+                    </Text>
+                  </View>
+
+                  <Text style={styles.quoteText}>
+                    {requirement.material?.category?.name ||
+                      "Construction Material"}
+                  </Text>
+                </View>
+
+                {/* FOOTER */}
+                <View style={styles.cardFooter}>
+                  <Text style={styles.timeText}>Posted {time}</Text>
+
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("RequestDetails", {
+                        requestId: requirement.id,
+                      })
+                    }
+                  >
+                    <Text style={styles.viewDetails}>View Details →</Text>
+                  </Pressable>
+                </View>
+              </Pressable>
+            );
+          }}
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FF7A00" />
+
+                <Text style={styles.loadingText}>
+                  Loading your requirements...
+                </Text>
+              </View>
+            ) : error ? (
+              <View style={styles.emptyCard}>
+                <View style={styles.emptyIcon}>
+                  <Ionicons
+                    name="cloud-offline-outline"
+                    size={28}
+                    color="#FF7A00"
+                  />
+                </View>
+
+                <Text style={styles.emptyTitle}>
+                  Unable to load requirements
+                </Text>
+
+                <Text style={styles.emptySubtitle}>{error}</Text>
+
+                <Pressable
+                  style={styles.retryButton}
+                  onPress={loadRequirements}
+                >
+                  <Text style={styles.retryText}>Try Again</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={styles.emptyCard}>
+                <View style={styles.emptyIcon}>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={28}
+                    color="#FF7A00"
+                  />
+                </View>
+
+                <Text style={styles.emptyTitle}>No Requirements Yet</Text>
+
+                <Text style={styles.emptySubtitle}>
+                  Post your first material requirement and start receiving
+                  supplier quotes.
+                </Text>
+
+                <Pressable
+                  style={styles.retryButton}
+                  onPress={() => navigation.navigate("CreateRequirement")}
+                >
+                  <Text style={styles.retryText}>Post Requirement</Text>
+                </Pressable>
+              </View>
+            )
+          }
+          ListFooterComponent={<View style={styles.bottomSpace} />}
+        />
       </SafeAreaView>
     </View>
   );

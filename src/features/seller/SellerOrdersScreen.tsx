@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   TextInput,
   StatusBar,
+  Pressable,
+  FlatList,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getSellerOrders } from "./seller.api";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SellerOrdersScreen = ({ navigation }: any) => {
   const [search, setSearch] = useState("");
@@ -54,16 +57,15 @@ const SellerOrdersScreen = ({ navigation }: any) => {
 
   const orderStats = useMemo(() => {
     const orderList = Array.isArray(orders) ? orders : [];
-  
+
     return {
       totalOrders: orderList.length,
-  
+
       inTransit: orderList.filter(
-        order =>
-          String(order?.status ?? "").toUpperCase() === "DISPATCHED"
+        (order) => String(order?.status ?? "").toUpperCase() === "DISPATCHED"
       ).length,
-  
-      delivered: orderList.filter(order =>
+
+      delivered: orderList.filter((order) =>
         ["DELIVERED", "COMPLETED"].includes(
           String(order?.status ?? "").toUpperCase()
         )
@@ -127,267 +129,41 @@ const SellerOrdersScreen = ({ navigation }: any) => {
     });
   }, [orders, search, activeFilter]);
 
-  const formatCurrency = (amount: number) => {
-    return `₹${amount.toLocaleString("en-IN")}`;
-  };
-
-  const getFilterStatus = (filter: string) => {
-    switch (filter) {
-      case "Pending":
-        return "PENDING";
-
-      case "Accepted":
-        return "ACCEPTED";
-
-      case "Dispatched":
-        return "DISPATCHED";
-
-      case "Completed":
-        return "COMPLETED";
-
-      case "Cancelled":
-        return "CANCELLED";
-
-      default:
-        return null;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Pending":
-        return "time-outline";
-      case "Active":
-        return "bicycle-outline";
-      case "Completed":
-        return "checkmark-circle-outline";
-      case "Cancelled":
-        return "close-circle-outline";
-      default:
-        return "cube-outline";
-    }
-  };
-
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       <StatusBar
         translucent
         backgroundColor="transparent"
         barStyle="dark-content"
       />
 
-      <LinearGradient
-        colors={["#FFF3D6", "#FFF8EE", "#FFFFFF"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.background}
-      >
+      <View style={styles.container}>
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.brand}>BUILDSATHI</Text>
+            <Text style={styles.brand}>NEEVSATHI</Text>
+
             <Text style={styles.headerTitle}>My Orders</Text>
           </View>
 
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={styles.headerIcon}
-              onPress={() => navigation.navigate("SellerNotifications")}
-            >
-              <Ionicons
-                name="notifications-outline"
-                size={21}
-                color="#0A0A0A"
-              />
+          <Pressable
+            style={styles.headerIcon}
+            onPress={() => navigation.navigate("SellerNotifications")}
+          >
+            <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
-              <View style={styles.notificationDot} />
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity
-              style={styles.headerProfile}
-              onPress={() => navigation.navigate('SellerProfile')}
-            >
-              <Ionicons
-                name="person-outline"
-                size={20}
-                color="#FF7A00"
-              />
-            </TouchableOpacity> */}
-          </View>
+            <View style={styles.notificationDot} />
+          </Pressable>
         </View>
 
-        <ScrollView
+        <FlatList
+          data={filteredOrders}
+          keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
-        >
-          {/* INTRO */}
-          <View style={styles.introSection}>
-            <Text style={styles.pageHeading}>Manage your orders</Text>
-
-            <Text style={styles.pageSubtitle}>
-              Track deliveries, payments and buyer orders
-            </Text>
-          </View>
-
-          {/* OVERVIEW CARD */}
-          {/* <LinearGradient
-            colors={["#0A0A0A", "#1A1A1A", "#3A2A08"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.overviewCard}
-          >
-            <View style={styles.overviewTop}>
-              <View>
-                <Text style={styles.overviewLabel}>Total Order Value</Text>
-
-                <Text style={styles.overviewAmount}>
-                  {String(stats?.totalOrders ?? 0).padStart(2, "0")}
-                </Text>
-              </View>
-
-              <View style={styles.overviewIcon}>
-                <Ionicons name="cube-outline" size={24} color="#FFD76A" />
-              </View>
-            </View>
-
-            <View style={styles.overviewDivider} />
-
-            <View style={styles.overviewStats}>
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewStatValue}>08</Text>
-                <Text style={styles.overviewStatLabel}>Total Orders</Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewStatValue}>02</Text>
-                <Text style={styles.overviewStatLabel}>Active</Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewStatValue}>05</Text>
-                <Text style={styles.overviewStatLabel}>Completed</Text>
-              </View>
-
-              <View style={styles.overviewStat}>
-                <Text style={styles.overviewStatValue}>₹2.4L</Text>
-                <Text style={styles.overviewStatLabel}>This Month</Text>
-              </View>
-            </View>
-          </LinearGradient> */}
-
-          {/* QUICK STATS */}
-          <View style={styles.quickStatsRow}>
-            <View style={styles.quickStatCard}>
-              <View
-                style={[styles.quickStatIcon, { backgroundColor: "#FFF7D6" }]}
-              >
-                <Ionicons name="time-outline" size={18} color="#D4A017" />
-              </View>
-
-              <Text style={styles.quickStatValue}>{orderStats?.totalOrders ?? 0}</Text>
-
-              <Text style={styles.quickStatLabel}> Total Orders</Text>
-            </View>
-
-            <View style={styles.quickStatCard}>
-              <View
-                style={[styles.quickStatIcon, { backgroundColor: "#FFF0DF" }]}
-              >
-                <Ionicons name="bicycle-outline" size={18} color="#FF7A00" />
-              </View>
-
-              <Text style={styles.quickStatValue}>{orderStats.inTransit}</Text>
-
-              <Text style={styles.quickStatLabel}> In Transit</Text>
-            </View>
-
-            <View style={styles.quickStatCard}>
-              <View
-                style={[styles.quickStatIcon, { backgroundColor: "#EAF8EF" }]}
-              >
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={18}
-                  color="#16A34A"
-                />
-              </View>
-
-              <Text style={styles.quickStatValue}>{orderStats.delivered}</Text>
-
-              <Text style={styles.quickStatLabel}>Delivered</Text>
-            </View>
-          </View>
-
-          {/* SEARCH */}
-          <View style={styles.searchBox}>
-            <Ionicons name="search-outline" size={20} color="#9A8F83" />
-
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Search orders, buyers or materials"
-              placeholderTextColor="#A79B8D"
-              style={styles.searchInput}
-            />
-
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch("")}>
-                <Ionicons name="close-circle" size={20} color="#B8AFA4" />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* FILTERS */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterScroll}
-          >
-            {filters.map((filter) => {
-              const active = activeFilter === filter;
-
-              return (
-                <TouchableOpacity
-                  key={filter}
-                  onPress={() => setActiveFilter(filter)}
-                  style={[styles.filterChip, active && styles.filterChipActive]}
-                >
-                  <Text
-                    style={[
-                      styles.filterText,
-                      active && styles.filterTextActive,
-                    ]}
-                  >
-                    {filter}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-
-          {/* SECTION HEADER */}
-          <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>
-                {activeFilter === "All"
-                  ? "Recent Orders"
-                  : `${activeFilter} Orders`}
-              </Text>
-
-              <Text style={styles.sectionSubtitle}>
-                {filteredOrders.length} orders found
-              </Text>
-            </View>
-
-            <TouchableOpacity>
-              <Ionicons name="options-outline" size={21} color="#FF7A00" />
-            </TouchableOpacity>
-          </View>
-
-          {/* ORDER CARDS */}
-          {/* ORDER CARDS */}
-          {filteredOrders.map((order) => {
-            const status = String(order.status ?? "").toUpperCase();
+          keyboardShouldPersistTaps="handled"
+          renderItem={({ item: order }) => {
+            const status = String(order?.status ?? "").toUpperCase();
 
             const statusConfig = {
               PENDING: {
@@ -427,15 +203,15 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                 icon: "close-circle-outline",
               },
             }[status] ?? {
-              label: order.status ?? "Unknown",
+              label: order?.status ?? "Unknown",
               color: "#8C8175",
               bg: "#F5F1EC",
               icon: "cube-outline",
             };
 
-            const totalAmount = Number(order.totalAmount ?? 0);
+            const totalAmount = Number(order?.totalAmount ?? 0);
 
-            const expectedDate = order.expectedDeliveryDate
+            const expectedDate = order?.expectedDeliveryDate
               ? new Date(order.expectedDeliveryDate).toLocaleDateString(
                   "en-IN",
                   {
@@ -446,7 +222,7 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                 )
               : "Not specified";
 
-            const orderedDate = order.createdAt
+            const orderedDate = order?.createdAt
               ? new Date(order.createdAt).toLocaleDateString("en-IN", {
                   day: "2-digit",
                   month: "short",
@@ -455,15 +231,14 @@ const SellerOrdersScreen = ({ navigation }: any) => {
               : "";
 
             const location = [
-              order.deliveryAddress?.city,
-              order.deliveryAddress?.state,
+              order?.deliveryAddress?.city,
+              order?.deliveryAddress?.state,
             ]
               .filter(Boolean)
               .join(", ");
 
             return (
               <TouchableOpacity
-                key={order.id}
                 activeOpacity={0.92}
                 style={styles.orderCard}
                 onPress={() =>
@@ -477,12 +252,14 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                   <View style={styles.orderIdRow}>
                     <View style={styles.orderIcon}>
                       <Text style={styles.orderEmoji}>
-                        {order.material?.name === "Brick" ? "🧱" : "🏗️"}
+                        {order?.material?.name === "Brick" ? "🧱" : "🏗️"}
                       </Text>
                     </View>
 
                     <View>
-                      <Text style={styles.orderId}>{order.orderNumber}</Text>
+                      <Text style={styles.orderId}>
+                        {order?.orderNumber ?? "Order"}
+                      </Text>
 
                       <Text style={styles.orderTime}>{orderedDate}</Text>
                     </View>
@@ -503,7 +280,12 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                     />
 
                     <Text
-                      style={[styles.statusText, { color: statusConfig.color }]}
+                      style={[
+                        styles.statusText,
+                        {
+                          color: statusConfig.color,
+                        },
+                      ]}
                     >
                       {statusConfig.label}
                     </Text>
@@ -514,11 +296,11 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                 <View style={styles.materialSection}>
                   <View>
                     <Text style={styles.materialName}>
-                      {order.material?.name ?? "Material"}
+                      {order?.material?.name ?? "Material"}
                     </Text>
 
                     <Text style={styles.materialQuantity}>
-                      {order.quantity} {order.unit}
+                      {order?.quantity} {order?.unit}
                     </Text>
                   </View>
 
@@ -544,7 +326,7 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                   <View style={styles.buyerInfo}>
                     <View style={styles.buyerNameRow}>
                       <Text style={styles.buyerName}>
-                        {order.buyer?.name ?? "Buyer"}
+                        {order?.buyer?.name ?? "Buyer"}
                       </Text>
 
                       <View style={styles.verifiedSmall}>
@@ -553,7 +335,7 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                     </View>
 
                     <Text style={styles.buyerType}>
-                      {order.buyer?.buyerProfile?.companyName ??
+                      {order?.buyer?.buyerProfile?.companyName ??
                         "Individual Buyer"}
                     </Text>
                   </View>
@@ -594,17 +376,16 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                   <View style={styles.paymentRow}>
                     <Ionicons
                       name={
-                        order.quote?.status === "DISPATCHED"
+                        order?.quote?.status === "DISPATCHED"
                           ? "checkmark-circle"
-                          : order.quote?.status === "ACCEPTED"
+                          : order?.quote?.status === "ACCEPTED"
                           ? "checkmark-circle"
                           : "time-outline"
                       }
                       size={15}
                       color={
-                        order.quote?.status === "DISPATCHED"
-                          ? "#16A34A"
-                          : order.quote?.status === "ACCEPTED"
+                        order?.quote?.status === "DISPATCHED" ||
+                        order?.quote?.status === "ACCEPTED"
                           ? "#16A34A"
                           : "#D4A017"
                       }
@@ -615,18 +396,18 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                         styles.paymentText,
                         {
                           color:
-                            order.quote?.status === "DISPATCHED" ||
-                            order.quote?.status === "ACCEPTED"
+                            order?.quote?.status === "DISPATCHED" ||
+                            order?.quote?.status === "ACCEPTED"
                               ? "#16A34A"
                               : "#D4A017",
                         },
                       ]}
                     >
-                      {order.quote?.status === "DISPATCHED"
+                      {order?.quote?.status === "DISPATCHED"
                         ? "Dispatched"
-                        : order.quote?.status === "ACCEPTED"
+                        : order?.quote?.status === "ACCEPTED"
                         ? "Accepted"
-                        : order.quote?.status ?? "Pending"}
+                        : order?.quote?.status ?? "Pending"}
                     </Text>
                   </View>
 
@@ -642,10 +423,151 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                 </View>
               </TouchableOpacity>
             );
-          })}
+          }}
+          ListHeaderComponent={
+            <>
+              {/* INTRO */}
+              <View style={styles.introSection}>
+                <Text style={styles.pageHeading}>Manage your orders</Text>
 
-          {/* EMPTY STATE */}
-          {filteredOrders.length === 0 && (
+                <Text style={styles.pageSubtitle}>
+                  Track deliveries, payments and buyer orders
+                </Text>
+              </View>
+
+              {/* QUICK STATS */}
+              <View style={styles.quickStatsRow}>
+                <View style={styles.quickStatCard}>
+                  <View
+                    style={[
+                      styles.quickStatIcon,
+                      { backgroundColor: "#FFF7D6" },
+                    ]}
+                  >
+                    <Ionicons name="time-outline" size={18} color="#D4A017" />
+                  </View>
+
+                  <Text style={styles.quickStatValue}>
+                    {orderStats?.totalOrders ?? 0}
+                  </Text>
+
+                  <Text style={styles.quickStatLabel}>Total Orders</Text>
+                </View>
+
+                <View style={styles.quickStatCard}>
+                  <View
+                    style={[
+                      styles.quickStatIcon,
+                      { backgroundColor: "#FFF0DF" },
+                    ]}
+                  >
+                    <Ionicons
+                      name="bicycle-outline"
+                      size={18}
+                      color="#FF7A00"
+                    />
+                  </View>
+
+                  <Text style={styles.quickStatValue}>
+                    {orderStats?.inTransit ?? 0}
+                  </Text>
+
+                  <Text style={styles.quickStatLabel}>In Transit</Text>
+                </View>
+
+                <View style={styles.quickStatCard}>
+                  <View
+                    style={[
+                      styles.quickStatIcon,
+                      { backgroundColor: "#EAF8EF" },
+                    ]}
+                  >
+                    <Ionicons
+                      name="checkmark-circle-outline"
+                      size={18}
+                      color="#16A34A"
+                    />
+                  </View>
+
+                  <Text style={styles.quickStatValue}>
+                    {orderStats?.delivered ?? 0}
+                  </Text>
+
+                  <Text style={styles.quickStatLabel}>Delivered</Text>
+                </View>
+              </View>
+
+              {/* SEARCH */}
+              <View style={styles.searchBox}>
+                <Ionicons name="search-outline" size={20} color="#9A8F83" />
+
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Search orders, buyers or materials"
+                  placeholderTextColor="#A79B8D"
+                  style={styles.searchInput}
+                />
+
+                {search.length > 0 && (
+                  <TouchableOpacity onPress={() => setSearch("")}>
+                    <Ionicons name="close-circle" size={20} color="#B8AFA4" />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* FILTERS */}
+              <FlatList
+                data={filters}
+                horizontal
+                keyExtractor={(item) => item}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterScroll}
+                renderItem={({ item: filter }) => {
+                  const active = activeFilter === filter;
+
+                  return (
+                    <TouchableOpacity
+                      onPress={() => setActiveFilter(filter)}
+                      style={[
+                        styles.filterChip,
+                        active && styles.filterChipActive,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.filterText,
+                          active && styles.filterTextActive,
+                        ]}
+                      >
+                        {filter}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+
+              {/* SECTION HEADER */}
+              <View style={styles.sectionHeader}>
+                <View>
+                  <Text style={styles.sectionTitle}>
+                    {activeFilter === "All"
+                      ? "Recent Orders"
+                      : `${activeFilter} Orders`}
+                  </Text>
+
+                  <Text style={styles.sectionSubtitle}>
+                    {filteredOrders.length} orders found
+                  </Text>
+                </View>
+
+                <TouchableOpacity>
+                  <Ionicons name="options-outline" size={21} color="#FF7A00" />
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          ListEmptyComponent={
             <View style={styles.emptyState}>
               <View style={styles.emptyIcon}>
                 <Ionicons name="cube-outline" size={32} color="#FF7A00" />
@@ -667,12 +589,11 @@ const SellerOrdersScreen = ({ navigation }: any) => {
                 <Text style={styles.clearButtonText}>Clear Filters</Text>
               </TouchableOpacity>
             </View>
-          )}
-
-          <View style={{ height: 110 }} />
-        </ScrollView>
-      </LinearGradient>
-    </View>
+          }
+          ListFooterComponent={<View style={{ height: 110 }} />}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -680,6 +601,10 @@ export default SellerOrdersScreen;
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+    backgroundColor: "#FFF8EE",
+  },
+  container: {
     flex: 1,
     backgroundColor: "#FFF8EE",
   },
@@ -694,24 +619,26 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    paddingTop: 58,
     paddingHorizontal: 18,
-    paddingBottom: 10,
+    paddingTop: 14,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1E2D0",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   brand: {
-    fontSize: 11,
-    fontWeight: "900",
+    fontSize: 9,
     letterSpacing: 2.2,
-    color: "#FF7A00",
+    fontWeight: "900",
+    color: "#D4A017",
+    marginBottom: 3,
   },
 
   headerTitle: {
-    marginTop: 3,
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "900",
     color: "#0A0A0A",
   },

@@ -114,10 +114,9 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
   const supplierPhone =
     order?.seller?.sellerProfile?.phone || order?.seller?.phone || "";
 
-  const supplierLocation =
-    [order?.seller?.sellerProfile?.city, order?.seller?.sellerProfile?.state]
-      .filter(Boolean)
-      .join(", ") || "N/A";
+  const supplierLocation = order?.seller?.sellerProfile?.businessType ?? "N/A";
+
+  console.log("dfsfs", order);
 
   const materialName = order?.material?.name || "Construction Material";
 
@@ -462,7 +461,7 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
               </View>
 
               <View style={styles.supplierMetaRow}>
-                <Ionicons name="location-outline" size={14} color="#8C8175" />
+                <Ionicons name="checkmark-circle-outline" size={14} color="#8C8175" />
 
                 <Text style={styles.supplierMeta} numberOfLines={1}>
                   {supplierLocation}
@@ -773,7 +772,6 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
                 completed={isCompleted}
                 active={false}
                 last */}
-             
             </View>
           </View>
         )}

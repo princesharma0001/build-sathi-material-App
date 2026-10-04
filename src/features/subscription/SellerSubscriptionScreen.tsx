@@ -97,6 +97,8 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
   //   return activePlanId === planId;
   // };
   const activePlan = plans.find((plan) => plan.code === selectedPlan);
+  console.log("dfsfs",activePlan);
+  
 
   useEffect(() => {
     loadSubscriptionPlans();
@@ -135,6 +137,13 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const closePaymentWebView = () => {
+    setWebViewVisible(false);
+    setCheckoutUrl("");
+    setCurrentOrderId("");
+    setPaymentChecking(false);
   };
 
   const handlePurchase = async () => {
@@ -200,9 +209,10 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
 
       if (status === "PAID") {
         await fetchSubscription();
-        setWebViewVisible(false);
-        setCheckoutUrl("");
-        setCurrentOrderId("");
+        closePaymentWebView();
+        // setWebViewVisible(false);
+        // setCheckoutUrl("");
+        // setCurrentOrderId("");
 
         Alert.alert(
           "Payment Successful",
@@ -223,15 +233,43 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
       }
 
       if (status === "CREATED" || status === "PENDING") {
+        closePaymentWebView();
+  
         Alert.alert(
           "Payment Pending",
-          "Your payment is still being processed. Please try again in a moment."
+          "Your payment is still being processed. Please check your subscription status again shortly."
         );
-
+  
         return;
       }
+      if (
+        status === "FAILED" ||
+        status === "CANCELLED" ||
+        status === "USER_DROPPED" ||
+        status === "EXPIRED"
+      ) {
+        closePaymentWebView();
+  
+        Alert.alert(
+          "Payment Failed",
+          "Your payment was not completed. No amount has been added to your subscription.",
+          [
+            {
+              text: "OK",
+              style: "default",
+            },
+          ]
+        );
+  
+        return;
+      }
+      closePaymentWebView();
 
-      Alert.alert("Payment Failed", "The payment was not completed.");
+      Alert.alert(
+        "Payment Failed",
+        "The payment could not be completed. Please try again."
+      );  
+      // Alert.alert("Payment Failed", "The payment was not completed.");
     } catch (error: any) {
       console.error("VERIFY PAYMENT ERROR:", error);
 
@@ -239,6 +277,7 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
         "Verification Error",
         error?.message || "Unable to verify your payment."
       );
+      closePaymentWebView();
     } finally {
       setPaymentChecking(false);
     }
@@ -339,15 +378,7 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
 
         <View style={styles.header}>
           <Pressable
-            onPress={() => {
-              console.log("BACK PRESSED");
-        
-              if (navigation.canGoBack()) {
-                navigation.goBack();
-              } else {
-                navigation.navigate("Seller");
-              }
-            }}
+             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
@@ -370,7 +401,7 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
   /**
    * ================= ERROR =================
    */
-  if (error || plans.length === 0) {
+  if (error || plans?.length === 0) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="#F04424" />
@@ -532,7 +563,7 @@ const SellerSubscriptionScreen = ({ navigation }: any) => {
           {/* ================= PLAN SELECTOR ================= */}
 
           <View style={styles.planSelector}>
-            {plans.map((plan) => {
+            {plans?.map((plan) => {
               const active = selectedPlan === plan.code;
 
               return (
@@ -876,12 +907,13 @@ const styles = StyleSheet.create({
   },
 
   webViewHeader: {
-    height: 58,
+    height: 88,
     backgroundColor: "#F04435",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 10,
+    // paddingTop:10
   },
 
   webViewCloseButton: {
@@ -891,12 +923,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.15)",
     alignItems: "center",
     justifyContent: "center",
+   
   },
 
   webViewTitle: {
     color: "#FFFFFF",
     fontSize: 17,
-    fontWeight: "900",
+    fontWeight: "800",
   },
 
   webView: {
@@ -1023,13 +1056,16 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    textAlign: "center",
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "900",
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#fff',
+    // position: "absolute",
+    // left: 0,
+    // right: 0,
+    // textAlign: "center",
+    // color: "#FFFFFF",
+    // fontSize: 20,
+    // fontWeight: "900",
   },
 
   headerRight: {
@@ -1195,13 +1231,13 @@ const styles = StyleSheet.create({
 
   quotaTitle: {
     color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "900",
   },
 
   quotaSubtitle: {
-    color: "#77777C",
-    fontSize: 10,
+    color: "#f5f5f5",
+    fontSize: 13,
     marginTop: 4,
   },
 

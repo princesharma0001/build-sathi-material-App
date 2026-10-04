@@ -17,8 +17,16 @@ interface ActiveSubscription {
   expiresAt: string | null;
 }
 
+
 interface MySubscriptionResponse {
+  freeQuota: {
+    limit: number;
+    used: number;
+    remaining: number;
+  };
+
   activeSubscriptions: ActiveSubscription[];
+
   paidQuotationsRemaining: number;
   totalQuotationsRemaining: number;
   canSendQuotation: boolean;

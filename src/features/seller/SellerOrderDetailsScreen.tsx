@@ -605,7 +605,7 @@ const SellerOrderDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.quoteStatusLabel}>Quote Status</Text>
 
                 <Text style={styles.quoteStatusValue}>
-                {statusConfig.label}
+                  {statusConfig.label}
                 </Text>
               </View>
             </View>
@@ -649,10 +649,13 @@ const DetailRow = ({
       <View style={styles.detailLeft}>
         <Ionicons name={icon as any} size={17} color="#8C8175" />
 
-        <Text style={styles.detailLabel}>{label}</Text>
+        <Text numberOfLines={1} style={styles.detailLabel}>
+          {label}
+        </Text>
       </View>
 
       <Text
+        numberOfLines={1}
         style={[
           styles.detailValue,
           valueColor ? { color: valueColor } : undefined,
@@ -762,8 +765,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     marginTop: 2,
-    paddingBottom:20,
-    paddingHorizontal:22
+    paddingBottom: 20,
+    paddingHorizontal: 22,
   },
 
   whatsappButton: {
