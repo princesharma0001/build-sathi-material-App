@@ -1,4 +1,4 @@
-package com.buildsathi
+package com.neevsathi
 
 import android.app.Application
 import com.facebook.react.PackageList

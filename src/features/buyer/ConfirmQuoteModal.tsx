@@ -8,7 +8,8 @@ import {
   StyleSheet as RNStyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { BlurView } from '@react-native-community/blur';
 
 interface Quote {

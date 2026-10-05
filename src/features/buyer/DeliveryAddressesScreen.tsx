@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { deleteDeliveryAddressApi, getDeliveryAddressesApi, setDefaultDeliveryAddressApi } from './address.api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

@@ -9,7 +9,8 @@ import {
   Image,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 const OrderConfirmationScreen = ({ navigation, route }: any) => {
   const quote = route?.params?.quote || {};

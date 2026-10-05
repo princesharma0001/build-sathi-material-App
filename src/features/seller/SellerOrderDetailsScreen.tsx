@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 
 const SellerOrderDetailsScreen = ({ navigation, route }: any) => {
   const { order } = route.params || {};
@@ -157,72 +158,144 @@ const SellerOrderDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const shareOrderOnWhatsApp = async () => {
-    const driverPhone = String(order.driverPhone || "").replace(/\D/g, "");
-
-    if (!driverPhone) {
-      return;
-    }
-
     const message = `
-  *BuildSathi - Delivery Receipt* 🧾
-  
-  *Order Details*
-  Order No: ${order.orderNumber || "N/A"}
-  Order Status: ${statusConfig.label}
-  Order Date: ${formatDate(order.createdAt)}
-  
-  *Material Details* 🧱
-  Material: ${order.material?.name || "N/A"}
-  Quantity: ${order.quantity || "N/A"} ${order.unit || ""}
-  Price/Unit: ${formatAmount(order.pricePerUnit)}
-  Material Amount: ${formatAmount(order.materialAmount)}
-  Delivery Charges: ${formatAmount(order.deliveryCharges)}
-  *Total Order Value: ${formatAmount(order.totalAmount)}*
-  
-  *Buyer Details* 👤
-  Buyer: ${order.buyer?.name || "N/A"}
-  Company: ${buyerCompany}
-  Phone: ${buyerPhone || "N/A"}
-  
-  *Delivery Address* 📍
-  ${fullAddress || "Address not available"}
-  
-  *Driver Details* 🚚
-  Driver: ${order.driverName || "N/A"}
-  Driver Phone: ${order.driverPhone || "N/A"}
-  Vehicle: ${order.vehicleNumber || "N/A"}
-  
-  *Expected Delivery:* ${formatDate(order.expectedDeliveryDate)}
-  
-  ${order.deliveryNotes ? `*Delivery Notes:* ${order.deliveryNotes}` : ""}
-  
-  Thank you for using *BuildSathi*.
-    `.trim();
+*NeevSathi - Delivery Receipt* 🧾
 
-    // India country code
-    const phone = `91${driverPhone}`;
+*Order Details*
+Order No: ${order.orderNumber || "N/A"}
+Order Status: ${statusConfig.label}
+Order Date: ${formatDate(order.createdAt)}
 
-    // WhatsApp standard URL
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(
-      message
-    )}`;
+*Material Details* 🧱
+Material: ${order.material?.name || "N/A"}
+Quantity: ${order.quantity || "N/A"} ${order.unit || ""}
+Price/Unit: ${formatAmount(order.pricePerUnit)}
+Material Amount: ${formatAmount(order.materialAmount)}
+Delivery Charges: ${formatAmount(order.deliveryCharges)}
+*Total Order Value: ${formatAmount(order.totalAmount)}*
 
-    console.log("WhatsApp URL:", whatsappUrl);
+*Buyer Details* 👤
+Buyer: ${order.buyer?.name || "N/A"}
+Company: ${buyerCompany}
+Phone: ${buyerPhone || "N/A"}
+
+*Delivery Address* 📍
+${fullAddress || "Address not available"}
+
+*Driver Details* 🚚
+Driver: ${order.driverName || "N/A"}
+Driver Phone: ${order.driverPhone || "N/A"}
+Vehicle: ${order.vehicleNumber || "N/A"}
+
+*Expected Delivery:* ${formatDate(order.expectedDeliveryDate)}
+
+${order.deliveryNotes ? `*Delivery Notes:* ${order.deliveryNotes}` : ""}
+
+Thank you for using *NeevSathi*.
+`.trim();
 
     try {
-      const supported = await Linking.canOpenURL(whatsappUrl);
+      // If driver phone exists → open WhatsApp chat directly
+      const driverPhone = String(order.driverPhone || "").replace(/\D/g, "");
 
-      console.log("Can open WhatsApp URL:", supported);
+      if (driverPhone) {
+        const phone = `91${driverPhone}`;
+
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(
+          message
+        )}`;
+
+        await Linking.openURL(whatsappUrl);
+        return;
+      }
+
+      // No phone number → open WhatsApp
+      const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+      const supported = await Linking.canOpenURL(whatsappUrl);
 
       if (supported) {
         await Linking.openURL(whatsappUrl);
       } else {
-        console.log("WhatsApp is not available on this device");
+        Alert.alert(
+          "WhatsApp Not Available",
+          "WhatsApp is not installed on this device."
+        );
       }
     } catch (error) {
       console.log("WhatsApp open error:", error);
+
+      Alert.alert("Error", "Unable to open WhatsApp.");
     }
   };
+
+  // const shareOrderOnWhatsApp = async () => {
+  //   const driverPhone = String(order.driverPhone || "").replace(/\D/g, "");
+
+  //   if (!driverPhone) {
+  //     return;
+  //   }
+
+  //   const message = `
+  // *BuildSathi - Delivery Receipt* 🧾
+
+  // *Order Details*
+  // Order No: ${order.orderNumber || "N/A"}
+  // Order Status: ${statusConfig.label}
+  // Order Date: ${formatDate(order.createdAt)}
+
+  // *Material Details* 🧱
+  // Material: ${order.material?.name || "N/A"}
+  // Quantity: ${order.quantity || "N/A"} ${order.unit || ""}
+  // Price/Unit: ${formatAmount(order.pricePerUnit)}
+  // Material Amount: ${formatAmount(order.materialAmount)}
+  // Delivery Charges: ${formatAmount(order.deliveryCharges)}
+  // *Total Order Value: ${formatAmount(order.totalAmount)}*
+
+  // *Buyer Details* 👤
+  // Buyer: ${order.buyer?.name || "N/A"}
+  // Company: ${buyerCompany}
+  // Phone: ${buyerPhone || "N/A"}
+
+  // *Delivery Address* 📍
+  // ${fullAddress || "Address not available"}
+
+  // *Driver Details* 🚚
+  // Driver: ${order.driverName || "N/A"}
+  // Driver Phone: ${order.driverPhone || "N/A"}
+  // Vehicle: ${order.vehicleNumber || "N/A"}
+
+  // *Expected Delivery:* ${formatDate(order.expectedDeliveryDate)}
+
+  // ${order.deliveryNotes ? `*Delivery Notes:* ${order.deliveryNotes}` : ""}
+
+  // Thank you for using *BuildSathi*.
+  //   `.trim();
+
+  //   // India country code
+  //   const phone = `91${driverPhone}`;
+
+  //   // WhatsApp standard URL
+  //   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(
+  //     message
+  //   )}`;
+
+  //   console.log("WhatsApp URL:", whatsappUrl);
+
+  //   try {
+  //     const supported = await Linking.canOpenURL(whatsappUrl);
+
+  //     console.log("Can open WhatsApp URL:", supported);
+
+  //     if (supported) {
+  //       await Linking.openURL(whatsappUrl);
+  //     } else {
+  //       console.log("WhatsApp is not available on this device");
+  //     }
+  //   } catch (error) {
+  //     console.log("WhatsApp open error:", error);
+  //   }
+  // };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>

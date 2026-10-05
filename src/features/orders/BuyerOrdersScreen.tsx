@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { getBuyerOrders } from "../buyer/buyer.api";
 
 type OrderStatus = "Active" | "Delivered" | "Cancelled";

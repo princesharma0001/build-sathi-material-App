@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { acceptBuyerQuoteApi, getBuyerQuoteByIdApi } from "../seller/quoteApi";
 import Toast from "react-native-toast-message";
 

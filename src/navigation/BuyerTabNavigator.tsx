@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import BuyerHomeScreen from '../features/buyer/BuyerHomeScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import BuyerRequestsScreen from '../features/buyer/BuyerRequestsScreen';
 import BuyerQuotesScreen from '../features/buyer/BuyerQuotesScreen';
 import BuyerOrdersScreen from '../features/orders/BuyerOrdersScreen';

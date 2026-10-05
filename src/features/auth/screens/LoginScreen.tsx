@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import LinearGradient from "react-native-linear-gradient";
+import messaging from "@react-native-firebase/messaging";
 
 import AuthHeader from "../components/AuthHeader";
 import AuthInput from "../components/AuthInput";
@@ -20,6 +21,8 @@ import { loginApi } from "../auth.api";
 import { saveAuthSession } from "../auth.store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { registerFCMToken } from "./notification.api";
+import { getFCMToken } from "../../../services/notificationService";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
@@ -33,6 +36,101 @@ const LoginScreen = ({ navigation }: Props) => {
 
   const [loading, setLoading] = useState(false);
 
+  // const handleLogin = async () => {
+  //   const trimmedEmail = email.trim();
+  //   const trimmedPassword = password.trim();
+
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  //   let isValid = true;
+
+  //   setApiError("");
+
+  //   // Email validation
+  //   if (!trimmedEmail) {
+  //     setEmailError("Please enter your email address");
+  //     isValid = false;
+  //   } else if (!emailRegex.test(trimmedEmail)) {
+  //     setEmailError("Please enter a valid email address");
+  //     isValid = false;
+  //   } else {
+  //     setEmailError("");
+  //   }
+
+  //   // Password validation
+  //   if (!trimmedPassword) {
+  //     setPasswordError("Please enter your password");
+  //     isValid = false;
+  //   } else if (trimmedPassword.length < 8) {
+  //     setPasswordError("Password must be at least 8 characters");
+  //     isValid = false;
+  //   } else {
+  //     setPasswordError("");
+  //   }
+
+  //   if (!isValid) {
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+
+  //     const response = await loginApi(trimmedEmail, trimmedPassword);
+
+  //     const { user, token } = response.data;
+
+  //     console.log("dfsdfs",user,token);
+      
+
+  //     // Save JWT + user in AsyncStorage
+  //     await saveAuthSession(token, user);
+
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "Welcome back 👋",
+  //       text2: "Login successful",
+  //       position: "top",
+  //       visibilityTime: 1800,
+  //       topOffset: 60,
+  //     });
+
+  //     // Role based navigation
+  //     if (user.role === "BUYER") {
+  //       navigation.replace("Buyer");
+  //       return;
+  //     }
+
+  //     if (user.role === "SELLER") {
+  //       navigation.replace("Seller");
+  //       return;
+  //     }
+
+  //     if (user.role === "CONTRACTOR") {
+  //       setApiError("Contractor account is not available yet.");
+  //       return;
+  //     }
+
+  //     if (user.role === "ADMIN") {
+  //       setApiError("Admin login is not available in the mobile app.");
+  //       return;
+  //     }
+
+  //     setApiError("Invalid user role.");
+  //   } catch (error: any) {
+  //     console.log("❌ Login error:", error);
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Login Failed",
+  //       text2: error?.message || "Invalid email or password",
+  //       position: "top",
+  //       visibilityTime: 3000,
+  //       topOffset: 60,
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleLogin = async () => {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
@@ -43,7 +141,9 @@ const LoginScreen = ({ navigation }: Props) => {
 
     setApiError("");
 
-    // Email validation
+    // =========================
+    // EMAIL VALIDATION
+    // =========================
     if (!trimmedEmail) {
       setEmailError("Please enter your email address");
       isValid = false;
@@ -54,7 +154,9 @@ const LoginScreen = ({ navigation }: Props) => {
       setEmailError("");
     }
 
-    // Password validation
+    // =========================
+    // PASSWORD VALIDATION
+    // =========================
     if (!trimmedPassword) {
       setPasswordError("Please enter your password");
       isValid = false;
@@ -72,16 +174,56 @@ const LoginScreen = ({ navigation }: Props) => {
     try {
       setLoading(true);
 
-      const response = await loginApi(trimmedEmail, trimmedPassword);
+      // =========================
+      // LOGIN API
+      // =========================
+      const response = await loginApi(
+        trimmedEmail,
+        trimmedPassword,
+      );
 
       const { user, token } = response.data;
 
-      console.log("dfsdfs",user,token);
-      
+      console.log("✅ LOGIN USER:", user);
+      console.log("🔐 LOGIN TOKEN RECEIVED");
 
-      // Save JWT + user in AsyncStorage
+      // =========================
+      // SAVE AUTH SESSION
+      // =========================
       await saveAuthSession(token, user);
 
+      // =========================
+      // FCM TOKEN REGISTRATION
+      // =========================
+      try {
+        console.log("🔥 Getting FCM token...");
+              const fcmToken = await getFCMToken();
+        
+
+        // const fcmToken = await messaging().getToken();
+
+        console.log("🔥 FCM TOKEN:", fcmToken);
+
+        if (fcmToken) {
+          await registerFCMToken(fcmToken, token);
+
+          console.log(
+            "✅ FCM token successfully registered with backend",
+          );
+        } else {
+          console.log("⚠️ FCM token not available");
+        }
+      } catch (fcmError) {
+        // FCM failure should NOT stop login
+        console.error(
+          "❌ FCM registration error:",
+          fcmError,
+        );
+      }
+
+      // =========================
+      // LOGIN SUCCESS TOAST
+      // =========================
       Toast.show({
         type: "success",
         text1: "Welcome back 👋",
@@ -91,7 +233,9 @@ const LoginScreen = ({ navigation }: Props) => {
         topOffset: 60,
       });
 
-      // Role based navigation
+      // =========================
+      // ROLE BASED NAVIGATION
+      // =========================
       if (user.role === "BUYER") {
         navigation.replace("Buyer");
         return;
@@ -103,22 +247,29 @@ const LoginScreen = ({ navigation }: Props) => {
       }
 
       if (user.role === "CONTRACTOR") {
-        setApiError("Contractor account is not available yet.");
+        setApiError(
+          "Contractor account is not available yet.",
+        );
         return;
       }
 
       if (user.role === "ADMIN") {
-        setApiError("Admin login is not available in the mobile app.");
+        setApiError(
+          "Admin login is not available in the mobile app.",
+        );
         return;
       }
 
       setApiError("Invalid user role.");
     } catch (error: any) {
       console.log("❌ Login error:", error);
+
       Toast.show({
         type: "error",
         text1: "Login Failed",
-        text2: error?.message || "Invalid email or password",
+        text2:
+          error?.message ||
+          "Invalid email or password",
         position: "top",
         visibilityTime: 3000,
         topOffset: 60,

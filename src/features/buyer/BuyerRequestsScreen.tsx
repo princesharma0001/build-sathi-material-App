@@ -13,7 +13,8 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
+// import Ionicons from "@react-native-vector-icons/Ionicons";
 import { getBuyerRequirementsApi, Requirement } from "./requirement.api";
 const BuyerRequestsScreen = ({ navigation }: any) => {
   const [requirements, setRequirements] = useState<Requirement[]>([]);

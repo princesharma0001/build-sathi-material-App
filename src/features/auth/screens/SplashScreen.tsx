@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../../navigation/types";

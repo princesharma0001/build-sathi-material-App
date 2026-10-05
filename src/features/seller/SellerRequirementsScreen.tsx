@@ -11,7 +11,8 @@ import {
   Image,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
+// import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   useFocusEffect,
   useNavigation,

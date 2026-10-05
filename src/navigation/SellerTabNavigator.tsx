@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import MainBuyerProfileScreen from '../features/buyer/MainBuyerProfileScreen';
 import SellerHomeScreen from '../features/seller/SellerHomeScreen';
 import SellerRequirementsScreen from '../features/seller/SellerRequirementsScreen';

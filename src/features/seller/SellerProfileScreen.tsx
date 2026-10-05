@@ -10,7 +10,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { getSellerProfileApi, SellerProfile } from "./seller.api";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSubscriptionStore } from "../subscription/subscription.store";

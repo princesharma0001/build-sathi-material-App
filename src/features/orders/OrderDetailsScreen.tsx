@@ -11,8 +11,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+// import Ionicons from "react-native-vector-icons/Ionicons";
 import { confirmMaterialReceived } from "../buyer/buyer.api";
 
 const OrderDetailsScreen = ({ navigation, route }: any) => {
