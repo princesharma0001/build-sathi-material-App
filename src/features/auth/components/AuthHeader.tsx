@@ -8,7 +8,7 @@ const AuthHeader = () => {
         <Text style={styles.logo}>B</Text>
       </View>
 
-      <Text style={styles.title}>BuildSathi</Text>
+      <Text style={styles.title}>NeevSathi</Text>
 
       <Text style={styles.subtitle}>
         Construction Material Marketplace

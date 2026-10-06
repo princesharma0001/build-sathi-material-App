@@ -704,148 +704,7 @@ const MainBuyerProfileScreen = ({
             </View>
           </View>
 
-          {/* ================================================== */}
-          {/* QUICK STATS */}
-          {/* ================================================== */}
-
-          <View
-            style={styles.statsCard}
-          >
-            {/* REQUIREMENTS */}
-
-            <Pressable
-              style={styles.statItem}
-              onPress={() =>
-                goTo('MyRequirements')
-              }
-            >
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor:
-                      '#FFF0DF',
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="document-text-outline"
-                  size={18}
-                  color="#FF7A00"
-                />
-              </View>
-
-              <Text
-                style={
-                  styles.statNumber
-                }
-              >
-                3
-              </Text>
-
-              <Text
-                style={
-                  styles.statLabel
-                }
-              >
-                Requirements
-              </Text>
-            </Pressable>
-
-            <View
-              style={
-                styles.statDivider
-              }
-            />
-
-            {/* QUOTES */}
-
-            <Pressable
-              style={styles.statItem}
-              onPress={() =>
-                goTo('Quotes')
-              }
-            >
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor:
-                      '#FFF7D9',
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="pricetag-outline"
-                  size={18}
-                  color="#D4A017"
-                />
-              </View>
-
-              <Text
-                style={
-                  styles.statNumber
-                }
-              >
-                10
-              </Text>
-
-              <Text
-                style={
-                  styles.statLabel
-                }
-              >
-                Quotes
-              </Text>
-            </Pressable>
-
-            <View
-              style={
-                styles.statDivider
-              }
-            />
-
-            {/* ORDERS */}
-
-            <Pressable
-              style={styles.statItem}
-              onPress={() =>
-                goTo('Orders')
-              }
-            >
-              <View
-                style={[
-                  styles.statIcon,
-                  {
-                    backgroundColor:
-                      '#EAF8EF',
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="cube-outline"
-                  size={18}
-                  color="#2E9D5B"
-                />
-              </View>
-
-              <Text
-                style={
-                  styles.statNumber
-                }
-              >
-                4
-              </Text>
-
-              <Text
-                style={
-                  styles.statLabel
-                }
-              >
-                Orders
-              </Text>
-            </Pressable>
-          </View>
+         
 
           {/* ================================================== */}
           {/* PERSONAL INFORMATION */}
@@ -1842,7 +1701,7 @@ const styles = StyleSheet.create({
   /* ================================================== */
 
   section: {
-    marginTop: 22,
+    marginTop: 10,
     paddingHorizontal: 16,
   },
 

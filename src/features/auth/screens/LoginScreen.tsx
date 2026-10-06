@@ -305,7 +305,7 @@ const LoginScreen = ({ navigation }: Props) => {
                 <Text style={styles.heading}>Welcome Back 👋</Text>
 
                 <Text style={styles.description}>
-                  Login to continue with BuildSathi
+                  Login to continue with NeevSathi
                 </Text>
 
                 {/* Email */}

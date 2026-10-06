@@ -1,134 +1,274 @@
-import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
-// import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import React, { useCallback, useState } from "react";
+import {
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator
+} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
+import {
+  getNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from "../notification/notificationApi";
 interface NotificationItem {
   id: string;
-  type: 'quote' | 'order' | 'requirement' | 'delivery' | 'system';
+  type: "quote" | "order" | "requirement" | "delivery" | "system";
+
   title: string;
   message: string;
   time: string;
   unread: boolean;
+
   action?: string;
+  data?: Record<string, string | undefined> | null;
+}
+
+export interface BackendNotification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  body: string;
+  data?: Record<string, string | undefined> | null;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const BuyerNotificationsScreen = ({ navigation }: any) => {
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState("All");
 
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: '1',
-      type: 'quote',
-      title: 'New quote received',
-      message:
-        'Shree Ganesh Traders has sent you a quote for OPC 53 Grade Cement.',
-      time: '10 min ago',
-      unread: true,
-      action: 'Quotes',
-    },
-    {
-      id: '2',
-      type: 'order',
-      title: 'Order confirmed',
-      message: 'Your order BS-2026-10482 has been confirmed successfully.',
-      time: '1 hour ago',
-      unread: true,
-      action: 'Orders',
-    },
-    {
-      id: '3',
-      type: 'delivery',
-      title: 'Delivery update',
-      message: 'Your cement order is being prepared by the supplier.',
-      time: '3 hours ago',
-      unread: true,
-      action: 'Orders',
-    },
-    {
-      id: '4',
-      type: 'quote',
-      title: 'You received 2 more quotes',
-      message: 'New suppliers have responded to your cement requirement.',
-      time: 'Yesterday',
-      unread: false,
-      action: 'Quotes',
-    },
-    {
-      id: '5',
-      type: 'requirement',
-      title: 'Requirement posted',
-      message:
-        'Your material requirement has been successfully sent to verified suppliers.',
-      time: 'Yesterday',
-      unread: false,
-      action: 'MyRequirements',
-    },
-    {
-      id: '6',
-      type: 'system',
-      title: 'Buyer Protection',
-      message:
-        'Your BuildSathi purchase is protected until successful delivery.',
-      time: '2 days ago',
-      unread: false,
-    },
-    {
-      id: '7',
-      type: 'delivery',
-      title: 'Delivery completed',
-      message: 'Your TMT Steel Rods order was delivered successfully.',
-      time: '5 days ago',
-      unread: false,
-      action: 'Orders',
-    },
-  ]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
-  const filters = ['All', 'Quotes', 'Orders', 'Updates'];
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const filters = ["All", "Quotes", "Orders", "Updates"];
 
   const getFilteredNotifications = () => {
-    if (selectedFilter === 'All') {
+    if (selectedFilter === "All") {
       return notifications;
     }
 
-    if (selectedFilter === 'Quotes') {
-      return notifications.filter(item => item.type === 'quote');
+    if (selectedFilter === "Quotes") {
+      return notifications.filter((item) => item.type === "quote");
     }
 
-    if (selectedFilter === 'Orders') {
+    if (selectedFilter === "Orders") {
       return notifications.filter(
-        item => item.type === 'order' || item.type === 'delivery',
+        (item) => item.type === "order" || item.type === "delivery"
       );
     }
 
     return notifications.filter(
-      item => item.type === 'requirement' || item.type === 'system',
+      (item) => item.type === "requirement" || item.type === "system"
     );
   };
 
-  const unreadCount = notifications.filter(item => item.unread).length;
+  const formatNotificationTime = (dateString: string) => {
+    const date = new Date(dateString);
 
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(item => ({
-        ...item,
-        unread: false,
-      })),
-    );
+    const now = new Date();
+
+    const diffMs = now.getTime() - date.getTime();
+
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffMinutes < 1) {
+      return "Just now";
+    }
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes} min ago`;
+    }
+
+    const diffHours = Math.floor(diffMinutes / 60);
+
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    }
+
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays === 1) {
+      return "Yesterday";
+    }
+
+    if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    }
+
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(item => (item.id === id ? { ...item, unread: false } : item)),
-    );
+  const loadNotifications = useCallback(async (showLoader = true) => {
+    try {
+      if (showLoader) {
+        setLoading(true);
+      }
+
+      const response = await getNotifications();
+      console.log("jhjghd",response);
+      const mappedNotifications =
+        response.data.notifications.map(mapNotification);
+
+      setNotifications(mappedNotifications);
+
+      setUnreadCount(response.data.unreadCount);
+    } catch (error: any) {
+      console.error("❌ GET NOTIFICATIONS ERROR:", error);
+
+      Alert.alert(
+        "Notifications",
+        error?.message || "Failed to load notifications."
+      );
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  const mapNotification = (
+    notification: BackendNotification
+  ): NotificationItem => {
+    const data = notification.data ?? {};
+
+    let action: string | undefined;
+
+    if (data.screen) {
+      action = data.screen;
+    }
+
+    return {
+      id: notification.id,
+
+      type: getNotificationType(notification.type),
+
+      title: notification.title,
+
+      message: notification.body,
+
+      time: formatNotificationTime(notification.createdAt),
+
+      unread: !notification.isRead,
+
+      action,
+
+      data,
+    };
+  };
+  const getNotificationType = (type: string): NotificationItem["type"] => {
+    switch (type) {
+      case "NEW_QUOTE":
+      case "QUOTE_ACCEPTED":
+      case "QUOTE_REJECTED":
+        return "quote";
+
+      case "ORDER_CONFIRMED":
+      case "ORDER_CANCELLED":
+        return "order";
+
+      case "ORDER_DISPATCHED":
+      case "ORDER_DELIVERED":
+        return "delivery";
+
+      case "NEW_REQUIREMENT":
+        return "requirement";
+
+      default:
+        return "system";
+    }
   };
 
-  const handleNotificationPress = (notification: NotificationItem) => {
-    markAsRead(notification.id);
+  React.useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
-    if (notification.action) {
-      navigation.navigate(notification.action);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    loadNotifications(false);
+  };
+
+  // const unreadCount = notifications.filter(item => item.unread).length;
+
+  const markAllAsRead = async () => {
+    if (unreadCount === 0) {
+      return;
+    }
+
+    try {
+      // Optimistic UI
+      setNotifications((prev) =>
+        prev.map((item) => ({
+          ...item,
+          unread: false,
+        }))
+      );
+
+      setUnreadCount(0);
+
+      await markAllNotificationsAsRead();
+    } catch (error) {
+      console.error("❌ MARK ALL READ ERROR:", error);
+
+      loadNotifications(false);
+    }
+  };
+
+  const markAsRead = async (id: string) => {
+    try {
+      const notification = notifications.find((item) => item.id === id);
+
+      if (!notification?.unread) {
+        return;
+      }
+
+      // Optimistic UI update
+      setNotifications((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                unread: false,
+              }
+            : item
+        )
+      );
+
+      setUnreadCount((prev) => Math.max(prev - 1, 0));
+
+      await markNotificationAsRead(id);
+    } catch (error) {
+      console.error("❌ MARK NOTIFICATION READ ERROR:", error);
+
+      // Reload from backend if API fails
+      loadNotifications(false);
+    }
+  };
+
+  const handleNotificationPress = async (notification: NotificationItem) => {
+    await markAsRead(notification.id);
+
+    if (!notification.action) {
+      return;
+    }
+
+    try {
+      navigation.navigate(notification.action, notification.data ?? undefined);
+    } catch (error) {
+      console.log("Navigation error:", error);
     }
   };
 
@@ -155,11 +295,18 @@ const BuyerNotificationsScreen = ({ navigation }: any) => {
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#FF7A00"
+          />
+        }
         contentContainerStyle={styles.scrollContent}
       >
         {/* SUMMARY */}
         <LinearGradient
-          colors={['#FFF3D6', '#FFE5BD', '#FFD39B']}
+          colors={["#FFF3D6", "#FFE5BD", "#FFD39B"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.summaryCard}
@@ -190,7 +337,7 @@ const BuyerNotificationsScreen = ({ navigation }: any) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterScroll}
           >
-            {filters.map(filter => {
+            {filters.map((filter) => {
               const active = selectedFilter === filter;
 
               return (
@@ -225,19 +372,29 @@ const BuyerNotificationsScreen = ({ navigation }: any) => {
         </View>
 
         {/* NOTIFICATIONS */}
-        <View style={styles.notificationList}>
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map(notification => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-                onPress={() => handleNotificationPress(notification)}
-              />
-            ))
-          ) : (
-            <EmptyNotifications />
-          )}
-        </View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#FF7A00" />
+
+            <Text style={styles.loadingText}>Loading notifications...</Text>
+          </View>
+        ) : (
+          <>
+            <View style={styles.notificationList}>
+              {filteredNotifications.length > 0 ? (
+                filteredNotifications.map((notification) => (
+                  <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                    onPress={() => handleNotificationPress(notification)}
+                  />
+                ))
+              ) : (
+                <EmptyNotifications />
+              )}
+            </View>
+          </>
+        )}
 
         {/* FOOTER TRUST CARD */}
         <View style={styles.protectionCard}>
@@ -275,58 +432,58 @@ const NotificationCard = ({
 }) => {
   const getIcon = () => {
     switch (notification.type) {
-      case 'quote':
-        return 'pricetag-outline';
+      case "quote":
+        return "pricetag-outline";
 
-      case 'order':
-        return 'cube-outline';
+      case "order":
+        return "cube-outline";
 
-      case 'delivery':
-        return 'car-outline';
+      case "delivery":
+        return "car-outline";
 
-      case 'requirement':
-        return 'document-text-outline';
+      case "requirement":
+        return "document-text-outline";
 
       default:
-        return 'shield-checkmark-outline';
+        return "shield-checkmark-outline";
     }
   };
 
   const getIconColor = () => {
     switch (notification.type) {
-      case 'quote':
-        return '#D4A017';
+      case "quote":
+        return "#D4A017";
 
-      case 'order':
-        return '#FF7A00';
+      case "order":
+        return "#FF7A00";
 
-      case 'delivery':
-        return '#7C5CFC';
+      case "delivery":
+        return "#7C5CFC";
 
-      case 'requirement':
-        return '#E85D75';
+      case "requirement":
+        return "#E85D75";
 
       default:
-        return '#2E9D5B';
+        return "#2E9D5B";
     }
   };
 
   const getIconBackground = () => {
     switch (notification.type) {
-      case 'quote':
-        return '#FFF7D9';
+      case "quote":
+        return "#FFF7D9";
 
-      case 'order':
-        return '#FFF0DF';
+      case "order":
+        return "#FFF0DF";
 
-      case 'delivery':
-        return '#F1EDFF';
+      case "delivery":
+        return "#F1EDFF";
 
-      case 'requirement':
-        return '#FFF0F3';
+      case "requirement":
+        return "#FFF0F3";
 
       default:
-        return '#EAF8EF';
+        return "#EAF8EF";
     }
   };
 
@@ -415,7 +572,7 @@ export default BuyerNotificationsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF8EE',
+    backgroundColor: "#FFF8EE",
   },
 
   scrollContent: {
@@ -427,39 +584,51 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingBottom: 10,
-    flexDirection: 'row',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  loadingContainer: {
+    minHeight: 210,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+  },
+  
+  loadingText: {
+    marginTop: 10,
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#9A8B7D',
   },
 
   headerButton: {
     width: 42,
     height: 42,
     borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFDF8',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFDF8",
     borderWidth: 1,
-    borderColor: '#F0DEC4',
+    borderColor: "#F0DEC4",
   },
 
   headerTitleContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   brand: {
     fontSize: 9,
-    fontWeight: '900',
+    fontWeight: "900",
     letterSpacing: 2.4,
-    color: '#FF7A00',
+    color: "#FF7A00",
   },
 
   headerTitle: {
     marginTop: 3,
     fontSize: 17,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
   },
 
   /* SUMMARY */
@@ -470,22 +639,22 @@ const styles = StyleSheet.create({
     minHeight: 84,
     // padding: 14,
     borderRadius: 21,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#F3D4A8',
-    overflow: 'hidden',
+    borderColor: "#F3D4A8",
+    overflow: "hidden",
   },
 
   summaryIcon: {
     width: 47,
     height: 47,
     borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.65)',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.65)",
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.8)',
+    borderColor: "rgba(255,255,255,0.8)",
     marginLeft: 12,
   },
 
@@ -497,15 +666,15 @@ const styles = StyleSheet.create({
 
   summaryTitle: {
     fontSize: 13,
-    fontWeight: '900',
-    color: '#0A0A0A',
+    fontWeight: "900",
+    color: "#0A0A0A",
   },
 
   summarySubtitle: {
     marginTop: 3,
     fontSize: 9,
     lineHeight: 14,
-    color: '#665C51',
+    color: "#665C51",
   },
 
   unreadBadge: {
@@ -513,24 +682,24 @@ const styles = StyleSheet.create({
     height: 43,
     paddingHorizontal: 6,
     borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FF7A00',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FF7A00",
     marginRight: 12,
   },
 
   unreadNumber: {
     fontSize: 14,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
   },
 
   unreadLabel: {
     marginTop: 1,
     fontSize: 6,
-    fontWeight: '900',
+    fontWeight: "900",
     letterSpacing: 0.7,
-    color: '#FFE6CA',
+    color: "#FFE6CA",
   },
 
   /* FILTER */
@@ -548,26 +717,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 35,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
   },
 
   filterChipActive: {
-    backgroundColor: '#FF7A00',
-    borderColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
+    borderColor: "#FF7A00",
   },
 
   filterText: {
     fontSize: 9,
-    fontWeight: '800',
-    color: '#8C8175',
+    fontWeight: "800",
+    color: "#8C8175",
   },
 
   filterTextActive: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
 
   /* HEADER */
@@ -575,22 +744,22 @@ const styles = StyleSheet.create({
   notificationHeader: {
     marginTop: 22,
     paddingHorizontal: 19,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   sectionTitle: {
     fontSize: 9,
-    fontWeight: '900',
+    fontWeight: "900",
     letterSpacing: 1.3,
-    color: '#9A8B7D',
+    color: "#9A8B7D",
   },
 
   markReadText: {
     fontSize: 9,
-    fontWeight: '900',
-    color: '#FF7A00',
+    fontWeight: "900",
+    color: "#FF7A00",
   },
 
   /* LIST */
@@ -601,44 +770,44 @@ const styles = StyleSheet.create({
   },
 
   notificationCard: {
-    position: 'relative',
+    position: "relative",
     minHeight: 91,
     marginBottom: 9,
     padding: 12,
     paddingLeft: 14,
     borderRadius: 19,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
   },
 
   notificationCardUnread: {
-    backgroundColor: '#FFFDF9',
-    borderColor: '#F5D8B5',
+    backgroundColor: "#FFFDF9",
+    borderColor: "#F5D8B5",
   },
 
   notificationPressed: {
-    backgroundColor: '#FFF7EF',
+    backgroundColor: "#FFF7EF",
   },
 
   unreadDot: {
-    position: 'absolute',
+    position: "absolute",
     top: 13,
     left: 6,
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
   },
 
   notificationIcon: {
     width: 43,
     height: 43,
     borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   notificationContent: {
@@ -647,47 +816,47 @@ const styles = StyleSheet.create({
   },
 
   notificationTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   notificationTitle: {
     flex: 1,
     fontSize: 11,
-    fontWeight: '800',
-    color: '#40372F',
+    fontWeight: "800",
+    color: "#40372F",
   },
 
   notificationTitleUnread: {
-    fontWeight: '900',
-    color: '#211C17',
+    fontWeight: "900",
+    color: "#211C17",
   },
 
   notificationTime: {
     marginLeft: 7,
-    fontSize: 7.5,
-    fontWeight: '600',
-    color: '#A19589',
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#A19589",
   },
 
   notificationMessage: {
     marginTop: 4,
-    fontSize: 9,
+    fontSize: 12,
     lineHeight: 14,
-    color: '#8C8175',
+    color: "#8C8175",
   },
 
   notificationAction: {
     marginTop: 7,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   notificationActionText: {
     marginRight: 4,
     fontSize: 8.5,
-    fontWeight: '900',
-    color: '#FF7A00',
+    fontWeight: "900",
+    color: "#FF7A00",
   },
 
   /* EMPTY */
@@ -695,36 +864,36 @@ const styles = StyleSheet.create({
   emptyCard: {
     minHeight: 210,
     borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
   },
 
   emptyIcon: {
     width: 64,
     height: 64,
     borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F5F1EC',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F5F1EC",
   },
 
   emptyTitle: {
     marginTop: 13,
     fontSize: 13,
-    fontWeight: '900',
-    color: '#40372F',
+    fontWeight: "900",
+    color: "#40372F",
   },
 
   emptySubtitle: {
-    width: '72%',
+    width: "72%",
     marginTop: 5,
     fontSize: 9,
     lineHeight: 14,
-    textAlign: 'center',
-    color: '#9A8B7D',
+    textAlign: "center",
+    color: "#9A8B7D",
   },
 
   /* PROTECTION */
@@ -734,20 +903,20 @@ const styles = StyleSheet.create({
     marginTop: 21,
     padding: 14,
     borderRadius: 19,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EAF8EF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EAF8EF",
     borderWidth: 1,
-    borderColor: '#CDEBD8',
+    borderColor: "#CDEBD8",
   },
 
   protectionIcon: {
     width: 42,
     height: 42,
     borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
   },
 
   protectionText: {
@@ -757,15 +926,15 @@ const styles = StyleSheet.create({
 
   protectionTitle: {
     fontSize: 10,
-    fontWeight: '900',
-    color: '#226B3E',
+    fontWeight: "900",
+    color: "#226B3E",
   },
 
   protectionSubtitle: {
     marginTop: 3,
     fontSize: 8.5,
     lineHeight: 14,
-    color: '#568267',
+    color: "#568267",
   },
 
   bottomSpace: {
