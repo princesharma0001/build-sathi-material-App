@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 // import Ionicons from "react-native-vector-icons/Ionicons";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { getSellerProfileApi, SellerProfile } from "./seller.api";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSubscriptionStore } from "../subscription/subscription.store";
 import { useSellerStore } from "./seller.store";
+import { clearAuthSession2, useAuthStore } from "../auth/auth.store";
 
 const SellerProfileScreen = ({ navigation }: any) => {
   const {
@@ -64,24 +65,24 @@ const SellerProfileScreen = ({ navigation }: any) => {
       bg: "#EAF8EF",
       route: "SellerVerification",
     },
-    {
-      id: "materials",
-      title: "Materials & Pricing",
-      subtitle: "Manage your products and prices",
-      icon: "cube-outline",
-      color: "#D4A017",
-      bg: "#FFF7D6",
-      route: "SellerProducts",
-    },
+    // {
+    //   id: "materials",
+    //   title: "Materials & Pricing",
+    //   subtitle: "Manage your products and prices",
+    //   icon: "cube-outline",
+    //   color: "#D4A017",
+    //   bg: "#FFF7D6",
+    //   route: "SellerProducts",
+    // },
 
     {
-      id: "payments",
-      title: "Bank & Payments",
-      subtitle: "Manage payments and settlement details",
-      icon: "card-outline",
-      color: "#7C3AED",
-      bg: "#F2ECFF",
-      route: "SellerPayments",
+      id: "feedback",
+      title: "Customer Feedback",
+      subtitle: "View customer ratings and reviews",
+      icon: "star-outline",
+      color: "#F97316",
+      bg: "#FFF0E5",
+      route: "feedbackSeller",
     },
     {
       id: "notifications",
@@ -90,15 +91,22 @@ const SellerProfileScreen = ({ navigation }: any) => {
       icon: "notifications-outline",
       color: "#2563EB",
       bg: "#EAF2FF",
-      route: "SellerNotifications",
+      route: "Notifications",
+    },
+    {
+      id: "terms",
+      title: "Terms & Conditions",
+      subtitle: "Read the terms and rules for using NeevSathi",
+      icon: "document-text-outline",
+      color: "#2563EB",
+      bg: "#EAF2FF",
+      route: "TermsAndPolicy",
     },
   ];
 
   const handleMenuPress = (item: any) => {
     navigation.navigate(item.route);
   };
-
-
 
   useFocusEffect(
     useCallback(() => {
@@ -116,18 +124,33 @@ const SellerProfileScreen = ({ navigation }: any) => {
       {
         text: "Logout",
         style: "destructive",
-        onPress: () => {
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "Auth",
-                params: {
-                  screen: "Login",
+        onPress: async () => {
+          try {
+            // Clear token, user data and Zustand auth state
+            await clearAuthSession2();
+
+            // Clear Zustand state also
+            await useAuthStore.getState().logout();
+
+            // Navigate to Login
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "Auth",
+                  params: {
+                    screen: "Login",
+                  },
                 },
-              },
-            ],
-          });
+              ],
+            });
+          } catch (error) {
+            console.log("LOGOUT ERROR:", error);
+            Alert.alert(
+              "Logout Failed",
+              "Unable to clear your session. Please try again."
+            );
+          }
         },
       },
     ]);
@@ -186,7 +209,7 @@ const SellerProfileScreen = ({ navigation }: any) => {
 
           <TouchableOpacity
             style={styles.headerIcon}
-            onPress={() => navigation.navigate("SellerNotifications")}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
@@ -428,7 +451,7 @@ const SellerProfileScreen = ({ navigation }: any) => {
           <Text style={styles.performanceTitle}>Seller Performance</Text>
 
           <View style={styles.performanceCard}>
-            <View style={styles.performanceRow}>
+            {/* <View style={styles.performanceRow}>
               <View style={styles.performanceLeft}>
                 <View
                   style={[
@@ -449,11 +472,11 @@ const SellerProfileScreen = ({ navigation }: any) => {
               </View>
 
               <Text style={styles.performanceValue}>{seller.rating} ★</Text>
-            </View>
+            </View> */}
 
-            <View style={styles.performanceDivider} />
+            {/* <View style={styles.performanceDivider} /> */}
 
-            <View style={styles.performanceRow}>
+            {/* <View style={styles.performanceRow}>
               <View style={styles.performanceLeft}>
                 <View
                   style={[
@@ -478,9 +501,9 @@ const SellerProfileScreen = ({ navigation }: any) => {
               </View>
 
               <Text style={styles.performanceValue}>{seller.responseRate}</Text>
-            </View>
+            </View> */}
 
-            <View style={styles.performanceDivider} />
+            {/* <View style={styles.performanceDivider} /> */}
 
             <View style={styles.performanceRow}>
               <View style={styles.performanceLeft}>
@@ -523,13 +546,13 @@ const SellerProfileScreen = ({ navigation }: any) => {
               <Text style={styles.supportTitle}>Need help?</Text>
 
               <Text style={styles.supportText}>
-                Contact BuildSathi Seller Support
+                Contact NeevSathi Seller Support
               </Text>
             </View>
 
             <TouchableOpacity
               style={styles.supportButton}
-              onPress={() => navigation.navigate("SellerSupport")}
+              onPress={() => navigation.navigate("Support")}
             >
               <Ionicons name="arrow-forward" size={17} color="#FF7A00" />
             </TouchableOpacity>
@@ -542,7 +565,7 @@ const SellerProfileScreen = ({ navigation }: any) => {
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
 
-          <Text style={styles.version}>BuildSathi Seller • Version 1.0.0</Text>
+          <Text style={styles.version}>NeevSathi Seller • Version 1.0.0</Text>
 
           <View style={{ height: 115 }} />
         </ScrollView>

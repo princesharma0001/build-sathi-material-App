@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,10 +9,13 @@ import {
   StatusBar,
   Image,
   Alert,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { getSellerDashboardApi } from "./seller.api";
 import Toast from "react-native-toast-message";
@@ -112,6 +115,7 @@ const SellerHomeScreen = ({ navigation }: any) => {
       subColor: "rgba(255,255,255,0.8)",
     },
   ];
+  console.log("adfsgs", dashboard);
 
   const popularDemand = (dashboard?.popularMaterials || []).map(
     (material: any, index: number) => {
@@ -119,25 +123,21 @@ const SellerHomeScreen = ({ navigation }: any) => {
         {
           colors: ["#FFF3D6", "#FFE2A8"],
           iconBackground: "#FFF8E7",
-          icon: "🏖️",
           accent: "#F97316",
         },
         {
           colors: ["#EAF5FF", "#D6EBFF"],
           iconBackground: "#F0F8FF",
-          icon: "🧱",
           accent: "#2563EB",
         },
         {
           colors: ["#E8F7EE", "#D5F0DE"],
           iconBackground: "#F2FBF5",
-          icon: "🧱",
           accent: "#16A34A",
         },
         {
           colors: ["#F3E8FF", "#E9D5FF"],
           iconBackground: "#FAF5FF",
-          icon: "🏗️",
           accent: "#9333EA",
         },
       ];
@@ -155,6 +155,49 @@ const SellerHomeScreen = ({ navigation }: any) => {
       };
     }
   );
+
+  // const popularDemand = (dashboard?.popularMaterials || []).map(
+  //   (material: any, index: number) => {
+  //     const uiStyles = [
+  //       {
+  //         colors: ["#FFF3D6", "#FFE2A8"],
+  //         iconBackground: "#FFF8E7",
+  //         icon: "🏖️",
+  //         accent: "#F97316",
+  //       },
+  //       {
+  //         colors: ["#EAF5FF", "#D6EBFF"],
+  //         iconBackground: "#F0F8FF",
+  //         icon: "🧱",
+  //         accent: "#2563EB",
+  //       },
+  //       {
+  //         colors: ["#E8F7EE", "#D5F0DE"],
+  //         iconBackground: "#F2FBF5",
+  //         icon: "🧱",
+  //         accent: "#16A34A",
+  //       },
+  //       {
+  //         colors: ["#F3E8FF", "#E9D5FF"],
+  //         iconBackground: "#FAF5FF",
+  //         icon: "🏗️",
+  //         accent: "#9333EA",
+  //       },
+  //     ];
+
+  //     const style = uiStyles[index % uiStyles.length];
+
+  //     return {
+  //       ...material,
+  //       ...style,
+  //       requirement: `${material.requirementCount ?? 0} ${
+  //         (material.requirementCount ?? 0) === 1
+  //           ? "requirement"
+  //           : "requirements"
+  //       }`,
+  //     };
+  //   }
+  // );
 
   const recentRequirements = (dashboard?.recentRequirements || [])
     ?.slice(0, 5)
@@ -189,24 +232,44 @@ const SellerHomeScreen = ({ navigation }: any) => {
       };
     });
 
-    console.log("asfdf",recentRequirements);
-    
+  const hasLoadedDashboard = useRef(false);
 
   const fetchDashboard = async () => {
     try {
-      setLoading(true);
+      if (!hasLoadedDashboard.current) {
+        setLoading(true);
+      }
 
       const response = await getSellerDashboardApi();
-      console.log("sellerDash", response);
-
-      console.log(
-        "SELLER DASHBOARD RESPONSE:",
-        JSON.stringify(response, null, 2)
-      );
 
       setDashboard(response?.data);
+      hasLoadedDashboard.current = true;
     } catch (error: any) {
       console.log("SELLER DASHBOARD ERROR:", error?.message || error);
+
+      if (error?.message === "SESSION_EXPIRED") {
+        Toast.show({
+          type: "error",
+          text1: "Session Exipre",
+          text2: error?.message || "Session Expired",
+          position: "top",
+          visibilityTime: 3000,
+          topOffset: 60,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: "Auth",
+              params: {
+                screen: "Login",
+              },
+            },
+          ],
+        });
+
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -225,14 +288,73 @@ const SellerHomeScreen = ({ navigation }: any) => {
       const response = await getSellerDashboardApi();
 
       setDashboard(response?.data);
+      hasLoadedDashboard.current = true;
     } catch (error: any) {
       console.log("REFRESH DASHBOARD ERROR:", error?.message || error);
     } finally {
       setRefreshing(false);
     }
   };
+  // const fetchDashboard = async () => {
+  //   try {
+  //     setLoading(true);
 
+  //     const response = await getSellerDashboardApi();
+  //     console.log("sellerDash", response);
 
+  //     console.log(
+  //       "SELLER DASHBOARD RESPONSE:",
+  //       JSON.stringify(response, null, 2)
+  //     );
+
+  //     setDashboard(response?.data);
+  //   } catch (error: any) {
+  //     console.log("SELLER DASHBOARD ERROR:", error?.message || error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchDashboard();
+  //   }, [])
+  // );
+
+  // const onRefresh = async () => {
+  //   try {
+  //     setRefreshing(true);
+
+  //     const response = await getSellerDashboardApi();
+
+  //     setDashboard(response?.data);
+  //   } catch (error: any) {
+  //     console.log("REFRESH DASHBOARD ERROR:", error?.message || error);
+  //   } finally {
+  //     setRefreshing(false);
+  //   }
+  // };
+
+  if (loading && !dashboard) {
+    return (
+      <View style={styles.loaderContainer}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFF8EE" />
+
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.loaderLogo}
+        />
+
+        <ActivityIndicator size="large" color="#FF7A00" />
+
+        <Text style={styles.loaderTitle}>Loading Dashboard...</Text>
+
+        <Text style={styles.loaderSubtitle}>
+          Please wait while we fetch your business data.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -274,16 +396,33 @@ const SellerHomeScreen = ({ navigation }: any) => {
                 navigation.navigate("Notifications");
               }}
             >
-              <Text style={styles.bellIcon}>🔔</Text>
+              <Ionicons
+                name="notifications-outline"
+                size={21}
+                color="#0A0A0A"
+              />
+              <View style={styles.notificationDot} />
+
+              {/* <Text style={styles.bellIcon}>🔔</Text>
 
               <View style={styles.notificationBadge}>
                 <Text style={styles.badgeText}>2</Text>
-              </View>
+              </View> */}
             </Pressable>
           </View>
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#FF7A00"]}
+                tintColor="#FF7A00"
+                title="Refreshing dashboard..."
+                titleColor="#8C8175"
+              />
+            }
           >
             {/* WELCOME HERO */}
             <View style={styles.welcomeSection}>
@@ -468,6 +607,18 @@ const SellerHomeScreen = ({ navigation }: any) => {
                     >
                       <View
                         style={[
+                          styles.materialIconContainer,
+                          { backgroundColor: material.iconBackground },
+                        ]}
+                      >
+                        <Image
+                          source={{ uri: material.imageUrl }}
+                          style={styles.materialImage}
+                          resizeMode="cover"
+                        />
+                      </View>
+                      {/* <View
+                        style={[
                           styles.materialIcon,
                           {
                             backgroundColor: material.iconBackground,
@@ -477,7 +628,7 @@ const SellerHomeScreen = ({ navigation }: any) => {
                         <Text style={styles.materialEmoji}>
                           {material.icon}
                         </Text>
-                      </View>
+                      </View> */}
 
                       <Text style={styles.materialName}>{material.name}</Text>
 
@@ -524,24 +675,24 @@ const SellerHomeScreen = ({ navigation }: any) => {
               {recentRequirements?.length > 0 ? (
                 recentRequirements?.map((requirement: any) => (
                   <Pressable
-                  key={requirement.id}
-                  style={styles.requirementCard}
-                  onPress={() => {
-                    if (requirement.status === "ORDERED") {
-                      Toast.show({
-                        type: "info",
-                        text1: "Already Ordered",
-                        text2: "This requirement has already been converted into an order.",
+                    key={requirement.id}
+                    style={styles.requirementCard}
+                    onPress={() => {
+                      if (requirement.status === "ORDERED") {
+                        Toast.show({
+                          type: "info",
+                          text1: "Already Ordered",
+                          text2:
+                            "This requirement has already been converted into an order.",
+                        });
+                        return;
+                      }
+
+                      navigation.navigate("SellerRequirementDetails", {
+                        requirement,
                       });
-                      return;
-                    }
-                  
-                    navigation.navigate("SellerRequirementDetails", {
-                      requirement,
-                    });
-                  }}
-                >
-                  
+                    }}
+                  >
                     <View style={styles.requirementIcon}>
                       <Ionicons
                         name="document-text-outline"
@@ -557,12 +708,16 @@ const SellerHomeScreen = ({ navigation }: any) => {
                         </Text>
 
                         {/* {requirement.urgent && ( */}
-                          <View style={styles.urgentBadge}>
-                            <Text style={styles.urgentText}>{requirement?.deliveryPreference}</Text>
-                          </View>
-                          <View style={styles.urgentBadge1}>
-                            <Text style={styles.urgentText}>{requirement?.status}</Text>
-                          </View>
+                        <View style={styles.urgentBadge}>
+                          <Text style={styles.urgentText}>
+                            {requirement?.deliveryPreference}
+                          </Text>
+                        </View>
+                        <View style={styles.urgentBadge1}>
+                          <Text style={styles.urgentText}>
+                            {requirement?.status}
+                          </Text>
+                        </View>
                         {/* )} */}
                       </View>
 
@@ -584,9 +739,7 @@ const SellerHomeScreen = ({ navigation }: any) => {
                         <View style={styles.metaDot} />
 
                         <Text style={styles.metaText}>{requirement.time}</Text>
-                        
                       </View>
-                      
                     </View>
 
                     <Ionicons
@@ -648,6 +801,34 @@ const styles = StyleSheet.create({
     borderColor: "#F3E5D5",
     marginTop: 4,
   },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: "#FFF8EE",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+
+  loaderLogo: {
+    width: 85,
+    height: 85,
+    resizeMode: "contain",
+    marginBottom: 24,
+  },
+
+  loaderTitle: {
+    marginTop: 18,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#172554",
+  },
+
+  loaderSubtitle: {
+    marginTop: 8,
+    fontSize: 13,
+    color: "#8C8175",
+    textAlign: "center",
+  },
 
   emptyIconCircle: {
     width: 58,
@@ -684,6 +865,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 8,
     paddingBottom: 30,
+  },
+
+  materialIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 14,
+    marginTop: 14,
+  },
+
+  materialImage: {
+    width: "100%",
+    height: "100%",
   },
 
   /* HEADER */

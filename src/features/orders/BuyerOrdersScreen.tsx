@@ -8,6 +8,7 @@ import {
   StatusBar,
   Image,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -96,26 +97,39 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
     | "DELIVERED"
     | "COMPLETED"
     | "CANCELLED";
-  const fetchBuyerOrders = useCallback(async () => {
-    try {
+
+
+const fetchBuyerOrders = useCallback(async (isRefresh = false) => {
+  try {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
       setLoading(true);
+    }
 
-      const response = await getBuyerOrders();
+    const response = await getBuyerOrders();
 
-      console.log("buyer------", response);
+    console.log("Buyer orders API response:", response);
 
-      if (response?.success) {
-        setOrders(Array.isArray(response.data) ? response.data : []);
-      } else {
+    if (response?.success) {
+      setOrders(Array.isArray(response.data) ? response.data : []);
+    } else {
+      if (!isRefresh) {
         setOrders([]);
       }
-    } catch (error) {
-      console.log("Buyer orders API error:", error);
-      setOrders([]);
-    } finally {
-      setLoading(false);
+      console.log("Failed to fetch buyer orders:", response?.message);
     }
-  }, []);
+  } catch (error: any) {
+    console.log(
+      "Buyer orders API error:",
+      error?.response?.data || error?.message || error,
+    );
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchBuyerOrders();
@@ -311,15 +325,14 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
 
           <Pressable
             style={styles.headerButton}
-            onPress={() => {
-              console.log("Notifications");
-            }}
+            onPress={() => navigation.navigate("Notifications")}
+
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
-            <View style={styles.notificationBadge}>
+            {/* <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>2</Text>
-            </View>
+            </View> */}
           </Pressable>
         </View>
 
@@ -329,6 +342,17 @@ const BuyerOrdersScreen = ({ navigation }: any) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
           nestedScrollEnabled
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => fetchBuyerOrders(true)}
+              colors={["#FF7A00"]}
+              tintColor="#FF7A00"
+              progressBackgroundColor="#FFFFFF"
+              title="Refreshing orders..."
+              titleColor="#FF7A00"
+            />
+          }
           /* ============================================================
      HEADER
   ============================================================ */

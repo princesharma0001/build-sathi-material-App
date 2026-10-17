@@ -34,7 +34,7 @@ const App = () => {
         // 🔔 Create Android notification channel
         await notifee.createChannel({
           id: 'default',
-          name: 'BuildSathi Notifications',
+          name: 'NeevSathi Notifications',
           importance: AndroidImportance.HIGH,
           sound: 'default',
           vibration: true,
@@ -74,7 +74,7 @@ const App = () => {
 
         const title =
           remoteMessage.notification?.title ||
-          'BuildSathi';
+          'NeevSathi';
 
         const body =
           remoteMessage.notification?.body ||

@@ -513,7 +513,7 @@ const RequestDetailsScreen = ({ navigation, route }: any) => {
 
           <View style={styles.protectionContent}>
             <Text style={styles.protectionTitle}>
-              BuildSathi Buyer Protection
+            NeevSathi Buyer Protection
             </Text>
 
             <Text style={styles.protectionText}>

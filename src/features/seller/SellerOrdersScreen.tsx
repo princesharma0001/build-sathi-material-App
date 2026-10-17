@@ -9,6 +9,8 @@ import {
   StatusBar,
   Pressable,
   FlatList,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 // import Ionicons from "react-native-vector-icons/Ionicons";
@@ -36,9 +38,6 @@ const SellerOrdersScreen = ({ navigation }: any) => {
       setLoading(true);
 
       const response = await getSellerOrders();
-
-      console.log("SELLER ORDERS RESPONSE:", response);
-
       if (response?.success) {
         setOrders(response.data ?? []);
       } else {
@@ -55,6 +54,19 @@ const SellerOrdersScreen = ({ navigation }: any) => {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+    const onRefresh = async () => {
+      try {
+        setRefreshing(true);
+  
+        const response = await getSellerOrders();
+        setOrders(response.data ?? []);
+      } catch (error: any) {
+        console.log("REFRESH DASHBOARD ERROR:", error?.message || error);
+      } finally {
+        setRefreshing(false);
+      }
+    };
 
   const orderStats = useMemo(() => {
     const orderList = Array.isArray(orders) ? orders : [];
@@ -130,6 +142,38 @@ const SellerOrdersScreen = ({ navigation }: any) => {
     });
   }, [orders, search, activeFilter]);
 
+
+  if (loading && orders.length === 0) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="dark-content"
+        />
+
+        <View style={styles.loadingContainer}>
+          <View style={styles.loadingIcon}>
+            <Ionicons name="pricetag-outline" size={30} color="#FF7A00" />
+          </View>
+
+          <ActivityIndicator
+            size="small"
+            color="#FF7A00"
+            style={{ marginTop: 16 }}
+          />
+
+          <Text style={styles.loadingTitle}>Loading your orders...</Text>
+
+          <Text style={styles.loadingText}>
+            Fetching your latest orders.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+
   return (
     <SafeAreaView style={styles.root}>
       <StatusBar
@@ -149,7 +193,7 @@ const SellerOrdersScreen = ({ navigation }: any) => {
 
           <Pressable
             style={styles.headerIcon}
-            onPress={() => navigation.navigate("SellerNotifications")}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
@@ -162,6 +206,16 @@ const SellerOrdersScreen = ({ navigation }: any) => {
           keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.content}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#FF7A00"]}
+              tintColor="#FF7A00"
+              title="Refreshing dashboard..."
+              titleColor="#8C8175"
+            />
+          }
           keyboardShouldPersistTaps="handled"
           renderItem={({ item: order }) => {
             const status = String(order?.status ?? "").toUpperCase();
@@ -698,6 +752,40 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#8C8175",
     lineHeight: 19,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+
+  loadingIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 22,
+    backgroundColor: "#FFF3E5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#FFF8EE",
+  },
+
+  loadingTitle: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#0A0A0A",
+    marginTop: 14,
+  },
+
+  loadingText: {
+    fontSize: 11,
+    color: "#8C8175",
+    fontWeight: "600",
+    marginTop: 5,
   },
 
   overviewCard: {

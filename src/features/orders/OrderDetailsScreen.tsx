@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,17 +9,24 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { confirmMaterialReceived } from "../buyer/buyer.api";
+import { getOrderFeedbackStatusApi } from "../buyer/feedback.api";
 
 const OrderDetailsScreen = ({ navigation, route }: any) => {
   const order = route?.params?.order;
-  const [confirmingReceived, setConfirmingReceived] = React.useState(false);
 
+  const [hasFeedback, setHasFeedback] = useState(false);
+  const [checkingFeedback, setCheckingFeedback] = useState(false);
+  const [confirmingReceived, setConfirmingReceived] = React.useState(false);
+  const isOrderCompleted = ["DELIVERED", "COMPLETED"].includes(
+    String(order?.status ?? "").toUpperCase()
+  );
   const handleMaterialReceived = () => {
     Alert.alert(
       "Confirm Material Received",
@@ -43,8 +50,8 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
                 {
                   text: "OK",
                   onPress: () => {
-                    navigation.navigate("Buyer", {
-                      screen: "Orders",
+                    navigation.navigate("BuyerFeedback", {
+                      orderId: order.id,
                     });
                   },
                 },
@@ -100,6 +107,32 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
     );
   }
 
+  const checkFeedbackStatus = async (orderId: string) => {
+    try {
+      setCheckingFeedback(true);
+
+      const data = await getOrderFeedbackStatusApi(orderId);
+
+      console.log("Feedback status:", data);
+
+      // Update these fields according to your actual API response.
+      setHasFeedback(Boolean(data?.hasFeedback ?? data?.feedback));
+    } catch (error: any) {
+      console.log(
+        "FEEDBACK STATUS ERROR:",
+        error?.response?.data || error?.message
+      );
+    } finally {
+      setCheckingFeedback(false);
+    }
+  };
+
+  useEffect(() => {
+    if (order?.id) {
+      checkFeedbackStatus(order.id);
+    }
+  }, [order?.id]);
+
   /* =========================
      BASIC DATA
   ========================= */
@@ -116,9 +149,6 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
     order?.seller?.sellerProfile?.phone || order?.seller?.phone || "";
 
   const supplierLocation = order?.seller?.sellerProfile?.businessType ?? "N/A";
-
-  console.log("dfsfs", order);
-
   const materialName = order?.material?.name || "Construction Material";
 
   const quantity = order?.quantity ?? "";
@@ -462,7 +492,11 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
               </View>
 
               <View style={styles.supplierMetaRow}>
-                <Ionicons name="checkmark-circle-outline" size={14} color="#8C8175" />
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={14}
+                  color="#8C8175"
+                />
 
                 <Text style={styles.supplierMeta} numberOfLines={1}>
                   {supplierLocation}
@@ -805,6 +839,20 @@ const OrderDetailsScreen = ({ navigation, route }: any) => {
       ========================= */}
 
       <View style={styles.bottomBar}>
+      {isOrderCompleted && !hasFeedback && (
+          <TouchableOpacity
+            style={styles.feedbackButton}
+            onPress={() =>
+              navigation.navigate("BuyerFeedback", {
+                orderId: order.id,
+              })
+            }
+          >
+            <Ionicons name="star-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.feedbackButtonText}>Give Feedback</Text>
+          </TouchableOpacity>
+        )}
+      
         {isDispatched ? (
           <Pressable
             style={styles.trackButtonWrapper}
@@ -920,6 +968,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF8EE",
+  },
+  feedbackButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FF9F1C",
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 16,
+    gap: 8,
+    marginBottom:12
+  },
+
+  feedbackButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+
+  feedbackSubmitted: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F0FDF4",
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginTop: 16,
+    gap: 8,
+  },
+
+  feedbackSubmittedText: {
+    color: "#15803D",
+    fontSize: 15,
+    fontWeight: "600",
   },
 
   header: {
@@ -1687,8 +1769,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 14,
-    flexDirection: "row",
-    alignItems: "center",
+    // flexDirection: "row",
+    // alignItems: "center",
     backgroundColor: "#FFFDF9",
     borderTopWidth: 1,
     borderTopColor: "#F1E2D0",

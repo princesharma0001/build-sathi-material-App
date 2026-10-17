@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import { getMaterialsApi, Material } from "../buyer/material.api";
 import { DeliveryAddress, getDeliveryAddressesApi } from "../buyer/address.api";
@@ -791,7 +791,8 @@ const PostRequirementScreen = ({ navigation }: any) => {
                     </View>
 
                     <Text style={styles.emptyAddressText}>
-                      No saved delivery addresses found.
+                      Please add a delivery address from your Profile section
+                      first.
                     </Text>
                   </View>
                 ) : (
@@ -1777,7 +1778,7 @@ const styles = StyleSheet.create({
   },
 
   selectedAddressText: {
-    fontSize: 11,
+    fontSize: 13,
     lineHeight: 16,
     fontWeight: "700",
     color: "#27221D",
@@ -1892,7 +1893,7 @@ const styles = StyleSheet.create({
   },
 
   emptyAddressText: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "600",
     color: "#8C8175",
     textAlign: "center",

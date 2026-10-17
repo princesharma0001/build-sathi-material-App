@@ -264,6 +264,8 @@ const BuyerNotificationsScreen = ({ navigation }: any) => {
     if (!notification.action) {
       return;
     }
+    console.log("afdfsd",notification);
+    
 
     try {
       navigation.navigate(notification.action, notification.data ?? undefined);
@@ -404,7 +406,7 @@ const BuyerNotificationsScreen = ({ navigation }: any) => {
 
           <View style={styles.protectionText}>
             <Text style={styles.protectionTitle}>
-              BuildSathi Buyer Protection
+              NeevSathi Buyer Protection
             </Text>
 
             <Text style={styles.protectionSubtitle}>

@@ -1,17 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from "react";
+import { View, Text, StyleSheet, Platform } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import BuyerHomeScreen from '../features/buyer/BuyerHomeScreen';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
-import BuyerRequestsScreen from '../features/buyer/BuyerRequestsScreen';
-import BuyerQuotesScreen from '../features/buyer/BuyerQuotesScreen';
-import BuyerOrdersScreen from '../features/orders/BuyerOrdersScreen';
-import MainMBuyerProfileScreen from '../features/buyer/MainBuyerProfileScreen';
+import BuyerHomeScreen from "../features/buyer/BuyerHomeScreen";
+import { Ionicons } from "@react-native-vector-icons/ionicons";
+import BuyerRequestsScreen from "../features/buyer/BuyerRequestsScreen";
+import BuyerQuotesScreen from "../features/buyer/BuyerQuotesScreen";
+import BuyerOrdersScreen from "../features/orders/BuyerOrdersScreen";
+import MainMBuyerProfileScreen from "../features/buyer/MainBuyerProfileScreen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
 const BuyerTabNavigator = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName="BuyerHome"
@@ -20,15 +23,16 @@ const BuyerTabNavigator = () => {
         tabBarShowLabel: false,
 
         tabBarStyle: {
-          position: 'absolute',
+          position: "absolute",
 
           left: 16,
           right: 16,
-          bottom: 16,
+          bottom:
+            Platform.OS === "android" ? Math.max(insets.bottom, 16) + 12 : 16,
 
           height: 72,
 
-          backgroundColor: '#FFFCF7',
+          backgroundColor: "#FFFCF7",
 
           borderRadius: 24,
 
@@ -50,8 +54,8 @@ const BuyerTabNavigator = () => {
           // shadowRadius: 12,
         },
 
-        tabBarActiveTintColor: '#FF7A00',
-        tabBarInactiveTintColor: '#000',
+        tabBarActiveTintColor: "#FF7A00",
+        tabBarInactiveTintColor: "#000",
 
         tabBarItemStyle: {
           height: 55,
@@ -68,9 +72,9 @@ const BuyerTabNavigator = () => {
             <View style={styles.tabItem}>
               <View style={[styles.normalIcon]}>
                 <Ionicons
-                  name={focused ? 'document-text' : 'document-text-outline'}
+                  name={focused ? "document-text" : "document-text-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -92,9 +96,9 @@ const BuyerTabNavigator = () => {
             <View style={styles.tabItem}>
               <View style={[styles.normalIcon]}>
                 <Ionicons
-                  name={focused ? 'pricetag' : 'pricetag-outline'}
+                  name={focused ? "pricetag" : "pricetag-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -116,9 +120,9 @@ const BuyerTabNavigator = () => {
             <View style={styles.homeTabContainer}>
               <View style={[styles.homeButton]}>
                 <Ionicons
-                  name={focused ? 'home' : 'home-outline'}
+                  name={focused ? "home" : "home-outline"}
                   size={28}
-                  color={focused ? '#FF7A00' : '#FF7A00'}
+                  color={focused ? "#FF7A00" : "#FF7A00"}
                 />
               </View>
 
@@ -142,9 +146,9 @@ const BuyerTabNavigator = () => {
             <View style={styles.tabItem}>
               <View style={[styles.normalIcon]}>
                 <Ionicons
-                  name={focused ? 'cube' : 'cube-outline'}
+                  name={focused ? "cube" : "cube-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -166,9 +170,9 @@ const BuyerTabNavigator = () => {
             <View style={styles.tabItem}>
               <View style={[styles.normalIcon]}>
                 <Ionicons
-                  name={focused ? 'person' : 'person-outline'}
+                  name={focused ? "person" : "person-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -192,8 +196,8 @@ const styles = StyleSheet.create({
     width: 65,
     height: 58,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   normalIcon: {
@@ -202,14 +206,14 @@ const styles = StyleSheet.create({
 
     borderRadius: 12,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
     // backgroundColor: '#FFF3E5',
   },
 
   normalIconActive: {
-    backgroundColor: '#FFE1C2',
+    backgroundColor: "#FFE1C2",
   },
 
   normalIconText: {
@@ -226,15 +230,15 @@ const styles = StyleSheet.create({
 
     fontSize: 11,
 
-    fontWeight: '600',
+    fontWeight: "600",
 
-    color: '#8C8175',
+    color: "#8C8175",
   },
 
   tabLabelActive: {
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '800',
+    fontWeight: "800",
   },
 
   // =========================================
@@ -245,8 +249,8 @@ const styles = StyleSheet.create({
     width: 82,
     height: 90,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
     marginTop: -27,
   },
@@ -257,15 +261,15 @@ const styles = StyleSheet.create({
 
     borderRadius: 32,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
-    backgroundColor: '#FFF3E5',
+    backgroundColor: "#FFF3E5",
 
     borderWidth: 3,
-    borderColor: '#FFB15C',
+    borderColor: "#FFB15C",
 
-    shadowColor: '#FF7A00',
+    shadowColor: "#FF7A00",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -277,11 +281,11 @@ const styles = StyleSheet.create({
   },
 
   homeButtonActive: {
-    backgroundColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
 
-    borderColor: '#FFB15C',
+    borderColor: "#FFB15C",
 
-    shadowColor: '#FF7A00',
+    shadowColor: "#FF7A00",
     shadowOffset: {
       width: 0,
       height: 6,
@@ -295,9 +299,9 @@ const styles = StyleSheet.create({
   homeIcon: {
     fontSize: 32,
 
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '900',
+    fontWeight: "900",
 
     marginTop: -3,
   },
@@ -305,14 +309,14 @@ const styles = StyleSheet.create({
   homeLabel: {
     marginTop: 3,
     fontSize: 12,
-    fontWeight: '700',
-    color: '#8C8175',
+    fontWeight: "700",
+    color: "#8C8175",
   },
 
   homeLabelActive: {
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '900',
+    fontWeight: "900",
   },
 });
 

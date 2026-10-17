@@ -691,7 +691,7 @@ const EditSellerProfileScreen = ({navigation}: any) => {
 
                   <Text style={styles.securityText}>
                     Your business details are securely stored
-                    and used for your BuildSathi seller profile.
+                    and used for your NeevSathi seller profile.
                   </Text>
                 </View>
               </View>
@@ -734,7 +734,7 @@ const EditSellerProfileScreen = ({navigation}: any) => {
 
               <Text style={styles.bottomNote}>
                 Your updated information will be reflected
-                across your BuildSathi seller profile.
+                across your NeevSathi seller profile.
               </Text>
             </View>
           </ScrollView>

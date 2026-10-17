@@ -210,7 +210,7 @@ const RegisterScreen = ({navigation}: Props) => {
                 </Text>
 
                 <Text style={styles.description}>
-                  Join BuildSathi and start building smarter.
+                  Join NeevSathi and start building smarter.
                 </Text>
 
                 {/* Full Name */}

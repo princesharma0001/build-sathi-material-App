@@ -1,17 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-// import BuyerHomeScreen from '../features/buyer/screens/BuyerHomeScreen';
-// import BuyerProfileScreen from '../features/buyer/screens/BuyerProfileScreen';
-// import LocationScreen from '../features/buyer/screens/LocationScreen';
-
-// import CreateRequirementScreen from '../features/buyer/screens/CreateRequirementScreen';
-// import MyRequirementsScreen from '../features/buyer/screens/MyRequirementsScreen';
-// import QuotesScreen from '../features/buyer/screens/QuotesScreen';
-// import SellerDetailsScreen from '../features/buyer/screens/SellerDetailsScreen';
-
-// import OrderDetailsScreen from '../features/orders/screens/OrderDetailsScreen';
-
 import { BuyerStackParamList } from './types';
 import BuyerProfileScreen from '../features/buyer/BuyerProfileScreen';
 import LocationScreen from '../features/buyer/LocationScreen';
@@ -47,53 +35,11 @@ const BuyerNavigator = () => {
         name="BuyerHome"
         component={BuyerHomeScreen}
         options={{
-          title: 'BuildSathi',
+          title: 'NeevSathi',
         }}
       />
       
     
-
-      {/* Buyer Features */}
-
-      {/* <Stack.Screen
-        name="CreateRequirement"
-        component={CreateRequirementScreen}
-        options={{
-          title: 'Create Requirement',
-        }}
-      /> */}
-
-      {/* <Stack.Screen
-        name="MyRequirements"
-        component={MyRequirementsScreen}
-        options={{
-          title: 'My Requirements',
-        }}
-      />
-
-      <Stack.Screen
-        name="Quotes"
-        component={QuotesScreen}
-        options={{
-          title: 'Quotes',
-        }}
-      /> */}
-
-      {/* <Stack.Screen
-        name="SellerDetails"
-        component={SellerDetailsScreen}
-        options={{
-          title: 'Seller Details',
-        }}
-      />
-
-      <Stack.Screen
-        name="OrderDetails"
-        component={OrderDetailsScreen}
-        options={{
-          title: 'Order Details',
-        }}
-      /> */}
     </Stack.Navigator>
   );
 };

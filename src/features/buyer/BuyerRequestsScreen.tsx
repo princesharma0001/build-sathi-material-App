@@ -162,9 +162,9 @@ const BuyerRequestsScreen = ({ navigation }: any) => {
             }}
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
-            <View style={styles.notificationBadge}>
+            {/* <View style={styles.notificationBadge}>
               <Text style={styles.badgeText}>2</Text>
-            </View>
+            </View> */}
           </Pressable>
         </View>
 

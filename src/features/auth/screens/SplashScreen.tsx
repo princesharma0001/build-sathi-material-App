@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../../navigation/types";
@@ -215,8 +215,16 @@ const SplashScreen = ({ navigation }: Props) => {
 
             navigation.replace("Login");
         }
-      } catch (error) {
+      } catch (error: any) {
+        const status = error?.response?.status;
+
         console.log("❌ Splash authentication error:", error);
+        // Expired or invalid token
+        if (status === 401 || error?.message === "SESSION_EXPIRED") {
+          await clearAuthSession2();
+          navigation.replace("Login");
+          return;
+        }
 
         await clearAuthSession2();
 

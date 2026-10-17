@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import LinearGradient from "react-native-linear-gradient";
-import messaging from "@react-native-firebase/messaging";
+// import messaging from "@react-native-firebase/messaging";
 
 import AuthHeader from "../components/AuthHeader";
 import AuthInput from "../components/AuthInput";
@@ -23,16 +24,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { registerFCMToken } from "./notification.api";
 import { getFCMToken } from "../../../services/notificationService";
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+import { API_BASE_URL } from "../../../config/api";
+// import { GOOGLE_WEB_CLIENT_ID } from "../../../config/googleSignIn";
+import Ionicons from "@react-native-vector-icons/ionicons";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
 const LoginScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [apiError, setApiError] = useState("");
+  const [loading1, setLoading1] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +90,6 @@ const LoginScreen = ({ navigation }: Props) => {
   //     const { user, token } = response.data;
 
   //     console.log("dfsdfs",user,token);
-      
 
   //     // Save JWT + user in AsyncStorage
   //     await saveAuthSession(token, user);
@@ -177,10 +186,7 @@ const LoginScreen = ({ navigation }: Props) => {
       // =========================
       // LOGIN API
       // =========================
-      const response = await loginApi(
-        trimmedEmail,
-        trimmedPassword,
-      );
+      const response = await loginApi(trimmedEmail, trimmedPassword);
 
       const { user, token } = response.data;
 
@@ -197,8 +203,7 @@ const LoginScreen = ({ navigation }: Props) => {
       // =========================
       try {
         console.log("🔥 Getting FCM token...");
-              const fcmToken = await getFCMToken();
-        
+        const fcmToken = await getFCMToken();
 
         // const fcmToken = await messaging().getToken();
 
@@ -207,18 +212,13 @@ const LoginScreen = ({ navigation }: Props) => {
         if (fcmToken) {
           await registerFCMToken(fcmToken, token);
 
-          console.log(
-            "✅ FCM token successfully registered with backend",
-          );
+          console.log("✅ FCM token successfully registered with backend");
         } else {
           console.log("⚠️ FCM token not available");
         }
       } catch (fcmError) {
         // FCM failure should NOT stop login
-        console.error(
-          "❌ FCM registration error:",
-          fcmError,
-        );
+        console.error("❌ FCM registration error:", fcmError);
       }
 
       // =========================
@@ -247,16 +247,12 @@ const LoginScreen = ({ navigation }: Props) => {
       }
 
       if (user.role === "CONTRACTOR") {
-        setApiError(
-          "Contractor account is not available yet.",
-        );
+        setApiError("Contractor account is not available yet.");
         return;
       }
 
       if (user.role === "ADMIN") {
-        setApiError(
-          "Admin login is not available in the mobile app.",
-        );
+        setApiError("Admin login is not available in the mobile app.");
         return;
       }
 
@@ -267,15 +263,83 @@ const LoginScreen = ({ navigation }: Props) => {
       Toast.show({
         type: "error",
         text1: "Login Failed",
-        text2:
-          error?.message ||
-          "Invalid email or password",
+        text2: error?.message || "Invalid email or password",
         position: "top",
         visibilityTime: 3000,
         topOffset: 60,
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+ 
+const GOOGLE_WEB_CLIENT_ID =
+'330213964583-eidn5bid7qfas897gcip2svqf8fg99t8.apps.googleusercontent.com';
+
+useEffect(() => {
+GoogleSignin.configure({
+  webClientId: GOOGLE_WEB_CLIENT_ID,
+  offlineAccess: false,
+});
+}, []);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading1(true);
+
+      await GoogleSignin.hasPlayServices();
+
+      const result = await GoogleSignin.signIn();
+
+      if (!isSuccessResponse(result)) {
+        return;
+      }
+
+      const idToken = result.data.idToken;
+
+      if (!idToken) {
+        throw new Error("Google ID token missing. Check your Web Client ID.");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/auth/google`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const data = await response.json();
+      console.log("sdgsgs",data);
+      
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Google login failed");
+      }
+
+      const { accessToken, user } = data.data;
+      console.log("accessTokenaccessToken",accessToken);
+
+      await saveAuthSession(accessToken, user);
+
+      // TODO: Save accessToken using your existing auth flow.
+      // Update AuthContext/Redux and navigate based on user.role.
+
+      Alert.alert("Success", `Welcome ${user.name ?? "back"}!`);
+    } catch (error: any) {
+      if (
+        isErrorWithCode(error) &&
+        error.code === statusCodes.SIGN_IN_CANCELLED
+      ) {
+        return;
+      }
+
+      console.error("Google login failed:", error);
+
+      Alert.alert("Login Failed", error?.message || "Please try again.");
+    } finally {
+      setLoading1(false);
     }
   };
 
@@ -347,7 +411,9 @@ const LoginScreen = ({ navigation }: Props) => {
                   </View>
                 )}
                 <View style={styles.registerRow1}>
-                  <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
+                  <Pressable
+                    onPress={() => navigation.navigate("ForgotPassword")}
+                  >
                     <Text style={styles.registerLink}>Forgot Password</Text>
                   </Pressable>
                 </View>
@@ -362,6 +428,42 @@ const LoginScreen = ({ navigation }: Props) => {
                     <ActivityIndicator color="#FFFFFF" />
                   ) : (
                     <Text style={styles.buttonText}>Login</Text>
+                  )}
+                </Pressable>
+
+                <Pressable
+                  onPress={handleGoogleLogin}
+                  disabled={loading1}
+                  style={({ pressed }) => [
+                    styles.googleButton,
+                    pressed && styles.googleButtonPressed,
+                    loading1 && styles.googleButtonDisabled,
+                  ]}
+                >
+                  {loading1 ? (
+                    <ActivityIndicator color="#F97316" size="small" />
+                  ) : (
+                    <>
+                      <View style={styles.googleIconContainer}>
+                        <Ionicons
+                          name="logo-google"
+                          size={23}
+                          color="#4285F4"
+                        />
+                      </View>
+
+                      <Text style={styles.googleButtonText}>
+                        Continue with Google
+                      </Text>
+
+                      <View style={styles.googleRightIcon}>
+                        <Ionicons
+                          name="arrow-forward"
+                          size={19}
+                          color="#64748B"
+                        />
+                      </View>
+                    </>
                   )}
                 </Pressable>
 
@@ -483,7 +585,7 @@ const styles = StyleSheet.create({
   registerRow1: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    paddingBottom:20
+    paddingBottom: 20,
     // marginTop: 10,
   },
 
@@ -496,5 +598,56 @@ const styles = StyleSheet.create({
     color: "#FF7A00",
     fontWeight: "800",
     fontSize: 14,
+  },
+
+  googleButton: {
+    minHeight: 58,
+    marginTop: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    elevation: 3,
+    shadowColor: "#172554",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+
+  googleButtonPressed: {
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FDBA74",
+    transform: [{ scale: 0.99 }],
+  },
+
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
+
+  googleIconContainer: {
+    position: "absolute",
+    left: 12,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  googleButtonText: {
+    color: "#172554",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+
+  googleRightIcon: {
+    position: "absolute",
+    right: 16,
   },
 });

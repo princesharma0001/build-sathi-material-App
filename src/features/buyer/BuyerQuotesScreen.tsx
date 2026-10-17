@@ -38,11 +38,7 @@ const SellerQuotesScreen = () => {
       setLoading(true);
 
       const response = await getBuyerQuotesApi();
-
-      console.log("SELLER QUOTES RESPONSE:", JSON.stringify(response, null, 2));
-
       const quoteList = response?.data?.quotes;
-
       setQuotes(Array.isArray(quoteList) ? quoteList : []);
     } catch (error: any) {
       console.error("GET SELLER QUOTES ERROR:", error?.response?.data || error);
@@ -509,7 +505,7 @@ const SellerQuotesScreen = () => {
 
             <Pressable
               style={styles.headerIcon}
-              onPress={() => navigation.navigate("SellerNotifications")}
+              onPress={() => navigation.navigate("Notifications")}
             >
               <Ionicons
                 name="notifications-outline"

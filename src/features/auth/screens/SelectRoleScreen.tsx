@@ -93,8 +93,8 @@ const SelectRoleScreen = ({route, navigation}: Props) => {
         text1: 'Account Created 🎉',
         text2:
           selectedRole === 'buyer'
-            ? 'Welcome to BuildSathi Buyer.'
-            : 'Welcome to BuildSathi Seller.',
+            ? 'Welcome to NeevSathi Buyer.'
+            : 'Welcome to NeevSathi Seller.',
         position: 'top',
         visibilityTime: 1800,
       });
@@ -151,7 +151,7 @@ const SelectRoleScreen = ({route, navigation}: Props) => {
           {/* Heading */}
 
           <Text style={styles.heading}>
-            How will you use BuildSathi?
+            How will you use NeevSathi?
           </Text>
 
           <Text style={styles.description}>

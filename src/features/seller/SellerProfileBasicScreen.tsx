@@ -151,7 +151,7 @@ const SellerProfileBasicScreen = () => {
 
                 <Text style={styles.description}>
                   Add your business details to start selling construction
-                  materials on BuildSathi.
+                  materials on NeevSathi.
                 </Text>
               </View>
 
@@ -366,7 +366,7 @@ const SellerProfileBasicScreen = () => {
                 <Text style={styles.sectionTitle}>Contact Details</Text>
 
                 <Text style={styles.sectionSubtitle}>
-                  How buyers and BuildSathi can reach you
+                  How buyers and NeevSathi can reach you
                 </Text>
 
                 <View style={styles.inputGroup}>
@@ -414,7 +414,7 @@ const SellerProfileBasicScreen = () => {
 
                   <Text style={styles.trustText}>
                     Business details are used for verification and your
-                    BuildSathi seller profile.
+                    NeevSathi seller profile.
                   </Text>
                 </View>
               </View>

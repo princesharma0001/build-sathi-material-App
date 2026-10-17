@@ -478,7 +478,7 @@ const BuyerHomeScreen = ({ navigation }: any) => {
           <View style={styles.howCard}>
             <View style={styles.howHeader}>
               <View>
-                <Text style={styles.howTitle}>How BuildSathi works</Text>
+                <Text style={styles.howTitle}>How NeevSathi works</Text>
                 <Text style={styles.howSubtitle}>
                   Buy construction materials smarter
                 </Text>

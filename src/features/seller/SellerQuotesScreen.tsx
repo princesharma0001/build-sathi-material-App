@@ -450,7 +450,7 @@ const SellerQuotesScreen = () => {
 
           <Pressable
             style={styles.headerIcon}
-            onPress={() => navigation.navigate("SellerNotifications")}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 

@@ -554,12 +554,12 @@ const SellerRequirementDetailsScreen = ({ navigation, route }: any) => {
 
               <View style={styles.trustContent}>
                 <Text style={styles.trustTitle}>
-                  BuildSathi Seller Protection
+                NeevSathi Seller Protection
                 </Text>
 
                 <Text style={styles.trustText}>
                   Your quote and buyer communication stay protected through
-                  BuildSathi.
+                  NeevSathi.
                 </Text>
               </View>
             </View>

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const getGreeting = (): string => {
   const hour = new Date().getHours();
@@ -15,4 +16,18 @@ export const getGreeting = (): string => {
   }
 
   return "Good night";
+};
+
+export const clearAuthSession2 = async () => {
+  try {
+    await AsyncStorage.multiRemove([
+      '@buildsathi_token',
+      '@buildsathi_user',
+    ]);
+
+    console.log('Auth session cleared successfully');
+  } catch (error) {
+    console.log('Error clearing auth session:', error);
+    throw error;
+  }
 };

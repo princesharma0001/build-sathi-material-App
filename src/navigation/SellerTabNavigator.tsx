@@ -1,18 +1,21 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
-import MainBuyerProfileScreen from '../features/buyer/MainBuyerProfileScreen';
-import SellerHomeScreen from '../features/seller/SellerHomeScreen';
-import SellerRequirementsScreen from '../features/seller/SellerRequirementsScreen';
-import SellerQuotesScreen from '../features/seller/SellerQuotesScreen';
-import SellerOrdersScreen from '../features/seller/SellerOrdersScreen';
-import SellerProfileScreen from '../features/seller/SellerProfileScreen';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
+import MainBuyerProfileScreen from "../features/buyer/MainBuyerProfileScreen";
+import SellerHomeScreen from "../features/seller/SellerHomeScreen";
+import SellerRequirementsScreen from "../features/seller/SellerRequirementsScreen";
+import SellerQuotesScreen from "../features/seller/SellerQuotesScreen";
+import SellerOrdersScreen from "../features/seller/SellerOrdersScreen";
+import SellerProfileScreen from "../features/seller/SellerProfileScreen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
 const SellerTabNavigator = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName="SellerHome"
@@ -21,15 +24,15 @@ const SellerTabNavigator = () => {
         tabBarShowLabel: false,
 
         tabBarStyle: {
-          position: 'absolute',
+          position: "absolute",
 
           left: 16,
           right: 16,
-          bottom: 16,
-
+          bottom:
+            Platform.OS === "android" ? Math.max(insets.bottom, 16) + 12 : 16,
           height: 72,
 
-          backgroundColor: '#FFFCF7',
+          backgroundColor: "#FFFCF7",
 
           borderRadius: 24,
 
@@ -41,8 +44,8 @@ const SellerTabNavigator = () => {
           paddingBottom: 8,
         },
 
-        tabBarActiveTintColor: '#FF7A00',
-        tabBarInactiveTintColor: '#000',
+        tabBarActiveTintColor: "#FF7A00",
+        tabBarInactiveTintColor: "#000",
 
         tabBarItemStyle: {
           height: 55,
@@ -60,9 +63,9 @@ const SellerTabNavigator = () => {
                 style={[styles.normalIcon, focused && styles.normalIconActive]}
               >
                 <Ionicons
-                  name={focused ? 'document-text' : 'document-text-outline'}
+                  name={focused ? "document-text" : "document-text-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -85,9 +88,9 @@ const SellerTabNavigator = () => {
                 style={[styles.normalIcon, focused && styles.normalIconActive]}
               >
                 <Ionicons
-                  name={focused ? 'pricetag' : 'pricetag-outline'}
+                  name={focused ? "pricetag" : "pricetag-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -107,9 +110,9 @@ const SellerTabNavigator = () => {
             <View style={styles.homeTabContainer}>
               <View style={[styles.homeButton]}>
                 <Ionicons
-                  name={focused ? 'home' : 'home-outline'}
+                  name={focused ? "home" : "home-outline"}
                   size={28}
-                  color={focused ? '#FF7A00' : '#FF7A00'}
+                  color={focused ? "#FF7A00" : "#FF7A00"}
                 />
               </View>
 
@@ -133,9 +136,9 @@ const SellerTabNavigator = () => {
                 style={[styles.normalIcon, focused && styles.normalIconActive]}
               >
                 <Ionicons
-                  name={focused ? 'cube' : 'cube-outline'}
+                  name={focused ? "cube" : "cube-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -158,9 +161,9 @@ const SellerTabNavigator = () => {
                 style={[styles.normalIcon, focused && styles.normalIconActive]}
               >
                 <Ionicons
-                  name={focused ? 'person' : 'person-outline'}
+                  name={focused ? "person" : "person-outline"}
                   size={21}
-                  color={focused ? '#FF7A00' : '#8C8175'}
+                  color={focused ? "#FF7A00" : "#8C8175"}
                 />
               </View>
 
@@ -179,7 +182,7 @@ export default SellerTabNavigator;
 
 const styles = StyleSheet.create({
   tabBar: {
-    position: 'absolute',
+    position: "absolute",
 
     left: 16,
     right: 16,
@@ -187,19 +190,19 @@ const styles = StyleSheet.create({
 
     height: 72,
 
-    backgroundColor: '#FFFCF7',
+    backgroundColor: "#FFFCF7",
 
     borderRadius: 24,
 
     borderWidth: 1,
-    borderColor: '#F1E2D0',
+    borderColor: "#F1E2D0",
 
     paddingTop: 6,
     paddingBottom: 7,
 
     elevation: 8,
 
-    shadowColor: '#8C5A2B',
+    shadowColor: "#8C5A2B",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -210,16 +213,16 @@ const styles = StyleSheet.create({
 
   tabItem: {
     width: 70,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   normalIcon: {
     width: 34,
     height: 34,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
     // backgroundColor: '#FFF3E5',
   },
@@ -233,22 +236,22 @@ const styles = StyleSheet.create({
 
     fontSize: 9,
 
-    fontWeight: '600',
+    fontWeight: "600",
 
-    color: '#8C8175',
+    color: "#8C8175",
   },
 
   tabLabelActive: {
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '900',
+    fontWeight: "900",
   },
   homeTabContainer: {
     width: 82,
     height: 90,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
     marginTop: -27,
   },
@@ -259,15 +262,15 @@ const styles = StyleSheet.create({
 
     borderRadius: 32,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
 
-    backgroundColor: '#FFF3E5',
+    backgroundColor: "#FFF3E5",
 
     borderWidth: 3,
-    borderColor: '#FFB15C',
+    borderColor: "#FFB15C",
 
-    shadowColor: '#FF7A00',
+    shadowColor: "#FF7A00",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -279,11 +282,11 @@ const styles = StyleSheet.create({
   },
 
   homeButtonActive: {
-    backgroundColor: '#FF7A00',
+    backgroundColor: "#FF7A00",
 
-    borderColor: '#FFB15C',
+    borderColor: "#FFB15C",
 
-    shadowColor: '#FF7A00',
+    shadowColor: "#FF7A00",
     shadowOffset: {
       width: 0,
       height: 6,
@@ -297,9 +300,9 @@ const styles = StyleSheet.create({
   homeIcon: {
     fontSize: 32,
 
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '900',
+    fontWeight: "900",
 
     marginTop: -3,
   },
@@ -307,13 +310,13 @@ const styles = StyleSheet.create({
   homeLabel: {
     marginTop: 3,
     fontSize: 12,
-    fontWeight: '700',
-    color: '#8C8175',
+    fontWeight: "700",
+    color: "#8C8175",
   },
 
   homeLabelActive: {
-    color: '#FF7A00',
+    color: "#FF7A00",
 
-    fontWeight: '900',
+    fontWeight: "900",
   },
 });

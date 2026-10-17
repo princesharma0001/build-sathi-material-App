@@ -27,11 +27,11 @@ private fun createNotificationChannel() {
 
     val channel = NotificationChannel(
       channelId,
-      "BuildSathi Notifications",
+      "NeevSathi Notifications",
       NotificationManager.IMPORTANCE_HIGH
     )
 
-    channel.description = "BuildSathi push notifications"
+    channel.description = "NeevSathi push notifications"
 
     val audioAttributes = AudioAttributes.Builder()
       .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -52,7 +52,7 @@ private fun createNotificationChannel() {
   }
 }
 
-  override fun getMainComponentName(): String = "BuildSathi"
+  override fun getMainComponentName(): String = "NeevSathi"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(

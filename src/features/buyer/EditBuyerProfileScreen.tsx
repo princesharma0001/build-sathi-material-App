@@ -270,7 +270,7 @@ const EditBuyerProfileScreen = ({ navigation }: any) => {
             <Text style={styles.title}>Personal & Business Details</Text>
 
             <Text style={styles.subtitle}>
-              Update your information for a better BuildSathi experience.
+              Update your information for a better NeevSathi experience.
             </Text>
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>Full Name</Text>
@@ -630,8 +630,8 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 25,
-    fontWeight: "900",
+    fontSize: 22,
+    fontWeight: "800",
     color: "#0A0A0A",
     textAlign: "center",
   },

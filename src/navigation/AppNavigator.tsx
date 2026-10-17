@@ -22,6 +22,13 @@ import EditSellerProfileScreen from "../features/seller/EditSellerProfileScreen"
 import SellerDispatchMaterialScreen from "../features/seller/SellerDispatchMaterialScreen";
 import SellerOrderDetailsScreen from "../features/seller/SellerOrderDetailsScreen";
 import SellerSubscriptionScreen from "../features/subscription/SellerSubscriptionScreen";
+import SellerNotificationsScreen from "../features/seller/SellerNotificationsScreen";
+import TermsAndPolicyScreen from "../features/buyer/TermsAndPolicyScreen";
+import BuyerFeedbackScreen from "../features/buyer/BuyerFeedbackScreen";
+import TermsAndPolicyDetailScreen from "../features/buyer/TermsAndPolicyDetailScreen";
+import SellerFeedbackScreen from "../features/seller/SellerFeedbackScreen";
+import SupportScreen from "../features/buyer/SupportScreen";
+import MySupportTickets from "../features/buyer/MySupportTickets";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,10 +49,32 @@ const AppNavigator = () => {
         component={QuoteDetailsScreen}
         options={{ headerShown: false }}
       />
+
+      <Stack.Screen name="BuyerFeedback" component={BuyerFeedbackScreen} />
+      <Stack.Screen name="TermsAndPolicy" component={TermsAndPolicyScreen} />
       <Stack.Screen
         name="OrderConfirmation"
         component={OrderConfirmationScreen}
       />
+      <Stack.Screen
+        name="TermsConditions"
+        component={TermsAndPolicyDetailScreen}
+      />
+
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={TermsAndPolicyDetailScreen}
+      />
+
+      <Stack.Screen
+        name="AboutNeevSathi"
+        component={TermsAndPolicyDetailScreen}
+      />
+      <Stack.Screen name="feedbackSeller" component={SellerFeedbackScreen} />
+      <Stack.Screen name="Support" component={SupportScreen} />
+      <Stack.Screen name="MySupportTickets" component={MySupportTickets} />
+
+      
       <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
       <Stack.Screen
         name="CreateRequirement"
@@ -53,6 +82,11 @@ const AppNavigator = () => {
       />
       <Stack.Screen name="RequestDetails" component={RequestDetailsScreen} />
       <Stack.Screen name="Notifications" component={BuyerNotificationsScreen} />
+      <Stack.Screen
+        name="SellerNotifications"
+        component={SellerNotificationsScreen}
+      />
+
       <Stack.Screen
         name="EditBuyerProfile"
         component={EditBuyerProfileScreen}

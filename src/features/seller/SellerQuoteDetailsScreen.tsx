@@ -115,6 +115,7 @@ const SellerQuoteDetailsScreen = () => {
     fetchQuoteDetails();
   }, [fetchQuoteDetails]);
 
+
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -123,15 +124,47 @@ const SellerQuoteDetailsScreen = () => {
           backgroundColor="transparent"
           barStyle="dark-content"
         />
-
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF7A00" />
-
-          <Text style={styles.loadingText}>Loading quote details...</Text>
+  
+        <View style={styles.loaderContainer}>
+          <View style={styles.logoWrapper}>
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.loaderLogo}
+              resizeMode="contain"
+            />
+          </View>
+  
+          <Text style={styles.loaderTitle}>BuildSathi</Text>
+  
+          <Text style={styles.loaderSubtitle}>
+            Loading quote details...
+          </Text>
+  
+          <View style={styles.loaderTrack}>
+            <View style={styles.loaderProgress} />
+          </View>
         </View>
       </SafeAreaView>
     );
   }
+
+  // if (loading) {
+  //   return (
+  //     <SafeAreaView style={styles.safeArea}>
+  //       <StatusBar
+  //         translucent
+  //         backgroundColor="transparent"
+  //         barStyle="dark-content"
+  //       />
+
+  //       <View style={styles.loadingContainer}>
+  //         <ActivityIndicator size="large" color="#FF7A00" />
+
+  //         <Text style={styles.loadingText}>Loading quote details...</Text>
+  //       </View>
+  //     </SafeAreaView>
+  //   );
+  // }
 
   if (!quote) {
     return (
@@ -741,12 +774,12 @@ const SellerQuoteDetailsScreen = () => {
 
               <View style={styles.protectionContent}>
                 <Text style={styles.protectionTitle}>
-                  BuildSathi Seller Protection
+                NeevSathi Seller Protection
                 </Text>
 
                 <Text style={styles.protectionText}>
                   Your quotation and agreed terms are recorded securely on
-                  BuildSathi.
+                  NeevSathi.
                 </Text>
               </View>
             </LinearGradient>
@@ -1002,6 +1035,65 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#FFFFFF",
     fontWeight: "900",
+  },
+
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+
+  logoWrapper: {
+    width: 110,
+    height: 110,
+    borderRadius: 28,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#FF7A00',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    marginBottom: 18,
+  },
+
+  loaderLogo: {
+    width: 82,
+    height: 82,
+  },
+
+  loaderTitle: {
+    fontSize: 23,
+    fontWeight: '800',
+    color: '#FF7A00',
+    marginBottom: 8,
+  },
+
+  loaderSubtitle: {
+    fontSize: 14,
+    color: '#777777',
+    fontWeight: '500',
+    marginBottom: 22,
+  },
+
+  loaderTrack: {
+    width: 120,
+    height: 4,
+    borderRadius: 10,
+    backgroundColor: '#FFE2C2',
+    overflow: 'hidden',
+  },
+
+  loaderProgress: {
+    width: '65%',
+    height: '100%',
+    backgroundColor: '#FF7A00',
+    borderRadius: 10,
   },
 
   heroQuantity: {

@@ -524,7 +524,7 @@ const SendQuoteScreen = ({ navigation, route }: any) => {
                   </Text>
 
                   <Text style={styles.trustText}>
-                    Your quote will be shared with the buyer through BuildSathi.
+                    Your quote will be shared with the buyer through NeevSathi.
                   </Text>
                 </View>
               </View>

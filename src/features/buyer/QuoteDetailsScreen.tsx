@@ -13,7 +13,7 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import Ionicons from "react-native-vector-icons/Ionicons";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { acceptBuyerQuoteApi, getBuyerQuoteByIdApi } from "../seller/quoteApi";
 import Toast from "react-native-toast-message";
 
@@ -25,7 +25,9 @@ const QuoteDetailsScreen = ({ navigation, route }: any) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchQuoteDetails();
+    if (quoteId) {
+      fetchQuoteDetails();
+    }
   }, [quoteId]);
 
   const fetchQuoteDetails = async () => {
@@ -828,7 +830,7 @@ const QuoteDetailsScreen = ({ navigation, route }: any) => {
           </View>
 
           <View style={styles.trustContent}>
-            <Text style={styles.trustTitle}>BuildSathi Buyer Protection</Text>
+            <Text style={styles.trustTitle}>NeevSathi Buyer Protection</Text>
 
             <Text style={styles.trustText}>
               Review the seller, pricing, delivery details and message before

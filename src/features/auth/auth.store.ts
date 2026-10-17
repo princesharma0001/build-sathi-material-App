@@ -48,27 +48,31 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
 
+
   logout: async () => {
-    console.log("🔐 Clearing BuildSathi auth session...");
-
+    console.log('🔐 Clearing neevsathi auth session...');
+  
     try {
-      // Clear all persisted authentication data
-      await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
-
-      // Clear Zustand state
+      console.log('Step 1: Clearing AsyncStorage');
+  
+      await AsyncStorage.removeItem(TOKEN_KEY);
+      await AsyncStorage.removeItem(USER_KEY);
+  
+      console.log('Step 2: Clearing Zustand state');
+  
       set({
         activeRole: null,
         user: null,
         token: null,
       });
-
-      console.log("✅ BuildSathi auth session cleared");
+  
+      console.log('✅ Auth session cleared');
     } catch (error) {
-      console.error("❌ Failed to clear auth session:", error);
-
+      console.error('❌ Failed to clear auth session:', error);
       throw error;
     }
   },
+  
 }));
 
 // =========================

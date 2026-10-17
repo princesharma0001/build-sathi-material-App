@@ -9,9 +9,11 @@ import {
   StatusBar,
   FlatList,
   Image,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 // import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   useFocusEffect,
@@ -27,7 +29,7 @@ const SellerRequirementsScreen = () => {
   const route = useRoute<any>();
 
   const initialMaterial = route.params?.material || "All";
-
+  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState(initialMaterial);
   const [showFilters, setShowFilters] = useState(false);
@@ -126,6 +128,49 @@ const SellerRequirementsScreen = () => {
     }, [fetchRequirements])
   );
 
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      const data = await getSellerRequirementsApi();
+
+      setRequirements(data || []);
+    } catch (error: any) {
+      console.log("REFRESH DASHBOARD ERROR:", error?.message || error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  if (loading && requirements.length === 0) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="dark-content"
+        />
+
+        <View style={styles.loadingContainer}>
+          <View style={styles.loadingIcon}>
+            <Ionicons name="pricetag-outline" size={30} color="#FF7A00" />
+          </View>
+
+          <ActivityIndicator
+            size="small"
+            color="#FF7A00"
+            style={{ marginTop: 16 }}
+          />
+
+          <Text style={styles.loadingTitle}>Loading your requirement...</Text>
+
+          <Text style={styles.loadingText}>
+            Fetching your latest requirements.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
@@ -152,7 +197,7 @@ const SellerRequirementsScreen = () => {
 
           <Pressable
             style={styles.headerIcon}
-            onPress={() => navigation.navigate("SellerNotifications")}
+            onPress={() => navigation.navigate("Notifications")}
           >
             <Ionicons name="notifications-outline" size={21} color="#0A0A0A" />
 
@@ -165,6 +210,16 @@ const SellerRequirementsScreen = () => {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#FF7A00"]}
+              tintColor="#FF7A00"
+              title="Refreshing dashboard..."
+              titleColor="#8C8175"
+            />
+          }
           keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
             <>
@@ -310,7 +365,7 @@ const SellerRequirementsScreen = () => {
             />
           )}
           ListEmptyComponent={
-            !loading ? (
+            !loading && filteredRequirements.length === 0 ? (
               <View style={styles.emptyState}>
                 <View style={styles.emptyIcon}>
                   <Ionicons name="search-outline" size={30} color="#D4A017" />
@@ -800,7 +855,7 @@ const styles = StyleSheet.create({
     width: 47,
     height: 47,
     resizeMode: "cover",
-    borderRadius:12
+    borderRadius: 12,
   },
 
   /* FILTERS */
@@ -926,6 +981,37 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: "#FFF4E6",
     fontWeight: "700",
+  },
+ 
+
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+
+  loadingIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 22,
+    backgroundColor: "#FFF3E5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  loadingTitle: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#0A0A0A",
+    marginTop: 14,
+  },
+
+  loadingText: {
+    fontSize: 11,
+    color: "#8C8175",
+    fontWeight: "600",
+    marginTop: 5,
   },
 
   statLabel: {

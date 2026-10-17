@@ -175,42 +175,86 @@ export const getSellerProfileApi = async (): Promise<SellerProfile> => {
   };
 
 
-  export const getSellerDashboardApi = async () => {
-    const token = await AsyncStorage.getItem(
-      '@buildsathi_token',
-    );  
-    const response = await fetch(
-      `${API_BASE_URL}/sellers/dashboard`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+export const getSellerDashboardApi = async () => {
+  const token = await AsyncStorage.getItem('@buildsathi_token');
+
+  if (!token) {
+    throw new Error('Authentication token not found. Please log in again.');
+  }
+
+  const response = await fetch(
+    `${API_BASE_URL}/sellers/dashboard`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
       },
+    },
+  );
+
+  const rawText = await response.text();
+
+  let data: any;
+
+  try {
+    data = JSON.parse(rawText);
+  } catch {
+    throw new Error(
+      `Server returned invalid JSON: ${rawText.substring(0, 200)}`,
     );
+  }
+  // Token expired or invalid
+  if (response.status === 401) {
+    throw new Error('SESSION_EXPIRED');
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message || `Dashboard API failed: ${response.status}`,
+    );
+  }
+
+  return data;
+};
+
+
+  // export const getSellerDashboardApi = async () => {
+  //   const token = await AsyncStorage.getItem(
+  //     '@buildsathi_token',
+  //   );  
+  //   const response = await fetch(
+  //     `${API_BASE_URL}/sellers/dashboard`,
+  //     {
+  //       method: 'GET',
+  //       headers: {
+  //         Accept: 'application/json',
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     },
+  //   );
   
-    const rawText = await response.text();
+  //   const rawText = await response.text();
   
-    console.log('DASHBOARD STATUS:', response.status);
-    console.log('DASHBOARD URL:', response.url);
-    console.log('DASHBOARD RAW RESPONSE:', rawText);
+  //   console.log('DASHBOARD STATUS:', response.status);
+  //   console.log('DASHBOARD URL:', response.url);
+  //   console.log('DASHBOARD RAW RESPONSE:', rawText);
   
-    if (!response.ok) {
-      throw new Error(
-        `Dashboard API failed: ${response.status} ${rawText}`,
-      );
-    }
+  //   if (!response.ok) {
+  //     throw new Error(
+  //       `Dashboard API failed: ${response.status} ${rawText}`,
+  //     );
+  //   }
   
-    try {
-      return JSON.parse(rawText);
-    } catch (error) {
-      throw new Error(
-        `Server returned non-JSON response: ${rawText.substring(0, 300)}`,
-      );
-    }
-  };
+  //   try {
+  //     return JSON.parse(rawText);
+  //   } catch (error) {
+  //     throw new Error(
+  //       `Server returned non-JSON response: ${rawText.substring(0, 300)}`,
+  //     );
+  //   }
+  // };
 
   export const dispatchMaterial = async (
     payload: DispatchMaterialPayload,
